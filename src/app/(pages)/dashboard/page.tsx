@@ -6,6 +6,8 @@ import { PieComponent } from "@/app/components/dashboardgraph/chart/piechart";
 import { BarComponent } from "@/app/components/dashboardgraph/chart/barchart";
 import { InteractiveChart } from "@/app/components/dashboardgraph/chart/barchartinteractive";
 import { PieChartInteractive } from "@/app/components/dashboardgraph/chart/piechartinteractive";
+import Wrapper from "../wrapper";
+
 export default function Dashboard() {
   const { data: session } = useSession();
   const [showContent, setShowContent] = useState(false);
@@ -22,20 +24,22 @@ export default function Dashboard() {
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       {showContent ? (
         <>
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50">
-              <PieComponent />
+          <Wrapper>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="rounded-xl bg-muted/50">
+                <PieComponent />
+              </div>
+              <div className="rounded-xl bg-muted/50">
+                <BarComponent />
+              </div>
+              <div className="rounded-xl bg-muted/50">
+                <PieChartInteractive />
+              </div>
             </div>
-            <div className="aspect-video rounded-xl bg-muted/50">
-              <BarComponent />
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min mt-4">
+              <InteractiveChart />
             </div>
-            <div className="aspect-video rounded-xl bg-muted/50">
-              <PieChartInteractive />
-            </div>
-          </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
-            <InteractiveChart />
-          </div>
+          </Wrapper>
         </>
       ) : (
         <div className="flex justify-center items-center h-screen">
