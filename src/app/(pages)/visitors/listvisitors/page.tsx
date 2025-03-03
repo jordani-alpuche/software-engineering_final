@@ -1,7 +1,12 @@
 import React from "react";
+import ListVisitors from "@/app/components/visitors/list-visitors";
 
-const ListVisitors = () => {
-  return <div>List Visitors</div>;
+const Visitors = () => {
+  return (
+    <div>
+      <ListVisitors />
+    </div>
+  );
 };
 
-export default ListVisitors;
+export default Visitors;

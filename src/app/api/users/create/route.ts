@@ -7,30 +7,55 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
   try {
     const {
-      first_name,
-      last_name,
+      resident_first_name,
+      resident_last_name,
+      resident_house_number,
+      resident_address,
+      resident_phone_number,
+      security_first_name,
+      security_last_name,
+      security_phone_number,
+      security_shift,
       username,
       password,
-      phone,
       role,
-      unit,
       status,
     } = await req.json();
 
-    // Validate all required fields
-    if (
-      !first_name ||
-      !last_name ||
-      !username ||
-      !password ||
-      !phone ||
-      !role ||
-      !unit
-    ) {
-      return NextResponse.json(
-        { error: "All fields are required." },
-        { status: 400 }
-      );
+    if (role === "resident") {
+      if (
+        !resident_first_name ||
+        !resident_last_name ||
+        !resident_house_number ||
+        !resident_address ||
+        !resident_phone_number ||
+        !username ||
+        !password ||
+        !role ||
+        !status
+      ) {
+        return NextResponse.json(
+          { error: "All fields are required." },
+          { status: 400 }
+        );
+      }
+    }
+    if (role === "security") {
+      if (
+        !security_first_name ||
+        !security_last_name ||
+        !security_phone_number ||
+        !security_shift ||
+        !username ||
+        !password ||
+        !role ||
+        !status
+      ) {
+        return NextResponse.json(
+          { error: "All fields are required." },
+          { status: 400 }
+        );
+      }
     }
 
     // Check if the username already exists
@@ -49,21 +74,18 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await hashPassword(password);
 
     // Create the new user
-    const user = await prisma.users.create({
-      data: {
-        first_name,
-        last_name,
-        username,
-        password: hashedPassword,
-        phone,
-        role,
-        unit_number: unit,
-        status: status,
-      },
-    });
+    // const user = await prisma.users.create({
+    //   data: {
+    //     username,
+    //     password: hashedPassword,
+    //     role,
+    //     status: status,
+    //   },
+    // });
 
     // Return the created user data as a response
-    return NextResponse.json({ user }, { status: 201 });
+    return NextResponse.json({ hashPassword }, { status: 201 });
+    // return "User created successfully";
   } catch (error) {
     console.error(error);
     return NextResponse.json(
