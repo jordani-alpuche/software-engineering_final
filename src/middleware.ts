@@ -1,36 +1,42 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt"; // Import getToken to fetch JWT token
+import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
 
 // List of protected routes
 const protectedRoutes = [
-  "/form",
+  // "/form",
   "/dashboard",
   "/users/listusers",
   "/users/createuser",
   "/users/updateuser",
   "/visitors/listvisitors",
   "/visitors/newvisitor",
-  // "/users/updateuser",
-]; // Add your other protected routes here
+];
 
 export default async function middleware(request: NextRequest) {
   // Get the token (session) for the current request
   const token = await getToken({ req: request });
 
   const { pathname } = request.nextUrl;
-
-  // Check if the current path is protected
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
 
-  // If it's a protected route and no token exists, redirect to sign-in page
+  // If token is missing, redirect to sign-in page
   if (isProtected && !token) {
     return NextResponse.redirect(new URL("/api/auth/signin", request.url));
   }
 
-  return NextResponse.next(); // Allow access to the route if authenticated
+  // Ensure token has an expiration time and it's a number
+  if (
+    token &&
+    typeof token.exp === "number" &&
+    token.exp < Math.floor(Date.now() / 1000)
+  ) {
+    return NextResponse.redirect(new URL("/api/auth/signin", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 // Configure matcher to protect all routes except /api/auth

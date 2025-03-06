@@ -14,5 +14,6 @@ declare module "next-auth" {
     expires: string;
     error: string;
     username: string;
+    accessToken?: string; // Add accessToken to the Session interface
   }
 }

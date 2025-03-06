@@ -52,27 +52,25 @@ const SkeletonRow = () => (
 
 export type User = {
   id: string;
-  first_name: string;
-  last_name: string;
   username: string;
-  phone: string;
+  created_at: string;
   role: string;
-  status: "pending" | "processing" | "success" | "failed";
+  status: string;
 };
 
 export const columns: ColumnDef<User>[] = [
   {
-    accessorKey: "first_name",
-    header: "First Name",
+    accessorKey: "username",
+    header: "Username",
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("first_name")}</div>
+      <div className="lowercase">{row.getValue("username")}</div>
     ),
   },
   {
-    accessorKey: "last_name",
-    header: "Last Name",
+    accessorKey: "status",
+    header: "Status",
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("last_name") || "-"}</div>
+      <div className="lowercase">{row.getValue("status") || "-"}</div>
     ),
   },
   // {
@@ -104,29 +102,18 @@ export const columns: ColumnDef<User>[] = [
   //   ),
   // },
   {
-    accessorKey: "username",
-    header: "Username",
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("username")}</div>
-    ),
-  },
-  {
-    accessorKey: "phone",
-    header: "Phone Number",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("phone")}</div>,
-  },
-  {
     accessorKey: "role",
     header: "User Role",
     cell: ({ row }) => <div className="lowercase">{row.getValue("role")}</div>,
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "created_at",
+    header: "Created Date",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
+      <div className="lowercase">{row.getValue("created_at")}</div>
     ),
   },
+
   {
     id: "actions",
     enableHiding: false,
@@ -227,12 +214,12 @@ export default function ListUsers() {
     <div className="p-4 md:p-7 lg:p-8">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter First Name..."
+          placeholder="Filter Username..."
           value={
-            (table.getColumn("first_name")?.getFilterValue() as string) ?? ""
+            (table.getColumn("username")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("first_name")?.setFilterValue(event.target.value)
+            table.getColumn("username")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

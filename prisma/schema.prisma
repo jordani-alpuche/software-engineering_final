@@ -13,197 +13,201 @@ model access_points {
   location           String?              @db.VarChar(255)
   created_at         DateTime?            @default(now()) @db.Timestamp(6)
   updated_at         DateTime?            @default(now()) @db.Timestamp(6)
-  security_guards    security_guards[]
-  visitor_entry_logs visitor_entry_logs[]
-}
-
-model banned_visitors {
-  id         Int       @id @default(autoincrement())
-  visitor_id Int
-  reason     String
-  status     String?   @default("banned") @db.VarChar(20)
-  created_at DateTime? @default(now()) @db.Timestamp(6)
-  updated_at DateTime? @default(now()) @db.Timestamp(6)
-  user_id    Int
-  user       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  visitor    visitors  @relation(fields: [visitor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([visitor_id], map: "idx_banned_visitors_visitor_id")
-  @@index([user_id], map: "idx_banned_visitors_user_id")
-}
-
-model notifications {
-  id         Int       @id @default(autoincrement())
-  user_id    Int?
-  message    String
-  type       String    @db.VarChar(20)
-  status     String?   @default("unread") @db.VarChar(20)
-  created_at DateTime? @default(now()) @db.Timestamp(6)
-  updated_at DateTime? @default(now()) @db.Timestamp(6)
-  users      users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model qr_codes {
-  id                 Int                  @id @default(autoincrement())
-  user_id            Int?
-  visitor_id         Int?
-  code               String               @unique
-  expires_at         DateTime             @db.Timestamp(6)
-  status             String?              @default("pending") @db.VarChar(20)
-  created_at         DateTime?            @default(now()) @db.Timestamp(6)
-  updated_at         DateTime?            @default(now()) @db.Timestamp(6)
-  users              users?               @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  security           security[]
   visitor_entry_logs visitor_entry_logs[]
 
-  @@index([visitor_id], map: "idx_qr_codes_visitor_id")
+  @@index([id], map: "id_1741109294265_index")
 }
 
-model users {
-  id                 Int                  @id(map: "users_pkey1") @default(autoincrement())
-  username           String               @unique(map: "users_username_key1") @db.VarChar(255)
-  password           String
-  role               String               @db.VarChar(20)
-  status             String               @default("active") @db.VarChar(10)
-  created_at         DateTime?            @default(now()) @db.Timestamp(6)
-  updated_at         DateTime?            @default(now()) @db.Timestamp(6)
-  banned_visitors    banned_visitors[]
-  login_logs         login_log[]
-  notifications      notifications[]
-  qr_codes           qr_codes[]
-  residents          residents?
-  security_guards    security_guards?
-  visitor_entry_logs visitor_entry_logs[]
-  visitors           visitors[]
-}
+model blacklist_visitors {
+  id          Int       @id(map: "banned_visitors_pkey") @default(autoincrement())
+  reason      String
+  status      String    @default("banned") @db.VarChar(20)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @db.Timestamp(6)
+  resident_id Int?
+  last_name   String    @db.VarChar(255)
+  first_name  String    @db.VarChar(255)
+  security_id Int?
+  resident    resident? @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "blacklist_residentid")
+  security    security? @relation(fields: [security_id], references: [id], onDelete: NoAction, map: "blacklist_securityid")
 
-model visitors {
-  id                 Int                  @id @default(autoincrement())
-  resident_id        Int
-  visitor_first_name String               @db.VarChar(255)
-  visitor_phone      String               @db.VarChar(20)
-  visitor_id_type    String               @db.VarChar(50)
-  visitor_id_number  String               @db.VarChar(50)
-  visitor_email      String               @db.VarChar(100)
-  status             String               @default("pending") @db.VarChar(20)
-  created_at         DateTime?            @default(now()) @db.Timestamp(6)
-  visitor_type       String?              @db.VarChar(100)
-  visitor_dob        String?              @db.VarChar(255)
-  visitor_last_name  String               @db.VarChar(50)
-  banned_visitors    banned_visitors[]
-  visitor_entry_logs visitor_entry_logs[]
-  visitor_feedback   visitor_feedback[]
-  visitor_schedule   visitor_schedule[]
-  users              users                @relation(fields: [resident_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model visitor_entry_logs {
-  id              Int            @id(map: "entry_logs_pkey") @default(autoincrement())
-  visitor_id      Int
-  qr_code_id      Int?
-  security_id     Int?
-  entry_time      DateTime?      @default(now()) @db.Timestamp(6)
-  exit_time       DateTime?      @db.Timestamp(6)
-  created_at      DateTime?      @default(now()) @db.Timestamp(6)
-  updated_at      DateTime?      @default(now()) @db.Timestamp(6)
-  access_point_id Int?
-  access_point    access_points? @relation(fields: [access_point_id], references: [id], onDelete: NoAction)
-  qr_codes        qr_codes?      @relation(fields: [qr_code_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  security_guard  security_guards? @relation(fields: [security_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  visitors        visitors       @relation(fields: [visitor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([visitor_id], map: "idx_entry_logs_visitor_id")
-  users users[]
-}
-
-model resident_vehicle {
-  id            Int       @id(map: "visitor_vehicle_pkey") @default(autoincrement())
-  resident_id   Int
-  vehicle_make  String?   @db.VarChar(50)
-  vehicle_model String?   @db.VarChar(50)
-  vehicle_color String?   @db.VarChar(20)
-  license_plate String? @unique
-
-  residents     residents @relation(fields: [resident_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model residents {
-  id                    Int                  @id(map: "users_pkey") @default(autoincrement())
-  resident_first_name   String
-  resident_last_name    String
-  resident_house_number String
-  resident_address      String?              @db.VarChar(555)
-  created_at            DateTime?            @default(now()) @db.Timestamp(6)
-  resident_phone_number String               @db.VarChar(20)
-  user_id               Int                  @unique
-  resident_entry_log    resident_entry_log[]
-  resident_vehicle      resident_vehicle[]
-  user                  users                @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  visitor_schedule      visitor_schedule[]
-}
-
-model security_guards {
-  id                    Int                  @id @default(autoincrement())
-  create_time           DateTime?            @db.Date
-  security_first_name   String               @db.VarChar(100)
-  security_last_name    String               @db.VarChar(100)
-  security_phone_number String               @unique(map: "security_guards_phone_number_key") @db.VarChar(20)
-  security_shift        String               @db.VarChar(50)
-  created_at            DateTime?            @default(now()) @db.Timestamp(6)
-  access_point_id       Int?
-  user_id               Int                  @unique
-  resident_entry_log    resident_entry_log[]
-  access_point          access_points?       @relation(fields: [access_point_id], references: [id], onDelete: NoAction)
-  user                  users                @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  visitor_entry_logs visitor_entry_logs[]
-}
-
-model visitor_schedule {
-  id                 Int                @id @default(autoincrement())
-  resident_id        Int?
-  visitor_id         Int?
-  scheduled_date     DateTime           @db.Date
-  scheduled_time_in  String             @db.VarChar(255)
-  scheduled_time_out String             @db.VarChar(255)
-  is_recurring       Boolean?           @default(false)
-  recurrence_pattern String?            @db.VarChar(50)
-  created_at         DateTime?          @default(now()) @db.Timestamp(6)
-  qr_code            String?            @unique
-  license_plate      String?            @db.VarChar(20)
-  visitor_feedback   visitor_feedback[]
-  residents          residents?         @relation(fields: [resident_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  visitors           visitors?          @relation(fields: [visitor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model resident_entry_log {
-  id              Int              @id @default(autoincrement())
-  resident_id     Int?
-  security_id     Int?
-  scanned_in_at   DateTime?        @default(now()) @db.Timestamp(6)
-  scanned_out_at  DateTime?        @db.Timestamp(6)
-  residents       residents?       @relation(fields: [resident_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  security_guards security_guards? @relation(fields: [security_id], references: [id], onUpdate: NoAction)
-}
-
-model visitor_feedback {
-  id               Int               @id @default(autoincrement())
-  visitor_id       Int?
-  schedule_id      Int?
-  rating           Int?
-  comments         String?
-  created_at       DateTime?         @default(now()) @db.Timestamp(6)
-  visitor_schedule visitor_schedule? @relation(fields: [schedule_id], references: [id], onUpdate: NoAction)
-  visitors         visitors?         @relation(fields: [visitor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  @@index([id], map: "id_1741109275836_index")
+  @@index([resident_id], map: "resident_id_1741109286975_index")
+  @@index([security_id], map: "security_id_1741109281378_index")
 }
 
 model login_log {
   id          Int       @id @default(autoincrement())
-  user_id     Int?
-  ip_address  String    @db.VarChar(255)
+  user_id     Int
+  ip_address  String?   @db.VarChar(255)
   login_time  DateTime  @default(now()) @db.Timestamp(6)
   logout_time DateTime? @db.Timestamp(6)
   status      String    @default("success") @db.VarChar(20)
-  user        users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "loginlog_userid")
 
   @@index([user_id], map: "idx_login_log_user_id")
+  @@index([id], map: "id_1741109327221_index")
+}
+
+model notifications {
+  id          Int       @id @default(autoincrement())
+  message     String
+  type        String    @db.VarChar(20)
+  status      String    @default("unread") @db.VarChar(20)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @db.Timestamp(6)
+  resident_id Int?
+  security_id Int?
+  resident    resident? @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "notification_residentid")
+  security    security? @relation(fields: [security_id], references: [id], onDelete: NoAction, map: "notification_securityid")
+
+  @@index([id], map: "id_1741109344869_index")
+  @@index([resident_id], map: "resident_id_1741109348633_index")
+  @@index([security_id], map: "security_id_1741109354388_index")
+}
+
+model users {
+  id         Int         @id(map: "users_pkey1") @default(autoincrement())
+  username   String      @unique(map: "users_username_key1") @db.VarChar(255)
+  password   String
+  role       String      @db.VarChar(20)
+  status     String      @default("active") @db.VarChar(10)
+  created_at DateTime?   @default(now()) @db.Timestamp(6)
+  updated_at DateTime?   @default(now()) @db.Timestamp(6)
+  login_log  login_log[]
+  resident   resident[]
+  security   security[]
+
+  @@index([id], map: "id_1741109104433_index")
+}
+
+model visitor_entry_logs {
+  id                  Int               @id(map: "entry_logs_pkey") @default(autoincrement())
+  security_id         Int
+  entry_time          DateTime          @default(now()) @db.Timestamp(6)
+  exit_time           DateTime?         @db.Timestamp(6)
+  created_at          DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?         @default(now()) @db.Timestamp(6)
+  access_point_id     Int
+  visitor_schedule_id Int
+  entry_type          String            @db.VarChar(255)
+  visitors_schedule   visitors_schedule @relation(fields: [visitor_schedule_id], references: [id], onDelete: NoAction, map: "visitorentrylog_vscheduleid")
+  access_points       access_points     @relation(fields: [access_point_id], references: [id], onDelete: NoAction, map: "visitoryentrylog_accesspointid")
+
+  @@index([visitor_schedule_id], map: "idx_entry_logs_visitor_id")
+  @@index([access_point_id], map: "access_point_id_1741109472869_index")
+  @@index([id], map: "id_1741109463966_index")
+  @@index([security_id], map: "security_id_1741109482417_index")
+}
+
+model visitor_feedback {
+  id                  Int               @id @default(autoincrement())
+  rating              Int
+  comments            String?
+  created_at          DateTime?         @default(now()) @db.Timestamp(6)
+  visitor_schedule_id Int
+  visitors_schedule   visitors_schedule @relation(fields: [visitor_schedule_id], references: [id], onDelete: NoAction, map: "visitorfeedback_vscheduleid")
+
+  @@index([id], map: "id_1741109448583_index")
+  @@index([visitor_schedule_id], map: "visitor_schedule_id_1741109451844_index")
+}
+
+model visitors_schedule {
+  id                  Int                  @id(map: "visitors_pkey") @default(autoincrement())
+  resident_id         Int
+  visitor_first_name  String               @db.VarChar(255)
+  visitor_phone       String               @db.VarChar(20)
+  visitor_id_type     String               @db.VarChar(50)
+  visitor_id_number   String               @db.VarChar(50)
+  visitor_email       String               @db.VarChar(100)
+  status              String?              @default("pending") @db.VarChar(20)
+  created_at          DateTime?            @default(now()) @db.Timestamp(6)
+  visitor_type        String               @db.VarChar(100)
+  visitor_last_name   String               @db.VarChar(50)
+  license_plate       String               @db.VarChar(20)
+  visitor_entry_date  DateTime             @db.Date
+  visitor_exit_date   DateTime             @db.Date
+  visitor_qrcode      String?              @db.VarChar(255)
+  visitor_qrcode_url  String?              @db.VarChar(255)
+  visitor_qrcode_path String?              @db.VarChar(255)
+  visitor_entry_logs  visitor_entry_logs[]
+  visitor_feedback    visitor_feedback[]
+  resident            resident             @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "vistorschedule_residentid")
+
+  @@index([id], map: "id_1741109513648_index")
+  @@index([resident_id], map: "resident_id_1741109518675_index")
+}
+
+model entry_log {
+  id             Int       @id(map: "resident_entry_log_pkey") @default(autoincrement())
+  resident_id    Int
+  security_id    Int
+  scanned_in_at  DateTime  @default(now()) @db.Timestamp(6)
+  scanned_out_at DateTime? @db.Timestamp(6)
+  resident       resident  @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "entrylog_residentid")
+  security       security  @relation(fields: [security_id], references: [id], onDelete: NoAction, map: "entrylog_securityid")
+
+  @@index([id], map: "id_1741109306799_index")
+  @@index([resident_id], map: "resident_id_1741109310532_index")
+  @@index([security_id], map: "security_id_1741109315077_index")
+}
+
+model resident {
+  id                    Int                  @id @default(autoincrement())
+  resident_first_name   String               @db.VarChar(50)
+  resident_last_name    String               @db.VarChar(50)
+  resident_email        String               @db.VarChar(50)
+  resident_phone_number String               @db.VarChar(50)
+  resident_address      String               @db.VarChar(50)
+  resident_house_number String               @db.VarChar(50)
+  resident_qr_code      String               @db.VarChar(50)
+  created_at            DateTime             @default(now()) @db.Timestamp(6)
+  updated_at            DateTime             @default(now()) @db.Timestamp(6)
+  user_id               Int                  @unique
+  blacklist_visitors    blacklist_visitors[]
+  entry_log             entry_log[]
+  notifications         notifications[]
+  users                 users                @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "resident_userid")
+  resident_vehicle      resident_vehicle[]
+  visitors_schedule     visitors_schedule[]
+
+  @@index([user_id], map: "user_id_1741109050324_index")
+  @@index([id], map: "id_1741109369290_index")
+}
+
+model resident_vehicle {
+  id            Int      @id(map: "visitor_vehicle_pkey") @default(autoincrement())
+  resident_id   Int
+  vehicle_make  String   @db.VarChar(50)
+  vehicle_model String   @db.VarChar(50)
+  vehicle_color String?  @db.VarChar(20)
+  license_plate String   @unique
+  resident      resident @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "residentvehicle_residentid")
+
+  @@index([resident_id], map: "resident_id_1741109065767_index")
+  @@index([id], map: "id_1741109394620_index")
+}
+
+model security {
+  id                    Int                  @id @default(autoincrement())
+  security_first_name   String               @db.VarChar(50)
+  security_last_name    String               @db.VarChar(50)
+  security_email        String               @db.VarChar(50)
+  security_phone_number String               @db.VarChar(50)
+  security_address      String               @db.VarChar(50)
+  security_qr_code      String               @db.VarChar(50)
+  security_access_point Int
+  security_shift        String               @db.VarChar(50)
+  created_at            DateTime             @default(now()) @db.Timestamp(6)
+  updated_at            DateTime             @default(now()) @db.Timestamp(6)
+  user_id               Int                  @unique
+  blacklist_visitors    blacklist_visitors[]
+  entry_log             entry_log[]
+  notifications         notifications[]
+  access_points         access_points        @relation(fields: [security_access_point], references: [id], map: "accesspoint_id")
+  users                 users                @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "security_userid")
+
+  @@index([id], map: "id_1741109407459_index")
+  @@index([user_id], map: "user_id_1741109413061_index")
 }

@@ -3,25 +3,16 @@ import { hashPassword } from "./hashPassword";
 
 const prisma = new PrismaClient();
 
-export async function createUser(
-  name: string,
-  username: string,
-  password: string,
-  phone: string,
-  role: string,
-  unit_number: string
-) {
-  const hashedPassword = await hashPassword(password); // Hashing the password before saving
+export async function createUser() {
+  const hashedPassword = await hashPassword("Inadroj1"); // Hashing the password before saving
 
   try {
     const user = await prisma.users.create({
       data: {
-        name,
-        username,
-        password: hashedPassword,
-        phone,
-        role,
-        unit_number,
+        username: "jalpuche", // Username for the new admin
+        password: hashedPassword, // Hashed password
+        role: "admin", // Admin role
+        status: "active", // Set status to active
       },
     });
 
@@ -32,3 +23,12 @@ export async function createUser(
     throw error;
   }
 }
+
+// Call the function to create the user
+createUser()
+  .then(() => {
+    console.log("Admin user created successfully!");
+  })
+  .catch((error) => {
+    console.error("Error creating admin user:", error);
+  });

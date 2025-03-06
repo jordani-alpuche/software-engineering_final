@@ -21,14 +21,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Session expired" }, { status: 401 });
     }
 
-    // Fetch users from the database
-    const users = await prisma.users.findMany();
+    // Fetch access points from the database
+    const access_points = await prisma.access_points.findMany();
 
-    return NextResponse.json(users, { status: 200 });
+    return NextResponse.json(access_points, { status: 200 });
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error fetching access points:", error);
     return NextResponse.json(
-      { error: "Failed to fetch users" },
+      { error: "Failed to fetch Access Points" },
       { status: 500 }
     );
   }
