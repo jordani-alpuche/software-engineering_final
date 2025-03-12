@@ -1,9 +1,14 @@
 import React from "react";
 import ListUsers from "@/app/components/users/listusers";
-const page = () => {
+import { usersInfo } from "@/app/api/users/list/route";
+const page = async () => {
+  const userData = (await usersInfo()) || [];
+  // console.log(JSON.stringify(userData, null, 2));
+  // console.log("usersdata", userData);
+
   return (
     <div>
-      <ListUsers />
+      <ListUsers userInformation={userData} />
     </div>
   );
 };

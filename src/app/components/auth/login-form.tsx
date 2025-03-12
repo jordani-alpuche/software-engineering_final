@@ -51,12 +51,12 @@ export default function LoginForm() {
       redirect: false, // Prevent automatic redirection
     });
 
-    setIsLoading(false);
-
     if (result?.error) {
+      setIsLoading(false);
       setError(result.error);
       toast.error(result.error);
     } else {
+      //
       router.push("/dashboard"); // Redirect to dashboard on success
     }
   };

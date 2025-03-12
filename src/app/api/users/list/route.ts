@@ -1,35 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
+import { use } from "react";
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest) {
+export async function usersInfo() {
+  // Fetch all users
   try {
-    // Get the JWT token from the request
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Ensure token has an expiration time (exp) and is a number
-    if (
-      typeof token.exp !== "number" ||
-      token.exp < Math.floor(Date.now() / 1000)
-    ) {
-      return NextResponse.json({ error: "Session expired" }, { status: 401 });
-    }
-
-    // Fetch users from the database
     const users = await prisma.users.findMany();
-
-    return NextResponse.json(users, { status: 200 });
+    return users;
   } catch (error) {
-    console.error("Error fetching users:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch users" },
-      { status: 500 }
-    );
+    return error;
   }
 }

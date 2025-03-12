@@ -26,7 +26,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 
 const formSchema = z.object({
@@ -44,9 +43,9 @@ const formSchema = z.object({
   visit_end_time: z.string(),
 });
 
-export default function CreateVisitors() {
+export default function CreateVisitors({userID: userid}) {
   const router = useRouter();
-  const session = useSession();
+  console.log("userid", userid)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -69,27 +68,29 @@ export default function CreateVisitors() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const formattedData = { ...values };
 
-    if (values.visit_date_start) {
-      const fullDate = new Date(values.visit_date_start);
-      formattedData.visit_date_start = format(fullDate, "yyyy-MM-dd"); // Extracts date
-      formattedData.visit_start_time = format(fullDate, "hh:mm aa").toString(); // Extracts time in 12-hour format
-    }
+    
 
-    if (values.visit_date_end) {
-      const fullDate = new Date(values.visit_date_end);
-      formattedData.visit_date_end = format(fullDate, "yyyy-MM-dd"); // Extracts date
-      formattedData.visit_end_time = format(fullDate, "hh:mm aa").toString(); // Extracts time in 12-hour format
-    }
+    // if (values.visit_date_start) {
+    //   const fullDate = new Date(values.visit_date_start);
+    //   formattedData.visit_date_start = format(fullDate, "yyyy-MM-dd"); // Extracts date
+    //   formattedData.visit_start_time = format(fullDate, "hh:mm aa").toString(); // Extracts time in 12-hour format
+    // }
 
-    if (formattedData.type === true) {
-      formattedData.type = "recurring";
-    } else {
-      formattedData.type = "one-time";
-    }
+    // if (values.visit_date_end) {
+    //   const fullDate = new Date(values.visit_date_end);
+    //   formattedData.visit_date_end = format(fullDate, "yyyy-MM-dd"); // Extracts date
+    //   formattedData.visit_end_time = format(fullDate, "hh:mm aa").toString(); // Extracts time in 12-hour format
+    // }
 
-    formattedData.resident_id = Number(session.data?.user?.id);
+    // if (formattedData.type === true) {
+    //   formattedData.type = "recurring";
+    // } else {
+    //   formattedData.type = "one-time";
+    // }
 
-    console.log("Final Payload:", formattedData);
+    // formattedData.resident_id = Number(session.data?.user?.id);
+
+    // console.log("Final Payload:", formattedData);
 
     try {
       const response = await fetch("/api/visitors/create", {

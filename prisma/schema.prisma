@@ -7,34 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model access_points {
-  id                 Int                  @id @default(autoincrement())
-  name               String               @db.VarChar(100)
-  location           String?              @db.VarChar(255)
-  created_at         DateTime?            @default(now()) @db.Timestamp(6)
-  updated_at         DateTime?            @default(now()) @db.Timestamp(6)
-  security           security[]
-  visitor_entry_logs visitor_entry_logs[]
+model access_points_old {
+  id           Int            @id(map: "access_points_pkey") @default(autoincrement())
+  name         String         @db.VarChar(100)
+  location     String?        @db.VarChar(255)
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?      @default(now()) @db.Timestamp(6)
+  security_old security_old[]
 
   @@index([id], map: "id_1741109294265_index")
 }
 
 model blacklist_visitors {
-  id          Int       @id(map: "banned_visitors_pkey") @default(autoincrement())
-  reason      String
-  status      String    @default("banned") @db.VarChar(20)
-  created_at  DateTime? @default(now()) @db.Timestamp(6)
-  updated_at  DateTime? @default(now()) @db.Timestamp(6)
-  resident_id Int?
-  last_name   String    @db.VarChar(255)
-  first_name  String    @db.VarChar(255)
-  security_id Int?
-  resident    resident? @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "blacklist_residentid")
-  security    security? @relation(fields: [security_id], references: [id], onDelete: NoAction, map: "blacklist_securityid")
+  id                                          Int       @id(map: "banned_visitors_pkey") @default(autoincrement())
+  reason                                      String
+  status                                      String    @default("banned") @db.VarChar(20)
+  created_at                                  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at                                  DateTime? @default(now()) @db.Timestamp(6)
+  last_name                                   String    @db.VarChar(255)
+  first_name                                  String    @db.VarChar(255)
+  resident_id                                 Int?
+  security_id                                 Int?
+  users_blacklist_visitors_resident_idTousers users?    @relation("blacklist_visitors_resident_idTousers", fields: [resident_id], references: [id], onDelete: NoAction, map: "blacklist_resident_id")
+  users_blacklist_visitors_security_idTousers users?    @relation("blacklist_visitors_security_idTousers", fields: [security_id], references: [id], onDelete: NoAction, map: "blacklist_security_id")
 
   @@index([id], map: "id_1741109275836_index")
-  @@index([resident_id], map: "resident_id_1741109286975_index")
-  @@index([security_id], map: "security_id_1741109281378_index")
+  @@index([resident_id], map: "security_id_1741109281378_index")
+}
+
+model entry_log {
+  id                                 Int       @id(map: "resident_entry_log_pkey") @default(autoincrement())
+  scanned_in_at                      DateTime  @default(now()) @db.Timestamp(6)
+  scanned_out_at                     DateTime? @db.Timestamp(6)
+  resident_id                        Int?
+  security_id                        Int?
+  users_entry_log_resident_idTousers users?    @relation("entry_log_resident_idTousers", fields: [resident_id], references: [id], onDelete: NoAction, map: "entry_resident_id")
+  users_entry_log_security_idTousers users?    @relation("entry_log_security_idTousers", fields: [security_id], references: [id], onDelete: NoAction, map: "entry_security_id")
+
+  @@index([id], map: "id_1741109306799_index")
 }
 
 model login_log {
@@ -46,38 +56,102 @@ model login_log {
   status      String    @default("success") @db.VarChar(20)
   users       users     @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "loginlog_userid")
 
-  @@index([user_id], map: "idx_login_log_user_id")
   @@index([id], map: "id_1741109327221_index")
+  @@index([user_id], map: "idx_login_log_user_id")
 }
 
 model notifications {
-  id          Int       @id @default(autoincrement())
-  message     String
-  type        String    @db.VarChar(20)
-  status      String    @default("unread") @db.VarChar(20)
-  created_at  DateTime? @default(now()) @db.Timestamp(6)
-  updated_at  DateTime? @default(now()) @db.Timestamp(6)
-  resident_id Int?
-  security_id Int?
-  resident    resident? @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "notification_residentid")
-  security    security? @relation(fields: [security_id], references: [id], onDelete: NoAction, map: "notification_securityid")
+  id         Int       @id @default(autoincrement())
+  message    String
+  type       String    @db.VarChar(20)
+  status     String    @default("unread") @db.VarChar(20)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  user_id    Int?
+  users      users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "notifications_userid")
 
   @@index([id], map: "id_1741109344869_index")
-  @@index([resident_id], map: "resident_id_1741109348633_index")
-  @@index([security_id], map: "security_id_1741109354388_index")
+  @@index([user_id], map: "resident_id_1741109348633_index")
+}
+
+model resident_old {
+  id                    Int                 @id(map: "resident_pkey") @default(autoincrement())
+  created_at            DateTime            @default(now()) @db.Timestamp(6)
+  updated_at            DateTime            @default(now()) @db.Timestamp(6)
+  user_id               Int                 @unique(map: "resident_user_id_key")
+  resident_address      String              @db.VarChar(50)
+  resident_email        String              @db.VarChar(50)
+  resident_first_name   String              @db.VarChar(50)
+  resident_house_number String              @db.VarChar(50)
+  resident_last_name    String              @db.VarChar(50)
+  resident_phone_number String              @db.VarChar(50)
+  resident_qr_code      String?             @db.VarChar(50)
+  users                 users               @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "resident_userid")
+  visitors_schedule     visitors_schedule[]
+
+  @@index([id], map: "id_1741109369290_index")
+  @@index([user_id], map: "user_id_1741109050324_index")
+}
+
+model resident_vehicle {
+  id            Int     @id(map: "visitor_vehicle_pkey") @default(autoincrement())
+  user_id       Int
+  vehicle_make  String  @db.VarChar(50)
+  vehicle_model String  @db.VarChar(50)
+  vehicle_color String? @db.VarChar(20)
+  license_plate String  @unique
+  users         users   @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "resident_vehicle")
+
+  @@index([id], map: "id_1741109394620_index")
+  @@index([user_id], map: "resident_id_1741109065767_index")
+}
+
+model security_old {
+  id                    Int               @id(map: "security_pkey") @default(autoincrement())
+  created_at            DateTime          @default(now()) @db.Timestamp(6)
+  updated_at            DateTime          @default(now()) @db.Timestamp(6)
+  user_id               Int               @unique(map: "security_user_id_key")
+  security_access_point Int
+  security_address      String            @db.VarChar(50)
+  security_email        String            @db.VarChar(50)
+  security_first_name   String            @db.VarChar(50)
+  security_last_name    String            @db.VarChar(50)
+  security_phone_number String            @db.VarChar(50)
+  security_qr_code      String?           @db.VarChar(50)
+  security_shift        String            @db.VarChar(50)
+  access_points_old     access_points_old @relation(fields: [security_access_point], references: [id], map: "accesspoint_id")
+  users                 users             @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "security_userid")
+
+  @@index([id], map: "id_1741109407459_index")
+  @@index([user_id], map: "user_id_1741109413061_index")
 }
 
 model users {
-  id         Int         @id(map: "users_pkey1") @default(autoincrement())
-  username   String      @unique(map: "users_username_key1") @db.VarChar(255)
-  password   String
-  role       String      @db.VarChar(20)
-  status     String      @default("active") @db.VarChar(10)
-  created_at DateTime?   @default(now()) @db.Timestamp(6)
-  updated_at DateTime?   @default(now()) @db.Timestamp(6)
-  login_log  login_log[]
-  resident   resident[]
-  security   security[]
+  id                                                       Int                  @id(map: "users_pkey1") @unique(map: "id_unqiue") @default(autoincrement())
+  username                                                 String               @unique(map: "users_username_key1") @db.VarChar(255)
+  password                                                 String
+  role                                                     String               @db.VarChar(20)
+  status                                                   String               @default("active") @db.VarChar(10)
+  created_at                                               DateTime?            @default(now()) @db.Timestamp(6)
+  updated_at                                               DateTime?            @default(now()) @db.Timestamp(6)
+  first_name                                               String?              @db.VarChar(255)
+  last_name                                                String?              @db.VarChar(255)
+  email                                                    String?              @db.VarChar(100)
+  address                                                  String?              @db.VarChar(255)
+  house_number                                             String?              @db.VarChar(255)
+  phone_number                                             String?              @db.VarChar(255)
+  qrcode                                                   String?              @db.VarChar(1000)
+  shift                                                    String?              @db.VarChar(50)
+  accesspoints                                             String?              @db.VarChar(100)
+  blacklist_visitors_blacklist_visitors_resident_idTousers blacklist_visitors[] @relation("blacklist_visitors_resident_idTousers")
+  blacklist_visitors_blacklist_visitors_security_idTousers blacklist_visitors[] @relation("blacklist_visitors_security_idTousers")
+  entry_log_entry_log_resident_idTousers                   entry_log[]          @relation("entry_log_resident_idTousers")
+  entry_log_entry_log_security_idTousers                   entry_log[]          @relation("entry_log_security_idTousers")
+  login_log                                                login_log[]
+  notifications                                            notifications[]
+  resident_old                                             resident_old?
+  resident_vehicle                                         resident_vehicle[]
+  security_old                                             security_old?
 
   @@index([id], map: "id_1741109104433_index")
 }
@@ -89,15 +163,12 @@ model visitor_entry_logs {
   exit_time           DateTime?         @db.Timestamp(6)
   created_at          DateTime?         @default(now()) @db.Timestamp(6)
   updated_at          DateTime?         @default(now()) @db.Timestamp(6)
-  access_point_id     Int
   visitor_schedule_id Int
   entry_type          String            @db.VarChar(255)
   visitors_schedule   visitors_schedule @relation(fields: [visitor_schedule_id], references: [id], onDelete: NoAction, map: "visitorentrylog_vscheduleid")
-  access_points       access_points     @relation(fields: [access_point_id], references: [id], onDelete: NoAction, map: "visitoryentrylog_accesspointid")
 
-  @@index([visitor_schedule_id], map: "idx_entry_logs_visitor_id")
-  @@index([access_point_id], map: "access_point_id_1741109472869_index")
   @@index([id], map: "id_1741109463966_index")
+  @@index([visitor_schedule_id], map: "idx_entry_logs_visitor_id")
   @@index([security_id], map: "security_id_1741109482417_index")
 }
 
@@ -133,81 +204,8 @@ model visitors_schedule {
   visitor_qrcode_path String?              @db.VarChar(255)
   visitor_entry_logs  visitor_entry_logs[]
   visitor_feedback    visitor_feedback[]
-  resident            resident             @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "vistorschedule_residentid")
+  resident_old        resident_old         @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "vistorschedule_residentid")
 
   @@index([id], map: "id_1741109513648_index")
   @@index([resident_id], map: "resident_id_1741109518675_index")
-}
-
-model entry_log {
-  id             Int       @id(map: "resident_entry_log_pkey") @default(autoincrement())
-  resident_id    Int
-  security_id    Int
-  scanned_in_at  DateTime  @default(now()) @db.Timestamp(6)
-  scanned_out_at DateTime? @db.Timestamp(6)
-  resident       resident  @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "entrylog_residentid")
-  security       security  @relation(fields: [security_id], references: [id], onDelete: NoAction, map: "entrylog_securityid")
-
-  @@index([id], map: "id_1741109306799_index")
-  @@index([resident_id], map: "resident_id_1741109310532_index")
-  @@index([security_id], map: "security_id_1741109315077_index")
-}
-
-model resident {
-  id                    Int                  @id @default(autoincrement())
-  resident_first_name   String               @db.VarChar(50)
-  resident_last_name    String               @db.VarChar(50)
-  resident_email        String               @db.VarChar(50)
-  resident_phone_number String               @db.VarChar(50)
-  resident_address      String               @db.VarChar(50)
-  resident_house_number String               @db.VarChar(50)
-  resident_qr_code      String               @db.VarChar(50)
-  created_at            DateTime             @default(now()) @db.Timestamp(6)
-  updated_at            DateTime             @default(now()) @db.Timestamp(6)
-  user_id               Int                  @unique
-  blacklist_visitors    blacklist_visitors[]
-  entry_log             entry_log[]
-  notifications         notifications[]
-  users                 users                @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "resident_userid")
-  resident_vehicle      resident_vehicle[]
-  visitors_schedule     visitors_schedule[]
-
-  @@index([user_id], map: "user_id_1741109050324_index")
-  @@index([id], map: "id_1741109369290_index")
-}
-
-model resident_vehicle {
-  id            Int      @id(map: "visitor_vehicle_pkey") @default(autoincrement())
-  resident_id   Int
-  vehicle_make  String   @db.VarChar(50)
-  vehicle_model String   @db.VarChar(50)
-  vehicle_color String?  @db.VarChar(20)
-  license_plate String   @unique
-  resident      resident @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "residentvehicle_residentid")
-
-  @@index([resident_id], map: "resident_id_1741109065767_index")
-  @@index([id], map: "id_1741109394620_index")
-}
-
-model security {
-  id                    Int                  @id @default(autoincrement())
-  security_first_name   String               @db.VarChar(50)
-  security_last_name    String               @db.VarChar(50)
-  security_email        String               @db.VarChar(50)
-  security_phone_number String               @db.VarChar(50)
-  security_address      String               @db.VarChar(50)
-  security_qr_code      String               @db.VarChar(50)
-  security_access_point Int
-  security_shift        String               @db.VarChar(50)
-  created_at            DateTime             @default(now()) @db.Timestamp(6)
-  updated_at            DateTime             @default(now()) @db.Timestamp(6)
-  user_id               Int                  @unique
-  blacklist_visitors    blacklist_visitors[]
-  entry_log             entry_log[]
-  notifications         notifications[]
-  access_points         access_points        @relation(fields: [security_access_point], references: [id], map: "accesspoint_id")
-  users                 users                @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "security_userid")
-
-  @@index([id], map: "id_1741109407459_index")
-  @@index([user_id], map: "user_id_1741109413061_index")
 }

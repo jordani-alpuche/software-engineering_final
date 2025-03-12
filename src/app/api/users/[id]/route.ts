@@ -1,100 +1,103 @@
-import { NextRequest, NextResponse } from "next/server";
+"use server";
+// import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
-import { hashPassword } from "@/app/utils/hashPassword"; // Adjust path as necessary
+// import { bcrypt } from "bcryptjs";
+import { hashPassword } from "@/app/utils/hashPassword"; // Adjust path if necessary
 
 const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
 
-// Handler to fetch a user by ID
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: Number } }
-) {
-  try {
-    const { id } = await params;
-    const user = await prisma.users.findUnique({
-      where: { id: Number(id) },
-    });
+// Fetch a user by ID
+export async function getUsers(id: number) {
+  const user = await prisma.users.findUnique({
+    where: { id: Number(id) },
+  });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(user, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: "Error fetching user" }, { status: 500 });
-  }
+  return user || null; // Return user object or null if not found
 }
 
-// Handler to update a user by ID
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: number } }
-) {
+// Update a user by ID
+export async function updateUser(id: number, data: any) {
+  const userData = { ...data };
+
+  console.log("Data:", data);
+  console.log("ID:", id);
+
+  const currentUser = await prisma.users.findUnique({
+    where: { id },
+  });
+
+  if (!currentUser) {
+    console.error("User not found");
+    return {
+      success: false,
+      code: 404,
+      message: "User not found",
+    };
+  }
+
+  // Validate required fields
+  if (!userData.username) {
+    return {
+      success: false,
+      code: 400,
+      message: "Username, role is required.",
+    };
+  }
+
+  // Hash password if changed
+  let hashedPassword = currentUser.password;
+  if (data.password && data.password !== currentUser.password) {
+    hashedPassword = await hashPassword(data.password);
+  }
+
   try {
-    const { id } = await params;
+    // Update user record
 
-    // Parse request body data
-    const userData = await req.json();
-
-    if (!userData || typeof userData !== "object") {
-      return NextResponse.json(
-        { error: "Invalid data provided" },
-        { status: 400 }
-      );
+    if (userData.role === "admin" || userData.role === "resident") {
+      userData.shift = "";
+      userData.accesspoints = "";
     }
-
-    // Log the data for debugging
-    console.log("Request body data:", userData, "ID:", id);
-
-    // Fetch the current user data from the database
-    const currentUser = await prisma.users.findUnique({
-      where: { id: Number(id) },
-    });
-
-    if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (userData.role === "admin") {
+      userData.first_name = "";
+      userData.last_name = "";
+      userData.email = "";
+      userData.phone_number = "";
+      userData.address = "";
+      userData.house_number = "";
     }
-
-    // Check if the password provided in the request is different from the stored one
-    if (userData.password && userData.password !== currentUser.password) {
-      // Hash the new password
-      const hashedPassword = await hashPassword(userData.password);
-
-      // Update the user's password in the request data
-      userData.password = hashedPassword; // Replace password with hashed value
-    }
-
-    // Perform the update
+    userData.password = hashedPassword;
     const updatedUser = await prisma.users.update({
-      where: { id: Number(id) },
-      data: userData, // Update the user with the provided data
+      where: { id },
+      data: userData,
     });
 
-    return NextResponse.json(updatedUser, { status: 200 });
-  } catch (error) {
-    console.error("Error updating user:", error);
-    return NextResponse.json({ error: "Error updating user" }, { status: 500 });
+    return {
+      success: true,
+      code: 200,
+      message: "User updated successfully",
+    };
+  } catch (error: any) {
+    console.error("Error in updateUser:", error);
+    return {
+      success: false,
+      code: 500,
+      message: "Server error: " + error.message,
+    };
   }
 }
 
-// Handler to delete a user by ID
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// Delete a user by ID
+export async function deleteUser(id: number) {
   try {
     await prisma.users.delete({
-      where: { id: Number(params.id) },
+      where: { id: Number(id) },
     });
 
-    return NextResponse.json(
-      { message: "User deleted successfully" },
-      { status: 200 }
-    );
+    return { message: "User deleted successfully", success: true };
   } catch (error) {
-    return NextResponse.json({ error: "Error deleting user" }, { status: 500 });
+    console.error("Error deleting user:", error);
+    throw new Error("Error deleting user");
   }
 }

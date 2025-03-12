@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation"; // Import the router
+import { useRouter } from "next/navigation";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,20 +14,17 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -36,8 +33,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { deleteUser } from "@/app/api/users/[id]/route";
 
-// Skeletor Loader
+export type User = {
+  id: number;
+  username: string;
+  created_at: string;
+  role: string;
+  status: string;
+  first_name: string;
+  last_name: string;
+};
+
 const SkeletonRow = () => (
   <TableRow>
     {Array(6)
@@ -50,131 +57,9 @@ const SkeletonRow = () => (
   </TableRow>
 );
 
-export type User = {
-  id: string;
-  username: string;
-  created_at: string;
-  role: string;
-  status: string;
-};
-
-export const columns: ColumnDef<User>[] = [
-  {
-    accessorKey: "username",
-    header: "Username",
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("username")}</div>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("status") || "-"}</div>
-    ),
-  },
-  // {
-  //   accessorKey: "first_name",
-  //   header: ({ column }) => (
-  //     <Button
-  //       variant="ghost"
-  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //     >
-  //       First Name <ArrowUpDown />
-  //     </Button>
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="lowercase">{row.getValue("first_name")}</div>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "last_name",
-  //   header: ({ column }) => (
-  //     <Button
-  //       variant="ghost"
-  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //     >
-  //       Last Name <ArrowUpDown />
-  //     </Button>
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="lowercase">{row.getValue("last_name") || "-"}</div>
-  //   ),
-  // },
-  {
-    accessorKey: "role",
-    header: "User Role",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("role")}</div>,
-  },
-  {
-    accessorKey: "created_at",
-    header: "Created Date",
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("created_at")}</div>
-    ),
-  },
-
-  {
-    id: "actions",
-    enableHiding: false,
-    header: "Actions",
-    cell: ({ row }) => {
-      const user = row.original;
-      const router = useRouter(); // Initialize router
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => router.push(`/users/updateuser/${user.id}`)}
-            >
-              Update User
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                if (
-                  window.confirm("Are you sure you want to delete this user?")
-                ) {
-                  deleteUser(user.id);
-                }
-              }}
-            >
-              Delete User
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-
-const deleteUser = async (id: string) => {
-  try {
-    const response = await fetch(`/api/users/${id}`, {
-      method: "DELETE",
-    });
-
-    if (response.ok) {
-      alert("User deleted successfully");
-      window.location.reload(); // Reloads the page to reflect the changes
-    } else {
-      alert("Error deleting user");
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Error deleting user");
-  }
-};
-
-export default function ListUsers() {
+export default function ListUsers({ userInformation }) {
   const [data, setData] = React.useState<User[]>([]);
-  const [loading, setLoading] = React.useState(true); // Add loading state
+  const [loading, setLoading] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -182,20 +67,101 @@ export default function ListUsers() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
+  const router = useRouter();
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/users/list");
-        const result = await response.json();
-        setData(result);
+        setData(userInformation);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        setLoading(false); // Set loading to false after fetching data
+        setLoading(false);
       }
     };
     fetchData();
   }, []);
+
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "first_name",
+      header: "First Name",
+      cell: ({ row }) => <div>{row.getValue("first_name") || "N/A"}</div>,
+    },
+    {
+      accessorKey: "last_name",
+      header: "Last Name",
+      cell: ({ row }) => <div>{row.getValue("last_name") || "N/A"}</div>,
+    },
+
+    {
+      accessorKey: "username",
+      header: "Username",
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("username")}</div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("status") || "-"}</div>
+      ),
+    },
+    {
+      accessorKey: "role",
+      header: "User Role",
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("role")}</div>
+      ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      header: "Actions",
+      cell: ({ row }) => {
+        const user = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => router.push(`/users/updateuser/${user.id}`)}
+              >
+                Update User
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  if (
+                    window.confirm("Are you sure you want to delete this user?")
+                  ) {
+                    const UserDelete = await deleteUser(user.id);
+                    if (UserDelete.success) {
+                      alert("User deleted successfully");
+                      setData((prevData) =>
+                        prevData.filter((u) => u.id !== user.id)
+                      );
+                    } else {
+                      alert("Error deleting user");
+                    }
+                  }
+                }}
+              >
+                Delete User
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
   const table = useReactTable({
     data,
@@ -214,12 +180,12 @@ export default function ListUsers() {
     <div className="p-4 md:p-7 lg:p-8">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter Username..."
+          placeholder="Filter First Name..."
           value={
-            (table.getColumn("username")?.getFilterValue() as string) ?? ""
+            (table.getColumn("first_name")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("username")?.setFilterValue(event.target.value)
+            table.getColumn("first_name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -242,7 +208,6 @@ export default function ListUsers() {
           </TableHeader>
           <TableBody>
             {loading ? (
-              // Show Skeletor loader if loading is true
               Array(6)
                 .fill(0)
                 .map((_, index) => <SkeletonRow key={index} />)

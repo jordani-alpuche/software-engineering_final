@@ -56,7 +56,7 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "New Visitor",
+          title: "New Visitor Schedule",
           url: "/visitors/newvisitor",
         },
         {
