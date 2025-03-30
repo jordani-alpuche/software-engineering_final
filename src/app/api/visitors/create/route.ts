@@ -1,89 +1,169 @@
-import { NextRequest, NextResponse } from "next/server";
+"use server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
 
-export async function POST(req: NextRequest) {
+export async function createGroupVisitor(data: any) {
   try {
-    const {
-      resident_id,
-      visitor_name,
-      visitor_phone,
-      visitor_id_type,
-      visitor_id_number,
-      visitor_email,
-      visit_date_start,
-      visit_date_end,
-      status,
-      type,
-      visit_start_time,
-      visit_end_time,
-    } = await req.json();
-
-    // Validate all required fields
     if (
-      !resident_id ||
-      !visitor_name ||
-      !visitor_phone ||
-      !visitor_id_type ||
-      !visitor_id_number ||
-      !visitor_email ||
-      !visit_date_start ||
-      !visit_date_end ||
-      !status ||
-      !type ||
-      !visit_start_time ||
-      !visit_end_time
+      !data.resident_id ||
+      !data.visitors ||
+      !Array.isArray(data.visitors) ||
+      data.visitors.length === 0 ||
+      !data.visitor_phone ||
+      !data.visitor_email ||
+      !data.status ||
+      !data.visitor_type ||
+      !data.visitor_entry_date ||
+      !data.visitor_exit_date ||
+      !data.license_plate
     ) {
-      return NextResponse.json(
-        { error: "All fields are required." },
-        { status: 400 }
-      );
+      return {
+        success: false,
+        code: 400,
+        message: "Missing required fields or invalid visitors list",
+      };
     }
 
-    // Check if the username already exists
-    // const existingUser = await prisma.users.findUnique({
-    //   where: { username },
-    // });
+    // Validate visitor fields
+    const invalidVisitors = data.visitors.some(
+      (visitor) =>
+        !visitor.visitor_first_name ||
+        !visitor.visitor_last_name ||
+        !visitor.visitor_id_type ||
+        !visitor.visitor_id_number
+    );
+    if (invalidVisitors) {
+      return {
+        success: false,
+        code: 400,
+        message:
+          "Each visitor must have first name, last name, ID type, and ID number",
+      };
+    }
 
-    // if (existingUser) {
-    //   return NextResponse.json(
-    //     { error: "taken" },
-    //     { status: 409 } // Conflict status code
-    //   );
-    // }
+    const qr_code = "12356"; // Generate unique QR code
 
-    // Hash the password
-    const qr_code = "1234567890";
+    const result = await prisma.$transaction(async (tx) => {
+      // Create visitor schedule
+      const visitorSchedule = await tx.visitors_schedule.create({
+        data: {
+          resident_id: data.resident_id,
+          visitor_phone: data.visitor_phone,
+          visitor_email: data.visitor_email,
+          status: data.status,
+          visitor_type: data.visitor_type,
+          license_plate: data.license_plate,
+          visitor_entry_date: new Date(data.visitor_entry_date),
+          visitor_exit_date: new Date(data.visitor_exit_date),
+          visitor_qrcode: qr_code,
+          comments: data.comments,
+          sg_type: data.sg_type,
+        },
+      });
 
-    // Create the new visitior
-    const visitor = await prisma.visitors.create({
-      data: {
-        resident_id: resident_id,
-        visitor_name: visitor_name,
-        visitor_phone: visitor_phone,
-        visitor_id_type: visitor_id_type,
-        visitor_id_number: visitor_id_number,
-        visitor_email: visitor_email,
-        visit_date_start: visit_date_start,
-        visit_date_end: visit_date_end,
-        status: status,
-        type: type,
-        visit_start_time: visit_start_time,
-        visit_end_time: visit_end_time,
-        qr_code: qr_code,
-      },
+      // Create multiple visitors and link them to the schedule
+      await tx.visitiors.createMany({
+        data: data.visitors.map((visitor: any) => ({
+          visitor_first_name: visitor.visitor_first_name,
+          visitor_last_name: visitor.visitor_last_name,
+          visitor_id_type: visitor.visitor_id_type,
+          visitor_id_number: visitor.visitor_id_number,
+          visitor_schedule_id: visitorSchedule.id,
+        })),
+      });
+
+      return visitorSchedule;
     });
 
-    // Return the created user data as a response
-    return NextResponse.json({ visitor }, { status: 201 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return {
+      success: true,
+      code: 200,
+      message: "Group visitors scheduled successfully",
+      visitorScheduleId: result.id,
+    };
+  } catch (error: any) {
+    console.error("Error in createGroupVisitor:", error);
+    return {
+      success: false,
+      code: 500,
+      message: "Server error: " + error.message,
+    };
+  }
+}
+
+export async function createIndividualVisitor(data: any) {
+  try {
+    // Validate required fields
+    if (
+      !data.resident_id ||
+      !data.visitor_first_name ||
+      !data.visitor_last_name ||
+      !data.visitor_phone ||
+      !data.visitor_id_type ||
+      !data.visitor_id_number ||
+      !data.visitor_email ||
+      !data.status ||
+      !data.visitor_type ||
+      !data.visitor_entry_date ||
+      !data.visitor_exit_date ||
+      !data.license_plate
+    ) {
+      return {
+        success: false,
+        code: 400,
+        message: "Missing required fields",
+      };
+    }
+
+    const qr_code = "1234567890"; // Generate dynamically in production
+
+    // Start a transaction to create both visitor and schedule
+    const result = await prisma.$transaction(async (tx) => {
+      // Create visitor schedule first
+      const visitorSchedule = await tx.visitors_schedule.create({
+        data: {
+          resident_id: data.resident_id,
+          visitor_phone: data.visitor_phone,
+          visitor_email: data.visitor_email,
+          status: data.status,
+          visitor_type: data.visitor_type,
+          license_plate: data.license_plate,
+          visitor_entry_date: new Date(data.visitor_entry_date),
+          visitor_exit_date: new Date(data.visitor_exit_date),
+          visitor_qrcode: qr_code,
+          comments: data.comments,
+          sg_type: data.sg_type,
+        },
+      });
+
+      // Create visitor and link to schedule
+      await tx.visitiors.create({
+        data: {
+          visitor_first_name: data.visitor_first_name,
+          visitor_last_name: data.visitor_last_name,
+          visitor_id_type: data.visitor_id_type,
+          visitor_id_number: data.visitor_id_number,
+          visitor_schedule_id: visitorSchedule.id,
+        },
+      });
+
+      return visitorSchedule;
+    });
+
+    return {
+      success: true,
+      code: 200,
+      message: "Visitor created successfully",
+      visitorScheduleId: result.id,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      code: 500,
+      message: "Server error: " + error.message,
+    };
   }
 }

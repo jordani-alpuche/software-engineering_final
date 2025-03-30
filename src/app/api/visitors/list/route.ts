@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
+
+
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function visitorsInfo() {
+  const session = await getServerSession(authOptions)
+  const userid = Number(session?.user.id)
   try {
-    const visitors = await prisma.visitors.findMany();
-    return NextResponse.json(visitors, { status: 200 });
+    const visitors = await prisma.visitors_schedule.findMany({
+      where: {
+        resident_id: userid,
+      },
+    });
+    return visitors;
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch visitors" },
-      { status: 500 }
-    );
+    return error;
   }
 }

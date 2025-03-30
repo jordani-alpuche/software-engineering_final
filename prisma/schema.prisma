@@ -7,17 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model access_points_old {
-  id           Int            @id(map: "access_points_pkey") @default(autoincrement())
-  name         String         @db.VarChar(100)
-  location     String?        @db.VarChar(255)
-  created_at   DateTime?      @default(now()) @db.Timestamp(6)
-  updated_at   DateTime?      @default(now()) @db.Timestamp(6)
-  security_old security_old[]
-
-  @@index([id], map: "id_1741109294265_index")
-}
-
 model blacklist_visitors {
   id                                          Int       @id(map: "banned_visitors_pkey") @default(autoincrement())
   reason                                      String
@@ -74,25 +63,6 @@ model notifications {
   @@index([user_id], map: "resident_id_1741109348633_index")
 }
 
-model resident_old {
-  id                    Int                 @id(map: "resident_pkey") @default(autoincrement())
-  created_at            DateTime            @default(now()) @db.Timestamp(6)
-  updated_at            DateTime            @default(now()) @db.Timestamp(6)
-  user_id               Int                 @unique(map: "resident_user_id_key")
-  resident_address      String              @db.VarChar(50)
-  resident_email        String              @db.VarChar(50)
-  resident_first_name   String              @db.VarChar(50)
-  resident_house_number String              @db.VarChar(50)
-  resident_last_name    String              @db.VarChar(50)
-  resident_phone_number String              @db.VarChar(50)
-  resident_qr_code      String?             @db.VarChar(50)
-  users                 users               @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "resident_userid")
-  visitors_schedule     visitors_schedule[]
-
-  @@index([id], map: "id_1741109369290_index")
-  @@index([user_id], map: "user_id_1741109050324_index")
-}
-
 model resident_vehicle {
   id            Int     @id(map: "visitor_vehicle_pkey") @default(autoincrement())
   user_id       Int
@@ -104,26 +74,6 @@ model resident_vehicle {
 
   @@index([id], map: "id_1741109394620_index")
   @@index([user_id], map: "resident_id_1741109065767_index")
-}
-
-model security_old {
-  id                    Int               @id(map: "security_pkey") @default(autoincrement())
-  created_at            DateTime          @default(now()) @db.Timestamp(6)
-  updated_at            DateTime          @default(now()) @db.Timestamp(6)
-  user_id               Int               @unique(map: "security_user_id_key")
-  security_access_point Int
-  security_address      String            @db.VarChar(50)
-  security_email        String            @db.VarChar(50)
-  security_first_name   String            @db.VarChar(50)
-  security_last_name    String            @db.VarChar(50)
-  security_phone_number String            @db.VarChar(50)
-  security_qr_code      String?           @db.VarChar(50)
-  security_shift        String            @db.VarChar(50)
-  access_points_old     access_points_old @relation(fields: [security_access_point], references: [id], map: "accesspoint_id")
-  users                 users             @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "security_userid")
-
-  @@index([id], map: "id_1741109407459_index")
-  @@index([user_id], map: "user_id_1741109413061_index")
 }
 
 model users {
@@ -149,11 +99,21 @@ model users {
   entry_log_entry_log_security_idTousers                   entry_log[]          @relation("entry_log_security_idTousers")
   login_log                                                login_log[]
   notifications                                            notifications[]
-  resident_old                                             resident_old?
   resident_vehicle                                         resident_vehicle[]
-  security_old                                             security_old?
+  visitors_schedule                                        visitors_schedule[]
 
   @@index([id], map: "id_1741109104433_index")
+}
+
+model visitiors {
+  id                  Int                @id @default(autoincrement())
+  visitor_first_name  String?            @db.VarChar(255)
+  visitor_last_name   String?            @db.VarChar(255)
+  visitor_id_type     String?            @db.VarChar(255)
+  visitor_id_number   String?            @db.VarChar(255)
+  created_date        String?            @default("CURRENT_TIMESTAMP") @db.VarChar(255)
+  visitor_schedule_id Int?
+  visitors_schedule   visitors_schedule? @relation(fields: [visitor_schedule_id], references: [id], onDelete: NoAction, map: "vschedule_id")
 }
 
 model visitor_entry_logs {
@@ -187,24 +147,23 @@ model visitor_feedback {
 model visitors_schedule {
   id                  Int                  @id(map: "visitors_pkey") @default(autoincrement())
   resident_id         Int
-  visitor_first_name  String               @db.VarChar(255)
   visitor_phone       String               @db.VarChar(20)
-  visitor_id_type     String               @db.VarChar(50)
-  visitor_id_number   String               @db.VarChar(50)
   visitor_email       String               @db.VarChar(100)
   status              String?              @default("pending") @db.VarChar(20)
   created_at          DateTime?            @default(now()) @db.Timestamp(6)
   visitor_type        String               @db.VarChar(100)
-  visitor_last_name   String               @db.VarChar(50)
   license_plate       String               @db.VarChar(20)
   visitor_entry_date  DateTime             @db.Date
   visitor_exit_date   DateTime             @db.Date
   visitor_qrcode      String?              @db.VarChar(255)
   visitor_qrcode_url  String?              @db.VarChar(255)
   visitor_qrcode_path String?              @db.VarChar(255)
+  comments            String?              @db.VarChar(255)
+  sg_type             Int
+  visitiors           visitiors[]
   visitor_entry_logs  visitor_entry_logs[]
   visitor_feedback    visitor_feedback[]
-  resident_old        resident_old         @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "vistorschedule_residentid")
+  users               users                @relation(fields: [resident_id], references: [id], onDelete: NoAction, map: "vistorschedule_residentid")
 
   @@index([id], map: "id_1741109513648_index")
   @@index([resident_id], map: "resident_id_1741109518675_index")

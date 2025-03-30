@@ -69,7 +69,7 @@ export async function updateUser(id: number, data: any) {
     }
     userData.password = hashedPassword;
     const updatedUser = await prisma.users.update({
-      where: { id },
+      where: { id: Number(id) },
       data: userData,
     });
 

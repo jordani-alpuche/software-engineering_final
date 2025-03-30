@@ -1,12 +1,22 @@
 import React from "react";
 import ListVisitors from "@/app/components/visitors/list-visitors";
+import { visitorsInfo } from "@/app/api/visitors/list/route";
 
-const Visitors = () => {
+
+const visitors = async () => {
+
+  const visitorData = (await visitorsInfo()) || [];
+
   return (
     <div>
-      <ListVisitors />
+      <ListVisitors visitorInformation = {visitorData} />
     </div>
   );
 };
 
-export default Visitors;
+
+
+
+
+
+export default visitors;

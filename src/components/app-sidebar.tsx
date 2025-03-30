@@ -56,8 +56,12 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "New Visitor Schedule",
-          url: "/visitors/newvisitor",
+          title: "New Individual Visitor Schedule",
+          url: "/visitors/newIndividualVisitor",
+        },
+        {
+          title: "New Group Visitor Schedule",
+          url: "/visitors/newGroupVisitor",
         },
         {
           title: "List Vistors",
