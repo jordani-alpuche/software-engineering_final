@@ -6,14 +6,14 @@ import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate f
 
 const prisma = new PrismaClient();
 
-export async function visitorsInfo() {
+export async function visitorsLog() {
   const session = await getServerSession(authOptions);
   const userid = Number(session?.user.id);
   try {
-    const visitors = await prisma.visitors_schedule.findMany({
-      where: {
-        resident_id: userid,
-      },
+    const visitors = await prisma.visitor_entry_logs.findMany({
+      //   where: {
+      //     resident_id: userid,
+      //   },
       include: { visitiors: true }, // Include visitor details
     });
     return visitors;

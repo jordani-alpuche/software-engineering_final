@@ -47,7 +47,7 @@ const SkeletonRow = () => (
   </TableRow>
 );
 
-export default function ListVisitors({ visitorInformation }) {
+export default function VisitorsLog({ visitorLog }) {
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -62,9 +62,9 @@ export default function ListVisitors({ visitorInformation }) {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        setData(visitorInformation);
+        setData(visitorLog);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -74,30 +74,24 @@ export default function ListVisitors({ visitorInformation }) {
 
   type User = {
     id: number;
-    visitor_phone: string;
-    visitor_email: string;
-    status: string;
-    visitor_type: string;
-    license_plate: string;
-    visitor_entry_date: string;
-    visitor_exit_date: string;
-    comments: string;
-    sg_type: number;
-    visitiors: [
-      {
-        visitor_first_name: string;
-        visitor_last_name: string;
-        visitor_id_type: string;
-        visitor_id_number: string;
-      }
-    ];
+    security_id: number;
+    entry_time: string;
+    exit_time: string;
+    entry_type: string;
+    visitor_schedule_id: number;
+    visitiors: {
+      visitor_first_name: string;
+      visitor_last_name: string;
+      visitor_id_type: string;
+      visitor_id_number: string;
+    };
   };
 
   const columns: ColumnDef<User>[] = [
     {
       id: "visitor_first_name",
       header: "Visitor First Name",
-      accessorFn: (row) => row.visitiors?.[0]?.visitor_first_name ?? "N/A",
+      accessorFn: (row) => row.visitiors?.visitor_first_name ?? "N/A",
       cell: ({ row }) => (
         <div className="lowercase">{row.getValue("visitor_first_name")}</div>
       ),
@@ -110,36 +104,34 @@ export default function ListVisitors({ visitorInformation }) {
         const visitorsArray = row.original.visitiors;
         return (
           <div className="lowercase">
-            {visitorsArray?.[0]?.visitor_last_name || "N/A"}
+            {visitorsArray?.visitor_last_name || "N/A"}
           </div>
         );
       },
     },
 
     {
-      accessorKey: "license_plate",
-      header: "License Plate",
-      cell: ({ row }) => (
-        <div className="lowercase">{row.getValue("license_plate")}</div>
-      ),
+      accessorKey: "entry_time",
+      header: "Entry Time",
+      cell: ({ row }) => {
+        const entryTime = new Date(row.getValue("entry_time"));
+        return <div className="lowercase">{entryTime.toLocaleString()}</div>;
+      },
     },
 
     {
-      accessorKey: "visitor_type",
-      header: "Visitor Type",
-      cell: ({ row }) => (
-        <div className="lowercase">{row.getValue("visitor_type")}</div>
-      ),
+      accessorKey: "exit_time",
+      header: "Exit Time",
+      cell: ({ row }) => {
+        const exitTime = row.getValue("exit_time");
+        return (
+          <div className="lowercase">
+            {exitTime ? new Date(exitTime).toLocaleString() : "N/A"}
+          </div>
+        );
+      },
     },
-    {
-      accessorKey: "sg_type",
-      header: "Single or Group",
-      cell: ({ row }) => (
-        <div className="lowercase">
-          {row.getValue("sg_type") === 0 ? " Single Visitor" : "Group Visitor"}
-        </div>
-      ),
-    },
+
     {
       accessorKey: "status",
       header: "Status",
@@ -167,19 +159,21 @@ export default function ListVisitors({ visitorInformation }) {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() =>
-                  router.push(`/visitors/viewvisitor/${schedule.id}`)
+                  router.push(
+                    `/visitors/viewvisitor/${schedule.visitor_schedule_id}`
+                  )
                 }
               >
                 View Schedule
               </DropdownMenuItem>
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 onClick={() =>
                   router.push(`/visitors/updatevisitor/${schedule.id}`)
                 }
               >
                 Update Schedule
-              </DropdownMenuItem>
-              <DropdownMenuItem
+              </DropdownMenuItem> */}
+              {/* <DropdownMenuItem
                 onClick={async () => {
                   if (
                     window.confirm(
@@ -199,7 +193,7 @@ export default function ListVisitors({ visitorInformation }) {
                 }}
               >
                 Delete Schedule
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -222,7 +216,8 @@ export default function ListVisitors({ visitorInformation }) {
 
   return (
     <div className="p-4 md:p-7 lg:p-8">
-      <h1 className="text-4xl font-bold text-center mb-6">List Visitors</h1>
+      {/* Breadcrumb / Title */}
+      <h1 className="text-4xl font-bold text-center mb-6">Visitor Log</h1>
       <div className="flex items-center py-4">
         {/* {console.log(table.getAllColumns())} */}
         <Input

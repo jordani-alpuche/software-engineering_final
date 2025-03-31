@@ -1,7 +1,16 @@
 import React from "react";
+import VisitorsLog from "@/app/components/visitors/visitor-log";
+import { visitorsLog } from "@/app/api/visitors/entrylog/route";
 
-const VisitorLog = () => {
-  return <div>Visitor Log</div>;
+const page = async (props) => {
+  const visitorLog = (await visitorsLog()) || [];
+
+  // console.log("visitorLog", visitorLog);
+  return (
+    <div>
+      <VisitorsLog visitorLog={visitorLog} />
+    </div>
+  );
 };
 
-export default VisitorLog;
+export default page;

@@ -33,7 +33,7 @@ import { set } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-  resident_id: z.number(),
+  resident_id: z.coerce.number(),
   visitor_phone: z.string().min(1),
   visitor_email: z.string().min(1),
   status: z.string().min(1),
@@ -42,7 +42,7 @@ const formSchema = z.object({
   visitor_entry_date: z.coerce.date(),
   visitor_exit_date: z.coerce.date(),
   comments: z.string().optional(),
-  sg_type: z.number().optional(),
+  sg_type: z.coerce.number().optional(),
 
   visitors: z.array(
     z.object({
@@ -81,6 +81,7 @@ export default function CreateVisitors({ userID: userid }) {
     },
   });
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // console.log("submitted values", values);
     const formattedData = { ...values };
 
     if (formattedData.visitors.length === 0) {

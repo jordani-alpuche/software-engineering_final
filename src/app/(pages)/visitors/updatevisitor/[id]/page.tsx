@@ -8,7 +8,7 @@ const UpdateVisitor = async ({ params }) => {
   const { id: scheduleId } = await params;
 
   const scheduleGetData = (await getSchedule(scheduleId)) || {};
-  console.log("scheduleGetData", await scheduleGetData.sg_type);
+  // console.log("scheduleGetData", await scheduleGetData.sg_type);
 
   if (Object.keys(scheduleGetData).length === 0) {
     return notFound();

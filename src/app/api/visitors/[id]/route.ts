@@ -16,6 +16,7 @@ export async function getSchedule(id: number) {
     where: { id: Number(id), resident_id: Number(userid) },
     include: {
       visitiors: true, // Include visitor details
+      visitor_entry_logs: true, // Include entry logs
     },
   });
 
@@ -23,11 +24,12 @@ export async function getSchedule(id: number) {
 }
 
 // Update a Schedule by ID
-export async function updateSchedule(id: number, data: any) {
+export async function updateIndividualSchedule(id: number, data: any) {
   try {
+    console.log("Data received for update:", data);
     if (
       !data.resident_id ||
-      !Array.isArray(data.visitors) ||
+      // !Array.isArray(data.visitiors) ||
       !data.visitor_phone ||
       !data.visitor_email ||
       !data.status ||
@@ -83,6 +85,144 @@ export async function updateSchedule(id: number, data: any) {
       success: false,
       code: 500,
       message: "Server error: " + error.message,
+    };
+  }
+}
+
+export async function updateGroupSchedule(id: number, data: any) {
+  try {
+    console.log("Data received for update:", data);
+
+    // Validate required fields
+    if (
+      !data.resident_id ||
+      !data.visitor_phone ||
+      !data.visitor_email ||
+      !data.status ||
+      !data.visitor_type ||
+      !data.visitor_entry_date ||
+      !data.visitor_exit_date ||
+      !data.license_plate
+    ) {
+      return {
+        success: false,
+        code: 400,
+        message: "Missing required fields",
+      };
+    }
+
+    // Start transaction
+    const response = await prisma.$transaction(async (tx) => {
+      // Update visitor schedule
+      const updatedSchedule = await tx.visitors_schedule.update({
+        where: { id: Number(id), resident_id: Number(data.resident_id) },
+        data: {
+          resident_id: data.resident_id,
+          visitor_phone: data.visitor_phone,
+          visitor_email: data.visitor_email,
+          status: data.status,
+          visitor_type: data.visitor_type,
+          license_plate: data.license_plate,
+          visitor_entry_date: new Date(data.visitor_entry_date),
+          visitor_exit_date: new Date(data.visitor_exit_date),
+          comments: data.comments,
+        },
+      });
+
+      // Fetch existing visitors linked to this schedule
+      const existingVisitors = await tx.visitiors.findMany({
+        where: { visitor_schedule_id: updatedSchedule.id },
+        select: {
+          id: true,
+          visitor_first_name: true,
+          visitor_last_name: true,
+          visitor_id_type: true,
+          visitor_id_number: true,
+        },
+      });
+
+      const existingVisitorIds = existingVisitors.map((v) => v.id);
+      const submittedVisitorIds = data.visitors
+        .map((v) => v.id)
+        .filter(Boolean);
+
+      // Update existing visitors and create new ones if necessary
+      for (const visitor of data.visitors) {
+        if (visitor.id) {
+          // Update existing visitor
+          await tx.visitiors.update({
+            where: { id: visitor.id },
+            data: {
+              visitor_first_name: visitor.visitor_first_name,
+              visitor_last_name: visitor.visitor_last_name,
+              visitor_id_type: visitor.visitor_id_type,
+              visitor_id_number: visitor.visitor_id_number,
+            },
+          });
+        } else {
+          // Create new visitor
+          await tx.visitiors.create({
+            data: {
+              visitor_schedule_id: updatedSchedule.id,
+              visitor_first_name: visitor.visitor_first_name,
+              visitor_last_name: visitor.visitor_last_name,
+              visitor_id_type: visitor.visitor_id_type,
+              visitor_id_number: visitor.visitor_id_number,
+            },
+          });
+        }
+      }
+
+      // Remove deleted visitors only if they are not already tied to an entry log
+      const visitorsToDelete = existingVisitorIds.filter(
+        (id) => !submittedVisitorIds.includes(id)
+      );
+
+      for (const visitorId of visitorsToDelete) {
+        // Check if the visitor has any entry logs associated
+        const entryLogs = await tx.visitor_entry_logs.findMany({
+          where: { visitor_id: visitorId },
+        });
+
+        if (entryLogs.length > 0) {
+          throw new Error(
+            `Cannot update visitor because they are already linked to an entry log.`
+          );
+        } else {
+          // If no entry logs, proceed to delete the visitor
+          await tx.visitiors.delete({
+            where: { id: visitorId },
+          });
+        }
+      }
+
+      // Capture the current schedule and visitors
+      const updatedVisitors = await tx.visitiors.findMany({
+        where: { visitor_schedule_id: updatedSchedule.id },
+        select: { id: true, visitor_first_name: true, visitor_last_name: true },
+      });
+
+      return {
+        updatedSchedule,
+        updatedVisitors,
+      };
+    });
+
+    // Respond with captured schedule and visitors
+    return {
+      success: true,
+      code: 200,
+      message: `Schedule updated successfully with ${response.updatedVisitors.length} visitor(s) updated.`,
+      updatedSchedule: response.updatedSchedule,
+      updatedVisitors: response.updatedVisitors,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      code: 500,
+      message: `Server error: ${
+        error.message || "An unexpected error occurred"
+      }`,
     };
   }
 }

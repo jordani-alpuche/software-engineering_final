@@ -27,7 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { useRouter } from "next/navigation";
-import { updateSchedule } from "@/app/api/visitors/[id]/route";
+import { updateGroupSchedule } from "@/app/api/visitors/[id]/route";
 import Loading from "@/app/components/loading"; // Import your loading component
 import { set } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
@@ -91,10 +91,14 @@ export default function UpdateGroupVisitors({ scheduleData, scheduleID }) {
     },
   });
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
+    // console.log("before submit", values);
     const formattedData = { ...values };
+    // console.log("Formatted Data:", formattedData);
 
     if (formattedData.visitors.length === 0) {
       toast.error("At least one visitor is required.");
+      setIsLoading(false);
       return;
     }
 
@@ -106,10 +110,11 @@ export default function UpdateGroupVisitors({ scheduleData, scheduleID }) {
       formattedData.visitor_type = "one-time";
     }
 
-    setIsLoading(true);
+    // console.log("Formatted Data:", formattedData);
+
     try {
       // Assuming `createGroupVisitor` is the API function to create a group visitor
-      const updateVisitorResponse = await updateSchedule(
+      const updateVisitorResponse = await updateGroupSchedule(
         scheduleID,
         formattedData
       );

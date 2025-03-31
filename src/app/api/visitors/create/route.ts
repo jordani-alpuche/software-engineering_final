@@ -44,7 +44,7 @@ export async function createGroupVisitor(data: any) {
       };
     }
 
-    const qr_code = "12356"; // Generate unique QR code
+    const qr_code = "1233456"; // Generate dynamically in production
 
     const result = await prisma.$transaction(async (tx) => {
       // Create visitor schedule
@@ -73,6 +73,15 @@ export async function createGroupVisitor(data: any) {
           visitor_id_number: visitor.visitor_id_number,
           visitor_schedule_id: visitorSchedule.id,
         })),
+      });
+
+      const qr_code_url = `http://localhost:3000/visitors/viewvisitor/${visitorSchedule.id}`;
+
+      await tx.visitors_schedule.update({
+        where: { id: visitorSchedule.id },
+        data: {
+          visitor_qrcode: qr_code_url,
+        },
       });
 
       return visitorSchedule;
@@ -118,7 +127,7 @@ export async function createIndividualVisitor(data: any) {
       };
     }
 
-    const qr_code = "1234567890"; // Generate dynamically in production
+    const qr_code = "123456789"; // Generate dynamically in production
 
     // Start a transaction to create both visitor and schedule
     const result = await prisma.$transaction(async (tx) => {
@@ -136,6 +145,15 @@ export async function createIndividualVisitor(data: any) {
           visitor_qrcode: qr_code,
           comments: data.comments,
           sg_type: data.sg_type,
+        },
+      });
+
+      const qr_code_url = `http://localhost:3000/visitors/viewvisitor/${visitorSchedule.id}`;
+
+      await tx.visitors_schedule.update({
+        where: { id: visitorSchedule.id },
+        data: {
+          visitor_qrcode: qr_code_url,
         },
       });
 

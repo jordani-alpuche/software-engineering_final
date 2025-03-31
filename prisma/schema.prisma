@@ -100,31 +100,36 @@ model users {
   login_log                                                login_log[]
   notifications                                            notifications[]
   resident_vehicle                                         resident_vehicle[]
+  visitor_entry_logs                                       visitor_entry_logs[]
   visitors_schedule                                        visitors_schedule[]
 
   @@index([id], map: "id_1741109104433_index")
 }
 
 model visitiors {
-  id                  Int                @id @default(autoincrement())
-  visitor_first_name  String?            @db.VarChar(255)
-  visitor_last_name   String?            @db.VarChar(255)
-  visitor_id_type     String?            @db.VarChar(255)
-  visitor_id_number   String?            @db.VarChar(255)
-  created_date        String?            @default("CURRENT_TIMESTAMP") @db.VarChar(255)
+  id                  Int                  @id @default(autoincrement())
+  visitor_first_name  String?              @db.VarChar(255)
+  visitor_last_name   String?              @db.VarChar(255)
+  visitor_id_type     String?              @db.VarChar(255)
+  visitor_id_number   String?              @db.VarChar(255)
+  created_date        String?              @default("CURRENT_TIMESTAMP") @db.VarChar(255)
   visitor_schedule_id Int?
-  visitors_schedule   visitors_schedule? @relation(fields: [visitor_schedule_id], references: [id], onDelete: NoAction, map: "vschedule_id")
+  visitors_schedule   visitors_schedule?   @relation(fields: [visitor_schedule_id], references: [id], onDelete: NoAction, map: "vschedule_id")
+  visitor_entry_logs  visitor_entry_logs[]
 }
 
 model visitor_entry_logs {
   id                  Int               @id(map: "entry_logs_pkey") @default(autoincrement())
   security_id         Int
-  entry_time          DateTime          @default(now()) @db.Timestamp(6)
-  exit_time           DateTime?         @db.Timestamp(6)
   created_at          DateTime?         @default(now()) @db.Timestamp(6)
   updated_at          DateTime?         @default(now()) @db.Timestamp(6)
   visitor_schedule_id Int
-  entry_type          String            @db.VarChar(255)
+  entry_type          String?           @db.VarChar(255)
+  visitor_id          Int
+  entry_time          DateTime?         @default(now()) @db.Timestamp(6)
+  exit_time           DateTime?         @db.Timestamp(6)
+  users               users             @relation(fields: [security_id], references: [id], onDelete: NoAction, map: "securityid")
+  visitiors           visitiors         @relation(fields: [visitor_id], references: [id], onDelete: NoAction, map: "visitor_id")
   visitors_schedule   visitors_schedule @relation(fields: [visitor_schedule_id], references: [id], onDelete: NoAction, map: "visitorentrylog_vscheduleid")
 
   @@index([id], map: "id_1741109463966_index")
@@ -155,7 +160,7 @@ model visitors_schedule {
   license_plate       String               @db.VarChar(20)
   visitor_entry_date  DateTime             @db.Date
   visitor_exit_date   DateTime             @db.Date
-  visitor_qrcode      String?              @db.VarChar(255)
+  visitor_qrcode      String?
   visitor_qrcode_url  String?              @db.VarChar(255)
   visitor_qrcode_path String?              @db.VarChar(255)
   comments            String?              @db.VarChar(255)

@@ -32,7 +32,8 @@ import { set } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-  resident_id: z.number(),
+  resident_id: z.coerce.number(), // Converts string input to a number
+
   visitor_first_name: z.string().min(1),
   visitor_phone: z.string().min(1),
   visitor_id_type: z.string().min(1),
@@ -45,7 +46,7 @@ const formSchema = z.object({
   visitor_entry_date: z.coerce.date(),
   visitor_exit_date: z.coerce.date(),
   comments: z.string().optional(),
-  sg_type: z.number().optional(),
+  sg_type: z.coerce.number().optional(),
 });
 
 export default function CreateVisitors({ userID: userid }) {
@@ -74,6 +75,7 @@ export default function CreateVisitors({ userID: userid }) {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("here");
     setIsLoading(true);
     const formattedData = { ...values };
     formattedData.sg_type = 0;
@@ -97,6 +99,7 @@ export default function CreateVisitors({ userID: userid }) {
         setIsLoading(false);
       } else if (createVisitorResponse.code === 500) {
         toast.error("An Error Occurred while submitting the form.");
+        console.log("Error:", createVisitorResponse);
         setIsLoading(false);
       } else if (createVisitorResponse.code === 200) {
         toast.success("Visitor created successfully!");

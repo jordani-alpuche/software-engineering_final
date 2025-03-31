@@ -26,7 +26,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { useRouter } from "next/navigation";
-import { updateSchedule } from "@/app/api/visitors/[id]/route";
+import { updateIndividualSchedule } from "@/app/api/visitors/[id]/route";
 import Loading from "@/app/components/loading"; // Import your loading component
 import { Textarea } from "@/components/ui/textarea";
 
@@ -90,7 +90,7 @@ export default function UpdateVisitors({ scheduleData, scheduleID }) {
     }
 
     try {
-      const updateVisitorResponse = await updateSchedule(
+      const updateVisitorResponse = await updateIndividualSchedule(
         scheduleID,
         formattedData
       );
@@ -98,9 +98,11 @@ export default function UpdateVisitors({ scheduleData, scheduleID }) {
 
       if (updateVisitorResponse.code === 400) {
         toast.error("Please fill all the required fields");
+        console.log("Error:", updateVisitorResponse);
         setIsLoading(false);
       } else if (updateVisitorResponse.code === 500) {
         toast.error("An Error Occurred while submitting the form.");
+        console.log("Error:", updateVisitorResponse);
         setIsLoading(false);
       } else if (updateVisitorResponse.code === 200) {
         toast.success("Schedule Updated successfully!");
