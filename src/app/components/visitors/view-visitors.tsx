@@ -192,6 +192,31 @@ export default function ViewVisitors({ scheduleData, userid }) {
             </TableBody>
           </Table>
 
+          <Table className="mt-6 border">
+            <TableHeader>
+              <TableRow className="bg-gray-100">
+                <TableHead>Visitor ID</TableHead>
+                <TableHead>Entry Time</TableHead>
+                <TableHead>Exit Time</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {scheduleData.visitor_entry_logs?.map((log: any) => (
+                <TableRow key={log.id} className="border-b hover:bg-gray-50">
+                  <TableCell>{log.visitor_id}</TableCell>
+                  <TableCell>
+                    {new Date(log.entry_time).toDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {log.exit_time
+                      ? new Date(log.exit_time).toDateString()
+                      : "N/A"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
           {/* Form Actions */}
           <div className="flex space-x-4 mt-6">
             <Button
