@@ -1,273 +1,251 @@
+// api/visitors/entry-exit/route.ts
 "use server";
-import { PrismaClient, visitors_schedule } from "@prisma/client"; // Import types if needed
+import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
 
-// Define the expected payload structure
 interface EntryExitPayload {
   visitorId: number | string;
   scheduleId: number | string;
   securityId: number | string;
-  action: "logEntry" | "logExit" | "updateOneTime"; // Differentiates the operation
-  entryChecked?: boolean; // Only for updateOneTime
-  exitChecked?: boolean; // Only for updateOneTime
+  action: "logEntry" | "logExit" | "updateOneTime";
+  entryChecked?: boolean;
+  exitChecked?: boolean;
 }
 
-// Define a consistent return type
 interface ActionResult {
   success: boolean;
   code: number;
   message: string;
-  data?: any; // Optional data field (e.g., the created/updated log)
+  data?: any;
 }
 
 export async function updateEntryExitStatus(
   payload: EntryExitPayload
 ): Promise<ActionResult> {
   try {
-    console.log("Received payload:", payload);
+    const {
+      visitorId,
+      scheduleId,
+      securityId,
+      action,
+      entryChecked,
+      exitChecked,
+    } = payload;
 
-    // --- 1. Validate and Convert IDs ---
-    const visitorIdNum = Number(payload.visitorId);
-    const scheduleIdNum = Number(payload.scheduleId);
-    const securityIdNum = Number(payload.securityId);
-    const action = payload.action;
-
-    if (isNaN(visitorIdNum) || isNaN(scheduleIdNum) || isNaN(securityIdNum)) {
-      return {
-        success: false,
-        code: 400,
-        message: "Invalid ID format provided.",
-      };
-    }
-
-    // --- 2. Fetch the Schedule to determine visitor type ---
     const schedule = await prisma.visitors_schedule.findUnique({
-      where: { id: scheduleIdNum },
+      where: { id: Number(scheduleId) },
     });
 
     if (!schedule) {
-      return {
-        success: false,
-        code: 404,
-        message: `Schedule with ID ${scheduleIdNum} not found.`,
-      };
+      return { success: false, code: 404, message: "Schedule not found." };
     }
 
-    const visitorType = schedule.visitor_type; // "one-time" or "recurring"
-
-    // --- 3. Process based on Visitor Type and Action ---
-
-    // =============================
-    // === RECURRING VISITOR LOGIC ===
-    // =============================
-    if (visitorType === "recurring") {
-      if (action === "logEntry") {
-        // Find the latest log entry for this visitor/schedule to check if already inside
-        const lastLog = await prisma.visitor_entry_logs.findFirst({
-          where: {
-            visitor_id: visitorIdNum,
-            visitor_schedule_id: scheduleIdNum,
-          },
-          orderBy: { entry_time: "desc" }, // Get the most recent one
-        });
-
-        // Check if already inside
-        if (lastLog && !lastLog.exit_time) {
-          return {
-            success: false,
-            code: 400,
-            message: "Visitor is already logged in for this schedule.",
-          };
-        }
-
-        // Create a new entry log
-        const newLog = await prisma.visitor_entry_logs.create({
-          data: {
-            visitor_id: visitorIdNum,
-            visitor_schedule_id: scheduleIdNum,
-            security_id: securityIdNum,
-            entry_time: new Date(),
-            exit_time: null, // Explicitly null
-            entry_type: "recurring_entry", // Indicate type
-          },
-        });
-        console.log("Created recurring entry log:", newLog);
-        return {
-          success: true,
-          code: 200,
-          message: "Visitor logged in successfully.",
-          data: newLog,
-        };
-      } else if (action === "logExit") {
-        // Find the latest log entry that is still open (no exit time)
-        const logToUpdate = await prisma.visitor_entry_logs.findFirst({
-          where: {
-            visitor_id: visitorIdNum,
-            visitor_schedule_id: scheduleIdNum,
-            exit_time: null, // Must be an open entry
-          },
-          orderBy: { entry_time: "desc" }, // Get the most recent open entry
-        });
-
-        if (!logToUpdate) {
-          return {
-            success: false,
-            code: 400,
-            message: "No active entry log found for this visitor to log out.",
-          };
-        }
-
-        // Update the found log with exit time
-        const updatedLog = await prisma.visitor_entry_logs.update({
-          where: { id: logToUpdate.id },
-          data: {
-            exit_time: new Date(),
-            entry_type: "recurring_exit", // Indicate type
-          },
-        });
-        console.log("Updated recurring exit log:", updatedLog);
-        return {
-          success: true,
-          code: 200,
-          message: "Visitor logged out successfully.",
-          data: updatedLog,
-        };
-      } else {
-        // Invalid action for recurring type
-        return {
-          success: false,
-          code: 400,
-          message: `Invalid action '${action}' for recurring visitor type.`,
-        };
-      }
-    }
-
-    // ===========================
-    // === ONE-TIME VISITOR LOGIC ===
-    // ===========================
-    else if (visitorType === "one-time") {
+    if (schedule.visitor_type === "one-time") {
       if (action === "updateOneTime") {
-        const { entryChecked, exitChecked } = payload;
+        let operationPerformed = false;
 
-        // Find the single expected log entry for this visitor/schedule
-        // Note: Searching without securityId here, assuming one log per visitor/schedule for one-time
-        const existingLog = await prisma.visitor_entry_logs.findFirst({
+        // Check if there is an existing log for this visitor/schedule
+        let existingLog = await prisma.visitor_entry_logs.findFirst({
           where: {
-            visitor_id: visitorIdNum,
-            visitor_schedule_id: scheduleIdNum,
+            visitor_id: Number(visitorId),
+            visitor_schedule_id: Number(scheduleId),
           },
-          // Add orderBy if there's a chance of multiple logs even for one-time by error
-          // orderBy: { created_at: 'desc'}
+          orderBy: {
+            updated_at: "desc", // Get the most recent log
+          },
         });
 
-        console.log("One-Time - Existing Log:", existingLog);
-        console.log("One-Time - Checkbox States:", {
-          entryChecked,
-          exitChecked,
-        });
-
-        if (entryChecked) {
-          // --- Entry is checked ---
-          const entryTime = existingLog?.entry_time ?? new Date(); // Use existing or set new
-          const exitTime = exitChecked
-            ? existingLog?.exit_time ?? new Date()
-            : null; // Set exit if checked, otherwise null
-
-          if (existingLog) {
-            // Update existing log
-            const updatedLog = await prisma.visitor_entry_logs.update({
-              where: { id: existingLog.id },
-              data: {
-                entry_time: entryTime, // Should already exist, but safe to set
-                exit_time: exitTime,
-                security_id: securityIdNum, // Update security ID if it changed
-                entry_type: "one_time_update",
-              },
-            });
-            console.log("Updated one-time log:", updatedLog);
-            return {
-              success: true,
-              code: 200,
-              message: "One-time status updated.",
-              data: updatedLog,
-            };
-          } else {
-            // Create new log
-            const newLog = await prisma.visitor_entry_logs.create({
-              data: {
-                visitor_id: visitorIdNum,
-                visitor_schedule_id: scheduleIdNum,
-                security_id: securityIdNum,
-                entry_time: entryTime, // Always set entry time if creating
-                exit_time: exitTime, // Set exit time based on checkbox
-                entry_type: "one_time_initial",
-              },
-            });
-            console.log("Created one-time log:", newLog);
-            return {
-              success: true,
-              code: 200,
-              message: "One-time status created.",
-              data: newLog,
-            };
+        if (entryChecked && !exitChecked) {
+          // Entry only
+          if (!existingLog || !existingLog.entry_time) {
+            if (existingLog) {
+              await prisma.visitor_entry_logs.update({
+                where: { id: existingLog.id },
+                data: { entry_time: new Date() },
+              });
+            } else {
+              await prisma.visitor_entry_logs.create({
+                data: {
+                  security_id: Number(securityId),
+                  visitor_schedule_id: Number(scheduleId),
+                  visitor_id: Number(visitorId),
+                  entry_time: new Date(),
+                },
+              });
+            }
+            operationPerformed = true;
           }
-        } else {
-          // --- Entry is unchecked ---
-          // Following the original logic's apparent intent: delete the log if entry is unchecked
-          if (existingLog) {
-            await prisma.visitor_entry_logs.delete({
+        } else if (!entryChecked && exitChecked) {
+          // Exit only
+          if (existingLog && existingLog.entry_time && !existingLog.exit_time) {
+            await prisma.visitor_entry_logs.update({
               where: { id: existingLog.id },
+              data: { exit_time: new Date() },
             });
-            console.log(
-              "Deleted one-time log due to unchecked entry:",
-              existingLog.id
-            );
-            return {
-              success: true,
-              code: 200,
-              message: "One-time entry log removed.",
-            };
-          } else {
-            // No log exists, and entry is unchecked - do nothing
-            console.log(
-              "No one-time log found, entry unchecked - no action taken."
-            );
-            return {
-              success: true,
-              code: 200,
-              message: "No action needed (no log, entry unchecked).",
-            };
+            operationPerformed = true;
+          }
+        } else if (entryChecked && exitChecked) {
+          // Entry and exit
+          if (!existingLog || !existingLog.entry_time) {
+            if (existingLog) {
+              await prisma.visitor_entry_logs.update({
+                where: { id: existingLog.id },
+                data: { entry_time: new Date(), exit_time: new Date() },
+              });
+            } else {
+              await prisma.visitor_entry_logs.create({
+                data: {
+                  security_id: Number(securityId),
+                  visitor_schedule_id: Number(scheduleId),
+                  visitor_id: Number(visitorId),
+                  entry_time: new Date(),
+                  exit_time: new Date(),
+                },
+              });
+            }
+            operationPerformed = true;
+          } else if (
+            existingLog &&
+            existingLog.entry_time &&
+            !existingLog.exit_time
+          ) {
+            await prisma.visitor_entry_logs.update({
+              where: { id: existingLog.id },
+              data: { exit_time: new Date() },
+            });
+            operationPerformed = true;
+          }
+        } else if (!entryChecked && !exitChecked) {
+          // Neither checked, cancel the log
+          if (existingLog) {
+            if (existingLog.exit_time) {
+              await prisma.visitor_entry_logs.update({
+                where: { id: existingLog.id },
+                data: { exit_time: null },
+              });
+            } else if (existingLog.entry_time) {
+              await prisma.visitor_entry_logs.update({
+                where: { id: existingLog.id },
+                data: { entry_time: null },
+              });
+            }
+            operationPerformed = true;
           }
         }
+
+        if (operationPerformed) {
+          return {
+            success: true,
+            code: 200,
+            message: "One-time visitor status updated successfully.",
+          };
+        }
+
+        // if (entryChecked || exitChecked) {
+        //   return {
+        //     success: false,
+        //     code: 400,
+        //     message: "No changes made.",
+        //   };
+        // }
+
+        return {
+          success: true,
+          code: 200,
+          message: "No changes requested.",
+        };
       } else {
-        // Invalid action for one-time type
         return {
           success: false,
           code: 400,
-          message: `Invalid action '${action}' for one-time visitor type.`,
+          message: "Invalid action for one-time visitor.",
         };
       }
-    }
+    } else if (schedule.visitor_type === "recurring") {
+      if (action === "logEntry") {
+        const openLog = await prisma.visitor_entry_logs.findFirst({
+          where: {
+            visitor_id: Number(visitorId),
+            visitor_schedule_id: Number(scheduleId),
+            exit_time: null,
+          },
+        });
 
-    // ===========================
-    // === UNKNOWN VISITOR TYPE ===
-    // ===========================
-    else {
+        if (!openLog) {
+          await prisma.visitor_entry_logs.create({
+            data: {
+              security_id: Number(securityId),
+              visitor_schedule_id: Number(scheduleId),
+              visitor_id: Number(visitorId),
+              entry_time: new Date(),
+            },
+          });
+          return {
+            success: true,
+            code: 200,
+            message: "Recurring visitor entry logged.",
+          };
+        } else {
+          return {
+            success: false,
+            code: 400,
+            message: "Visitor is already logged in.",
+          };
+        }
+      } else if (action === "logExit") {
+        const openLog = await prisma.visitor_entry_logs.findFirst({
+          where: {
+            visitor_id: Number(visitorId),
+            visitor_schedule_id: Number(scheduleId),
+            exit_time: null,
+          },
+        });
+
+        if (openLog) {
+          await prisma.visitor_entry_logs.update({
+            where: { id: openLog.id },
+            data: { exit_time: new Date() },
+          });
+          return {
+            success: true,
+            code: 200,
+            message: "Recurring visitor exit logged.",
+          };
+        } else {
+          return {
+            success: false,
+            code: 400,
+            message: "No active entry log found for this visitor.",
+          };
+        }
+      } else {
+        return {
+          success: false,
+          code: 400,
+          message: "Invalid action for recurring visitor.",
+        };
+      }
+    } else {
       return {
         success: false,
         code: 400,
-        message: `Unknown visitor type '${visitorType}' encountered.`,
+        message: "Unknown visitor type.",
       };
     }
   } catch (error: any) {
-    console.error("Error in updateEntryExitStatus:", error);
+    console.error("Error updating entry/exit status:", error);
     return {
       success: false,
       code: 500,
-      message: "Server error: " + error.message,
+      message: "Failed to update entry/exit status.",
+      data: error.message,
     };
+  } finally {
+    await prisma.$disconnect();
+    revalidatePath(`/visitors/view/${payload.scheduleId}`);
   }
 }

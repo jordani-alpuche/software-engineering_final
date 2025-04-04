@@ -1,7 +1,8 @@
+// frontend/ViewVisitors.tsx
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Ensure CSS is imported
+import "react-toastify/dist/ReactToastify.css";
 import { QRCodeCanvas } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,11 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
+import { updateEntryExitStatus } from "@/app/api/visitors/entry-exit/route";
 
-// --- Import the updated Server Action ---
-import { updateEntryExitStatus } from "@/app/api/visitors/entry-exit/route"; // Adjust the import path to where your Server Action file is
-
-// --- Define Types (copy from previous example or adapt) ---
 interface Visitor {
   id: number;
   visitor_first_name?: string | null;
@@ -29,8 +27,8 @@ interface Visitor {
 interface VisitorLog {
   id: number;
   visitor_id: number;
-  entry_time?: Date | string | null; // Allow string initially from JSON
-  exit_time?: Date | string | null; // Allow string initially from JSON
+  entry_time?: Date | string | null;
+  exit_time?: Date | string | null;
 }
 
 interface ScheduleData {
@@ -38,7 +36,7 @@ interface ScheduleData {
   visitor_phone: string;
   visitor_email: string;
   license_plate: string;
-  visitor_type: string; // "one-time" or "recurring"
+  visitor_type: string;
   status?: string | null;
   visitor_entry_date: string | Date;
   visitor_exit_date: string | Date;
@@ -52,9 +50,9 @@ interface VisitorCurrentStatus {
   visitorId: number;
   isInside: boolean;
   lastLogId: number | null;
+  lastLogExitTime?: Date | string | null;
 }
 
-// Define the expected result type from the Server Action
 interface ActionResult {
   success: boolean;
   code: number;
@@ -71,11 +69,9 @@ export default function ViewVisitors({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  // Use state for schedule data to allow potential refresh without full reload
   const [scheduleData, setScheduleData] =
     useState<ScheduleData>(initialScheduleData);
 
-  // --- State for One-Time Visitors ---
   const [visitorStatuses, setVisitorStatuses] = useState(() => {
     if (scheduleData.visitor_type === "one-time") {
       return (
@@ -94,39 +90,40 @@ export default function ViewVisitors({
     return [];
   });
 
-  // --- State for Recurring Visitors ---
   const [recurringVisitorStatus, setRecurringVisitorStatus] = useState<
     VisitorCurrentStatus[]
   >([]);
 
-  // --- Effect to calculate recurring status ---
   useEffect(() => {
     if (scheduleData.visitor_type === "recurring") {
       const statusMap =
         scheduleData.visitiors?.map((visitor) => {
           const visitorLogs = scheduleData.visitor_entry_logs
             ?.filter((log) => log.visitor_id === visitor.id)
-            // Ensure entry_time is treated as Date for comparison
             .sort(
               (a, b) =>
                 new Date(b.entry_time || 0).getTime() -
                 new Date(a.entry_time || 0).getTime()
             );
 
+          // Check for an open entry log (entry_time exists, exit_time is null)
+          const isOpenEntry = visitorLogs?.some(
+            (log) => log.entry_time && !log.exit_time
+          );
+
           const lastLog = visitorLogs?.[0];
 
           return {
             visitorId: visitor.id,
-            isInside: !!lastLog && !lastLog.exit_time,
+            isInside: isOpenEntry, // Corrected logic
             lastLogId: lastLog?.id ?? null,
+            lastLogExitTime: lastLog?.exit_time,
           };
         }) || [];
       setRecurringVisitorStatus(statusMap);
     }
-    // Recalculate if scheduleData changes (e.g., after a refresh)
   }, [scheduleData]);
 
-  // --- Handlers for One-Time ---
   const handleCheckboxChange = (visitorId: number, type: "entry" | "exit") => {
     setVisitorStatuses((prevStatuses) => {
       return prevStatuses.map((visitor) => {
@@ -145,29 +142,26 @@ export default function ViewVisitors({
     });
   };
 
-  // --- Handler for ONE-TIME visitor updates (loops through visitors) ---
   const handleUpdateStatus = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    if (scheduleData.visitor_type !== "one-time") return; // Should not be called for recurring
+    if (scheduleData.visitor_type !== "one-time") return;
 
     setIsLoading(true);
     let allSuccessful = true;
     const errorMessages: string[] = [];
 
-    // Loop through each visitor status and call the API individually
     for (const status of visitorStatuses) {
       try {
         const payload = {
           visitorId: status.id,
           scheduleId: scheduleData.id,
           securityId: userid,
-          action: "updateOneTime" as const, // Explicitly set action type
+          action: "updateOneTime" as const,
           entryChecked: status.entry,
           exitChecked: status.exit,
         };
 
         console.log(`Calling API for one-time visitor ${status.id}:`, payload);
-        // --- Directly call the Server Action ---
         const result: ActionResult = await updateEntryExitStatus(payload);
         console.log(`API Result for visitor ${status.id}:`, result);
 
@@ -175,7 +169,7 @@ export default function ViewVisitors({
           allSuccessful = false;
           const message = `Visitor ${status.id}: ${result.message}`;
           errorMessages.push(message);
-          toast.error(message); // Show individual error toast
+          toast.error(message);
         }
       } catch (error: any) {
         allSuccessful = false;
@@ -188,21 +182,16 @@ export default function ViewVisitors({
 
     if (allSuccessful) {
       toast.success("All one-time visitor statuses updated successfully!");
-      // Refresh data - Simplest way is reload
       window.location.reload();
-      // Better UX: Fetch updated data and call setScheduleData(newScheduleData);
     } else {
       toast.warning(
         "Some visitor statuses could not be updated. See individual errors."
       );
-      // Optionally refresh even if there were partial errors
-      // window.location.reload();
     }
 
     setIsLoading(false);
   };
 
-  // --- Handler for RECURRING visitor actions (single action per call) ---
   const handleRecurringAction = async (
     visitorId: number,
     action: "logEntry" | "logExit"
@@ -213,14 +202,13 @@ export default function ViewVisitors({
         visitorId: visitorId,
         scheduleId: scheduleData.id,
         securityId: userid,
-        action: action, // 'logEntry' or 'logExit' passed directly
+        action: action,
       };
 
       console.log(
         `Calling API for recurring action '${action}' for visitor ${visitorId}:`,
         payload
       );
-      // --- Directly call the Server Action ---
       const result: ActionResult = await updateEntryExitStatus(payload);
       console.log(
         `API Result for recurring action '${action}' for visitor ${visitorId}:`,
@@ -234,9 +222,7 @@ export default function ViewVisitors({
               action === "logEntry" ? "logged in" : "logged out"
             } successfully!`
         );
-        // Refresh data - Simplest way is reload
         window.location.reload();
-        // Better UX: Fetch updated data and call setScheduleData(newScheduleData);
       } else {
         toast.error(
           result.message ||
@@ -256,7 +242,6 @@ export default function ViewVisitors({
     }
   };
 
-  // Helper to get current status for a recurring visitor
   const getRecurringStatus = useCallback(
     (visitorId: number): VisitorCurrentStatus | undefined => {
       return recurringVisitorStatus.find((v) => v.visitorId === visitorId);
@@ -264,7 +249,6 @@ export default function ViewVisitors({
     [recurringVisitorStatus]
   );
 
-  // Helper to format dates/times or return placeholder
   const formatDateTime = (
     dateTime: Date | string | null | undefined
   ): string => {
@@ -278,7 +262,6 @@ export default function ViewVisitors({
 
   return (
     <>
-      {/* Use a general loading overlay or disable elements */}
       {isLoading && (
         <div
           style={{
@@ -299,12 +282,9 @@ export default function ViewVisitors({
           Processing...
         </div>
       )}
-      {/* Wrap the main content in a form ONLY if needed for the one-time submit button */}
-      {/* Removed onSubmit={handleUpdateStatus} from form tag as it's triggered by button now */}
       <form className="p-6">
         <h1 className="text-3xl font-bold mb-6">Visitor Details</h1>
 
-        {/* Visitor Details (No changes needed here) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 p-4 border rounded mb-6">
           <div>
             <p>
@@ -342,7 +322,7 @@ export default function ViewVisitors({
             </p>
           </div>
         </div>
-        {/* ... Dates, Comments, QR Code ... */}
+
         <div className="mt-6 space-y-4 mb-6 p-4 border rounded">
           <p>
             <strong>Scheduled Entry:</strong>{" "}
@@ -367,7 +347,6 @@ export default function ViewVisitors({
           </div>
         )}
 
-        {/* --- Visitor Table --- */}
         <h2 className="text-2xl font-semibold mt-8">Visitors on Schedule</h2>
         <div className="overflow-x-auto mt-4">
           <Table className="min-w-full border">
@@ -405,6 +384,15 @@ export default function ViewVisitors({
                     ? visitorStatuses.find((vs) => vs.id === visitor.id)
                     : undefined;
 
+                const isOneTimeFullyChecked =
+                  scheduleData.visitor_type === "one-time" &&
+                  oneTimeStatus?.entry &&
+                  oneTimeStatus?.exit;
+
+                const isRecurringExited =
+                  scheduleData.visitor_type === "recurring" &&
+                  currentStatus?.lastLogExitTime;
+
                 return (
                   <TableRow
                     key={visitor.id}
@@ -415,9 +403,7 @@ export default function ViewVisitors({
                     <TableCell>{visitor.visitor_id_type || "N/A"}</TableCell>
                     <TableCell>{visitor.visitor_id_number || "N/A"}</TableCell>
                     <TableCell className="text-center">
-                      {/* --- Conditional Rendering for Actions/Status --- */}
                       {scheduleData.visitor_type === "one-time" ? (
-                        // --- One-Time Visitor Checkboxes ---
                         <div className="flex justify-center items-center space-x-4">
                           <label className="flex items-center space-x-1 cursor-pointer">
                             <input
@@ -427,7 +413,7 @@ export default function ViewVisitors({
                               onChange={() =>
                                 handleCheckboxChange(visitor.id, "entry")
                               }
-                              disabled={isLoading}
+                              disabled={isLoading || isOneTimeFullyChecked}
                             />
                             <span>Entry</span>
                           </label>
@@ -436,7 +422,11 @@ export default function ViewVisitors({
                               type="checkbox"
                               className="form-checkbox h-5 w-5 text-red-600"
                               checked={oneTimeStatus?.exit || false}
-                              disabled={!oneTimeStatus?.entry || isLoading}
+                              disabled={
+                                !oneTimeStatus?.entry ||
+                                isLoading ||
+                                isOneTimeFullyChecked
+                              }
                               onChange={() =>
                                 handleCheckboxChange(visitor.id, "exit")
                               }
@@ -445,7 +435,6 @@ export default function ViewVisitors({
                           </label>
                         </div>
                       ) : (
-                        // --- Recurring Visitor Buttons ---
                         <div className="flex justify-center space-x-2">
                           <Button
                             type="button"
@@ -455,7 +444,12 @@ export default function ViewVisitors({
                             onClick={() =>
                               handleRecurringAction(visitor.id, "logEntry")
                             }
-                            disabled={currentStatus?.isInside || isLoading}
+                            disabled={
+                              currentStatus?.isInside ||
+                              isLoading ||
+                              (currentStatus?.isInside &&
+                                currentStatus?.lastLogExitTime)
+                            }
                             aria-label={`Log entry for ${visitor.visitor_first_name}`}
                           >
                             Log Entry
@@ -468,7 +462,12 @@ export default function ViewVisitors({
                             onClick={() =>
                               handleRecurringAction(visitor.id, "logExit")
                             }
-                            disabled={!currentStatus?.isInside || isLoading}
+                            disabled={
+                              !currentStatus?.isInside ||
+                              isLoading ||
+                              (currentStatus?.isInside &&
+                                currentStatus?.lastLogExitTime)
+                            }
                             aria-label={`Log exit for ${visitor.visitor_first_name}`}
                           >
                             Log Exit
@@ -483,13 +482,11 @@ export default function ViewVisitors({
           </Table>
         </div>
 
-        {/* --- Log History Table (Good for both types) --- */}
         <h2 className="text-2xl font-semibold mt-10">Entry/Exit Log History</h2>
         <div className="overflow-x-auto mt-4">
           <Table className="min-w-full border">
             <TableHeader>
               <TableRow className="bg-gray-100">
-                {/* <TableHead>Log ID</TableHead> */}
                 <TableHead>Visitor Name</TableHead>
                 <TableHead>Entry Time</TableHead>
                 <TableHead>Exit Time</TableHead>
@@ -508,12 +505,12 @@ export default function ViewVisitors({
                 </TableRow>
               )}
               {scheduleData.visitor_entry_logs
-                ?.slice() // Create shallow copy before sorting to avoid mutating prop
+                ?.slice()
                 .sort(
                   (a, b) =>
                     new Date(b.entry_time || 0).getTime() -
                     new Date(a.entry_time || 0).getTime()
-                ) // Sort by most recent entry
+                )
                 .map((log) => {
                   const visitorInfo = scheduleData.visitiors.find(
                     (v) => v.id === log.visitor_id
@@ -523,14 +520,13 @@ export default function ViewVisitors({
                         visitorInfo.visitor_last_name || ""
                       }`.trim()
                     : `Visitor ID: ${log.visitor_id}`;
-                  const isCurrentlyInside = !log.exit_time && !!log.entry_time; // Check if this specific log indicates 'inside'
+                  const isCurrentlyInside = !log.exit_time && !!log.entry_time;
 
                   return (
                     <TableRow
                       key={log.id}
                       className="border-b hover:bg-gray-50"
                     >
-                      {/* <TableCell>{log.id}</TableCell> */}
                       <TableCell>{visitorName}</TableCell>
                       <TableCell>{formatDateTime(log.entry_time)}</TableCell>
                       <TableCell>{formatDateTime(log.exit_time)}</TableCell>
@@ -552,13 +548,11 @@ export default function ViewVisitors({
           </Table>
         </div>
 
-        {/* --- Form Actions --- */}
         <div className="flex space-x-4 mt-8">
-          {/* Only show the general 'Update Status' button for one-time visitors */}
           {scheduleData.visitor_type === "one-time" && (
             <Button
-              type="button" // Changed from submit
-              onClick={handleUpdateStatus} // Call handler on click
+              type="button"
+              onClick={handleUpdateStatus}
               className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
               disabled={isLoading}
             >
@@ -567,15 +561,14 @@ export default function ViewVisitors({
           )}
           <Button
             type="button"
-            onClick={() => router.back()} // Go back instead of fixed URL
+            onClick={() => router.back()}
             className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600"
             disabled={isLoading}
           >
             Back
           </Button>
         </div>
-      </form>{" "}
-      {/* End form */}
+      </form>
       <ToastContainer
         position="top-right"
         autoClose={4000}

@@ -16,6 +16,7 @@ export async function visitorsLog() {
       //   },
       include: { visitiors: true }, // Include visitor details
     });
+    // console.log("Visitors Logs", visitors);
     return visitors;
   } catch (error) {
     return error;

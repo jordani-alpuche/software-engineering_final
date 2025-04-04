@@ -26,7 +26,7 @@ export async function getSchedule(id: number) {
 // Update a Schedule by ID
 export async function updateIndividualSchedule(id: number, data: any) {
   try {
-    console.log("Data received for update:", data);
+    // console.log("Data received for update:", data);
     if (
       !data.resident_id ||
       // !Array.isArray(data.visitiors) ||
@@ -91,7 +91,7 @@ export async function updateIndividualSchedule(id: number, data: any) {
 
 export async function updateGroupSchedule(id: number, data: any) {
   try {
-    console.log("Data received for update:", data);
+    // console.log("Data received for update:", data);
 
     // Validate required fields
     if (

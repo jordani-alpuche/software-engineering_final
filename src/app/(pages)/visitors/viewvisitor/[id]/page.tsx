@@ -18,7 +18,7 @@ const page = async ({ params }) => {
   const scheduleGetData = (await getSchedule(scheduleId)) || {};
   const userid = session?.user.id;
 
-  console.log("Schedule Data:", scheduleGetData);
+  // console.log("Schedule Data:", scheduleGetData);
 
   if (Object.keys(scheduleGetData).length === 0) {
     return notFound();
