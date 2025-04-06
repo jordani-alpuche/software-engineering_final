@@ -16,6 +16,10 @@ import {
 import { useRouter } from "next/navigation";
 import { updateEntryExitStatus } from "@/app/api/visitors/entry-exit/route";
 
+import { format, toZonedTime } from "date-fns-tz";
+
+const timeZone = "America/Belize";
+
 interface Visitor {
   id: number;
   visitor_first_name?: string | null;
@@ -71,15 +75,6 @@ export default function ViewVisitors({
   const router = useRouter();
   const [scheduleData, setScheduleData] =
     useState<ScheduleData>(initialScheduleData);
-
-  // const exitDate = new Date(scheduleData.visitor_exit_date); // your date
-  // const now = new Date(); // current date and time
-
-  // if (exitDate < now) {
-  //   console.log("The date has already passed.");
-  // } else {
-  //   console.log("The date is in the future.");
-  // }
 
   const [visitorStatuses, setVisitorStatuses] = useState(() => {
     if (scheduleData.visitor_type === "one-time") {
@@ -349,11 +344,11 @@ export default function ViewVisitors({
         <div className="mt-6 space-y-4 mb-6 p-4 border rounded">
           <p>
             <strong>Scheduled Entry:</strong>{" "}
-            {new Date(scheduleData.visitor_entry_date).toString()}
+            {new Date(scheduleData.visitor_entry_date).toDateString()}
           </p>
           <p>
             <strong>Scheduled Exit:</strong>{" "}
-            {new Date(scheduleData.visitor_exit_date).toString()}
+            {new Date(scheduleData.visitor_exit_date).toDateString()}
           </p>
           {scheduleData.comments && (
             <p>

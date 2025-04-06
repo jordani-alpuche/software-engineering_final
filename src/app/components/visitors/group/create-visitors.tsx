@@ -108,6 +108,8 @@ export default function CreateVisitors({ userID: userid }) {
         toast.error(
           "Failed to create visitor group: Ensure all Fields are filled"
         );
+      } else if (response.code === 403) {
+        toast.error("Visitor is blacklisted");
       } else {
         const errorData = await response.json();
         console.log("Error creating visitor group:", errorData);

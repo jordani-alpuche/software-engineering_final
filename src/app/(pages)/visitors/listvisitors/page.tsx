@@ -15,7 +15,7 @@ const visitors = async (props) => {
   }
 
   const visitorData = (await visitorsInfo()) || [];
-  // console.log("visitorData", visitorData);
+  console.log("visitorData", visitorData);
   if (Object.keys(visitorData).length === 0) {
     return notfound();
   } else {

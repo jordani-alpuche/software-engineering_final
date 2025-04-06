@@ -15,6 +15,7 @@ export async function visitorsInfo() {
         resident_id: userid,
       },
       include: { visitiors: true }, // Include visitor details
+      orderBy: { visitor_entry_date: "desc" }, // Order by visitor entry date in descending order
     });
     return visitors;
   } catch (error) {

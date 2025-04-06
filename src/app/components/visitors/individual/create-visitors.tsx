@@ -104,6 +104,9 @@ export default function CreateVisitors({ userID: userid }) {
       } else if (createVisitorResponse.code === 200) {
         toast.success("Visitor created successfully!");
         router.push("/visitors/listvisitors");
+      } else if (createVisitorResponse.code === 403) {
+        toast.error("Visitor is blacklisted");
+        setIsLoading(false);
       }
     } catch (error) {
       setIsLoading(false);

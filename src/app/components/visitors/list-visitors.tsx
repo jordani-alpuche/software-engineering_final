@@ -85,6 +85,13 @@ export default function ListVisitors({ visitorInformation }) {
     sg_type: number;
     visitiors: [
       {
+        blacklist_visitors: {
+          id: number;
+          visitor_id: number;
+          reason: string;
+          status: string;
+        };
+
         visitor_first_name: string;
         visitor_last_name: string;
         visitor_id_type: string;
@@ -140,6 +147,7 @@ export default function ListVisitors({ visitorInformation }) {
         </div>
       ),
     },
+
     {
       accessorKey: "status",
       header: "Status",

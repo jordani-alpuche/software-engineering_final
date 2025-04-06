@@ -44,6 +44,28 @@ export async function createGroupVisitor(data: any) {
       };
     }
 
+    // Check if any member of the group is blacklisted
+    for (const member of data.visitors) {
+      console.log("Checking member:", member); // Log the member being checked
+
+      const blacklisted = await prisma.blacklist_visitors.findFirst({
+        where: {
+          visitiors: {
+            visitor_id_type: member.visitor_id_type,
+            visitor_id_number: member.visitor_id_number,
+          },
+        },
+      });
+
+      if (blacklisted) {
+        return {
+          success: false,
+          code: 403,
+          message: `Visitor ${member.visitor_first_name} ${member.visitor_last_name} is blacklisted`,
+        };
+      }
+    }
+
     const qr_code = "1233456"; // Generate dynamically in production
 
     const result = await prisma.$transaction(async (tx) => {
@@ -129,6 +151,24 @@ export async function createIndividualVisitor(data: any) {
         success: false,
         code: 400,
         message: "Missing required fields",
+      };
+    }
+
+    // Check if the visitor is blacklisted by visitor_id_type and visitor_id_number
+    const blacklistedVisitor = await prisma.blacklist_visitors.findFirst({
+      where: {
+        visitiors: {
+          visitor_id_type: data.visitor_id_type,
+          visitor_id_number: data.visitor_id_number,
+        },
+      },
+    });
+
+    if (blacklistedVisitor) {
+      return {
+        success: false,
+        code: 403,
+        message: "Visitor is blacklisted",
       };
     }
 
