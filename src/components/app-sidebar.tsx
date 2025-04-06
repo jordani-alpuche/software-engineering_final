@@ -81,16 +81,13 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "New Blacklist User",
-          url: "/visitors/newIndividualVisitor",
+          title: "New Blacklist Visitor",
+          url: "/blacklist/selectvisitor",
         },
+
         {
-          title: "Update Vistors",
-          url: "/visitors/listvisitors",
-        },
-        {
-          title: "List Blacklist Users",
-          url: "/visitors/newGroupVisitor",
+          title: "List Blacklist Visitor",
+          url: "/blacklist/listblacklistvisitor",
         },
       ],
     },

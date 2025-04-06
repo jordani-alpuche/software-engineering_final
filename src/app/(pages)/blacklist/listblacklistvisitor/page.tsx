@@ -1,6 +1,6 @@
 import React from "react";
-import ListVisitors from "@/app/components/visitors/list-visitors";
-import { visitorsInfo } from "@/app/api/visitors/list/route";
+import BlacklistVisitors from "@/app/components/blacklist/list-blacklistvisitor";
+import { blacklistInfo } from "@/app/api/blacklist/list/route";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
@@ -14,17 +14,15 @@ const visitors = async (props) => {
     return redirect("/api/auth/signin");
   }
 
-  const visitorData = (await visitorsInfo()) || [];
+  const blacklistData = (await blacklistInfo()) || [];
+
   // console.log("visitorData", visitorData);
-  if (Object.keys(visitorData).length === 0) {
-    return notfound();
-  } else {
-    return (
-      <div>
-        <ListVisitors visitorInformation={visitorData} />
-      </div>
-    );
-  }
+
+  return (
+    <div>
+      <BlacklistVisitors blacklistData={blacklistData} />
+    </div>
+  );
 };
 
 export default visitors;

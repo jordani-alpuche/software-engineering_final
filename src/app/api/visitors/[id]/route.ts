@@ -23,6 +23,64 @@ export async function getSchedule(id: number) {
   return schedule || null;
 }
 
+export async function getVisitors(vid: number) {
+  const visitorId = Number(vid);
+
+  // Check if visitor is already blacklisted
+  const isBlacklisted = await prisma.blacklist_visitors.findUnique({
+    where: { visitor_id: visitorId },
+  });
+
+  // If blacklisted, return null early
+  if (isBlacklisted) return "exists";
+
+  // Otherwise, get the visitor data
+  const visitor = await prisma.visitiors.findUnique({
+    where: { id: visitorId },
+    include: {
+      visitor_entry_logs: true,
+      visitors_schedule: true,
+    },
+  });
+
+  return visitor || null; // Still return null if visitor doesn't exist
+}
+
+export async function getAllVisitors() {
+  const session = await getServerSession(authOptions);
+
+  // 1. Get distinct blacklist entries
+  const blacklist = await prisma.blacklist_visitors.findMany({
+    include: {
+      visitiors: true,
+    },
+  });
+
+  // 2. Get distinct visitors
+  const visitors = await prisma.visitiors.findMany({
+    distinct: [
+      "visitor_first_name",
+      "visitor_last_name",
+      "visitor_id_type",
+      "visitor_id_number",
+    ],
+  });
+
+  // 3. Filter out blacklisted visitors
+  const filteredVisitors = visitors.filter((visitor: any) => {
+    return !blacklist.some(
+      (blacklisted) =>
+        visitor.visitor_first_name ===
+          blacklisted.visitiors.visitor_first_name &&
+        visitor.visitor_last_name === blacklisted.visitiors.visitor_last_name &&
+        visitor.visitor_id_type === blacklisted.visitiors.visitor_id_type &&
+        visitor.visitor_id_number === blacklisted.visitiors.visitor_id_number
+    );
+  });
+
+  return filteredVisitors || null;
+}
+
 // Update a Schedule by ID
 export async function updateIndividualSchedule(id: number, data: any) {
   try {

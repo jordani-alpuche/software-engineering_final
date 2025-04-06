@@ -13,12 +13,11 @@ model blacklist_visitors {
   status                                      String    @default("banned") @db.VarChar(20)
   created_at                                  DateTime? @default(now()) @db.Timestamp(6)
   updated_at                                  DateTime? @default(now()) @db.Timestamp(6)
-  last_name                                   String    @db.VarChar(255)
-  first_name                                  String    @db.VarChar(255)
   resident_id                                 Int?
   security_id                                 Int?
+  visitor_id                                  Int       @unique
   users_blacklist_visitors_resident_idTousers users?    @relation("blacklist_visitors_resident_idTousers", fields: [resident_id], references: [id], onDelete: NoAction, map: "blacklist_resident_id")
-  users_blacklist_visitors_security_idTousers users?    @relation("blacklist_visitors_security_idTousers", fields: [security_id], references: [id], onDelete: NoAction, map: "blacklist_security_id")
+  visitiors                                   visitiors @relation(fields: [visitor_id], references: [id], onDelete: NoAction, map: "visitor_id")
 
   @@index([id], map: "id_1741109275836_index")
   @@index([resident_id], map: "security_id_1741109281378_index")
@@ -94,7 +93,6 @@ model users {
   shift                                                    String?              @db.VarChar(50)
   accesspoints                                             String?              @db.VarChar(100)
   blacklist_visitors_blacklist_visitors_resident_idTousers blacklist_visitors[] @relation("blacklist_visitors_resident_idTousers")
-  blacklist_visitors_blacklist_visitors_security_idTousers blacklist_visitors[] @relation("blacklist_visitors_security_idTousers")
   entry_log_entry_log_resident_idTousers                   entry_log[]          @relation("entry_log_resident_idTousers")
   entry_log_entry_log_security_idTousers                   entry_log[]          @relation("entry_log_security_idTousers")
   login_log                                                login_log[]
@@ -114,6 +112,7 @@ model visitiors {
   visitor_id_number   String?              @db.VarChar(255)
   created_date        String?              @default("CURRENT_TIMESTAMP") @db.VarChar(255)
   visitor_schedule_id Int?
+  blacklist_visitors  blacklist_visitors?
   visitors_schedule   visitors_schedule?   @relation(fields: [visitor_schedule_id], references: [id], onDelete: NoAction, map: "vschedule_id")
   visitor_entry_logs  visitor_entry_logs[]
 }

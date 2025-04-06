@@ -47,6 +47,11 @@ export async function createGroupVisitor(data: any) {
     const qr_code = "1233456"; // Generate dynamically in production
 
     const result = await prisma.$transaction(async (tx) => {
+      const blacklist = await tx.blacklist_visitors.findMany({
+        include: {
+          visitiors: true,
+        },
+      });
       // Create visitor schedule
       const visitorSchedule = await tx.visitors_schedule.create({
         data: {
