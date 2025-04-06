@@ -320,8 +320,8 @@ export default function CreateVisitors({ userID: userid }) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="valid">Valid</SelectItem>
-                          <SelectItem value="invalid">Invalid</SelectItem>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="inactive">Inactive</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormDescription>Status of Visitor</FormDescription>

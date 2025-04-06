@@ -37,7 +37,7 @@ interface ScheduleData {
   visitor_email: string;
   license_plate: string;
   visitor_type: string;
-  status?: string | null;
+  status: string;
   visitor_entry_date: string | Date;
   visitor_exit_date: string | Date;
   comments?: string | null;
@@ -71,6 +71,15 @@ export default function ViewVisitors({
   const router = useRouter();
   const [scheduleData, setScheduleData] =
     useState<ScheduleData>(initialScheduleData);
+
+  // const exitDate = new Date(scheduleData.visitor_exit_date); // your date
+  // const now = new Date(); // current date and time
+
+  // if (exitDate < now) {
+  //   console.log("The date has already passed.");
+  // } else {
+  //   console.log("The date is in the future.");
+  // }
 
   const [visitorStatuses, setVisitorStatuses] = useState(() => {
     if (scheduleData.visitor_type === "one-time") {
@@ -159,13 +168,23 @@ export default function ViewVisitors({
           action: "updateOneTime" as const,
           entryChecked: status.entry,
           exitChecked: status.exit,
+
+          // visitor_entry_date: scheduleData.visitor_entry_date,
+          visitor_exit_date: scheduleData.visitor_exit_date,
+          status: scheduleData.status,
         };
 
-        console.log(`Calling API for one-time visitor ${status.id}:`, payload);
+        // console.log(`Calling API for one-time visitor ${status.id}:`, payload);
         const result: ActionResult = await updateEntryExitStatus(payload);
-        console.log(`API Result for visitor ${status.id}:`, result);
+        // console.log(`API Result for visitor ${status.id}:`, result);
 
-        if (!result.success) {
+        if (result.code === 403) {
+          allSuccessful = false;
+          const message = `Visitor ${status.id}: ${result.message}`;
+          // errorMessages.push(message);
+          toast.error(message);
+          window.location.reload();
+        } else if (!result.success) {
           allSuccessful = false;
           const message = `Visitor ${status.id}: ${result.message}`;
           errorMessages.push(message);
@@ -183,11 +202,12 @@ export default function ViewVisitors({
     if (allSuccessful) {
       toast.success("All one-time visitor statuses updated successfully!");
       window.location.reload();
-    } else {
-      toast.warning(
-        "Some visitor statuses could not be updated. See individual errors."
-      );
     }
+    // else {
+    //   toast.warning(
+    //     "Some visitor statuses could not be updated. See individual errors."
+    //   );
+    // }
 
     setIsLoading(false);
   };
@@ -203,6 +223,9 @@ export default function ViewVisitors({
         scheduleId: scheduleData.id,
         securityId: userid,
         action: action,
+        // visitor_entry_date: scheduleData.visitor_entry_date,
+        visitor_exit_date: scheduleData.visitor_exit_date,
+        status: scheduleData.status,
       };
 
       console.log(
