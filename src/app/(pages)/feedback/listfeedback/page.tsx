@@ -1,12 +1,11 @@
 import React from "react";
-import ListVisitors from "@/app/components/visitors/list-visitors";
-import { visitorsInfo } from "@/app/api/visitors/list/route";
+import ListVisitorFeedback from "@/app/components/feedback/list-feedback";
+import { getAllVisitorFeedback } from "@/app/api/feedback/[id]/route";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
-import notfound from "@/app/404"; // Import the notfound component
 
-const visitors = async (props) => {
+const page = async (props) => {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user?.id) {
@@ -14,14 +13,14 @@ const visitors = async (props) => {
     return redirect("/api/auth/signin");
   }
 
-  const visitorData = (await visitorsInfo()) || [];
-  console.log("visitorData", visitorData);
+  const feedbackData = (await getAllVisitorFeedback()) || [];
+  console.log("feedbackData", feedbackData);
 
   return (
     <div>
-      <ListVisitors visitorInformation={visitorData} />
+      <ListVisitorFeedback visitorFeedbackInformation={feedbackData} />
     </div>
   );
 };
 
-export default visitors;
+export default page;

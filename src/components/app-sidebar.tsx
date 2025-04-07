@@ -93,6 +93,18 @@ const data = {
     },
 
     {
+      title: "Feedback",
+      url: "#",
+      icon: Settings2,
+      items: [
+        {
+          title: "List Feedback",
+          url: "/feedback/listfeedback",
+        },
+      ],
+    },
+
+    {
       title: "Users",
       url: "#",
       icon: Settings2,
