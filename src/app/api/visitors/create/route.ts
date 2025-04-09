@@ -1,11 +1,45 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
+// import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
-
-export async function createGroupVisitor(data: any) {
+// const prisma = new PrismaClient({
+//   log: ["query", "info", "warn", "error"],
+// });
+interface GroupVisitorData {
+  resident_id: number;
+  visitors: {
+    visitor_first_name: string;
+    visitor_last_name: string;
+    visitor_id_type: string;
+    visitor_id_number: string;
+  }[];
+  visitor_phone: string;
+  visitor_email: string;
+  status: string;
+  visitor_type: string;
+  visitor_entry_date: string | Date;
+  visitor_exit_date: string | Date;
+  license_plate: string;
+  comments?: string;
+  sg_type: number;
+}
+interface IndividualVisitorData {
+  resident_id: number;
+  visitor_first_name: string;
+  visitor_last_name: string;
+  visitor_phone: string;
+  visitor_id_type: string;
+  visitor_id_number: string;
+  visitor_email: string;
+  status: string;
+  visitor_type: string;
+  visitor_entry_date: string | Date;
+  visitor_exit_date: string | Date;
+  license_plate: string;
+  comments?: string;
+  sg_type: number;
+}
+export async function createGroupVisitor(data: GroupVisitorData) {
   try {
     if (
       !data.resident_id ||
@@ -46,7 +80,7 @@ export async function createGroupVisitor(data: any) {
 
     // Check if any member of the group is blacklisted
     for (const member of data.visitors) {
-      console.log("Checking member:", member); // Log the member being checked
+      // console.log("Checking member:", member); // Log the member being checked
 
       const blacklisted = await prisma.blacklist_visitors.findFirst({
         where: {
@@ -130,7 +164,7 @@ export async function createGroupVisitor(data: any) {
   }
 }
 
-export async function createIndividualVisitor(data: any) {
+export async function createIndividualVisitor(data: IndividualVisitorData) {
   try {
     // Validate required fields
     if (

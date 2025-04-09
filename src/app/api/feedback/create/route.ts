@@ -6,7 +6,6 @@ const prisma = new PrismaClient({
 });
 
 export async function createVisitorFeedback(data: any) {
-  console.log("createVisitorFeedback", data);
   try {
     if (!data.scheduleId || !data.rating || !data.comments) {
       return {
@@ -33,7 +32,6 @@ export async function createVisitorFeedback(data: any) {
       data: feedback,
     };
   } catch (error: any) {
-    console.error("Error in Visitor Feedback:", error);
     return {
       success: false,
       code: 500,

@@ -31,7 +31,6 @@ export async function createUser(data: any) {
       message: "User created successfully",
     };
   } catch (error) {
-    console.error("Error in createUser:", error);
     return {
       success: false,
       code: 500,

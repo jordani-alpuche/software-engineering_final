@@ -14,7 +14,6 @@ interface EntryExitPayload {
   action: "logEntry" | "logExit" | "updateOneTime";
   entryChecked?: boolean;
   exitChecked?: boolean;
-  // visitorEntry?: string | Date;
   visitorExit: string | Date;
   status: string;
 }

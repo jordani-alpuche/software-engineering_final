@@ -7,6 +7,23 @@ const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
 
+// Validate schedule ID existence
+export async function isValidSchedule(id: number) {
+  if (isNaN(id)) {
+    return { valid: false, error: "Invalid ID format", code: 400 };
+  }
+
+  const schedule = await prisma.visitors_schedule.findUnique({
+    where: { id },
+  });
+
+  if (schedule) {
+    return { valid: true, code: 200 };
+  } else {
+    return { valid: false, error: "Schedule not found", code: 404 };
+  }
+}
+
 // Fetch a schedule by ID
 export async function getSchedule(id: number) {
   const session = await getServerSession(authOptions);
@@ -270,7 +287,7 @@ export async function updateGroupSchedule(id: number, data: any) {
     return {
       success: true,
       code: 200,
-      message: `Schedule updated successfully with ${response.updatedVisitors.length} visitor(s) updated.`,
+      message: "Schedule successfully updated.",
       updatedSchedule: response.updatedSchedule,
       updatedVisitors: response.updatedVisitors,
     };

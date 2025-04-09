@@ -21,15 +21,11 @@ export async function getUsers(id: number) {
 export async function updateUser(id: number, data: any) {
   const userData = { ...data };
 
-  console.log("Data:", data);
-  console.log("ID:", id);
-
   const currentUser = await prisma.users.findUnique({
     where: { id },
   });
 
   if (!currentUser) {
-    console.error("User not found");
     return {
       success: false,
       code: 404,
@@ -79,7 +75,6 @@ export async function updateUser(id: number, data: any) {
       message: "User updated successfully",
     };
   } catch (error: any) {
-    console.error("Error in updateUser:", error);
     return {
       success: false,
       code: 500,
@@ -97,7 +92,6 @@ export async function deleteUser(id: number) {
 
     return { message: "User deleted successfully", success: true };
   } catch (error) {
-    console.error("Error deleting user:", error);
     throw new Error("Error deleting user");
   }
 }
