@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="103" failures="0" errors="0" time="3.365">
+  <testsuite name="createGroupVisitor Server Action" errors="0" failures="0" skipped="0" timestamp="2025-04-10T01:15:52" time="1.735" tests="6">
+    <testcase classname="createGroupVisitor Server Action should successfully create a group visitor schedule and return 200" name="createGroupVisitor Server Action should successfully create a group visitor schedule and return 200" time="0.025">
+    </testcase>
+    <testcase classname="createGroupVisitor Server Action should return a 400 error if required data is missing" name="createGroupVisitor Server Action should return a 400 error if required data is missing" time="0.002">
+    </testcase>
+    <testcase classname="createGroupVisitor Server Action should return a 403 error if a visitor in the group is blacklisted" name="createGroupVisitor Server Action should return a 403 error if a visitor in the group is blacklisted" time="0.002">
+    </testcase>
+    <testcase classname="createIndividualVisitor Server Action should successfully create an individual visitor schedule and return 200" name="createIndividualVisitor Server Action should successfully create an individual visitor schedule and return 200" time="0.001">
+    </testcase>
+    <testcase classname="createIndividualVisitor Server Action should return a 400 error if required data is missing" name="createIndividualVisitor Server Action should return a 400 error if required data is missing" time="0.001">
+    </testcase>
+    <testcase classname="createIndividualVisitor Server Action should return a 403 error if the individual visitor is blacklisted" name="createIndividualVisitor Server Action should return a 403 error if the individual visitor is blacklisted" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="BlacklistVisitorAPI Action" errors="0" failures="0" skipped="0" timestamp="2025-04-10T01:15:52" time="1.957" tests="16">
+    <testcase classname="BlacklistVisitorAPI Action should successfully create a blacklist entry when type is &quot;true&quot;" name="BlacklistVisitorAPI Action should successfully create a blacklist entry when type is &quot;true&quot;" time="0.014">
+    </testcase>
+    <testcase classname="BlacklistVisitorAPI Action should successfully update a blacklist entry when type is &quot;false&quot;" name="BlacklistVisitorAPI Action should successfully update a blacklist entry when type is &quot;false&quot;" time="0.002">
+    </testcase>
+    <testcase classname="BlacklistVisitorAPI Action should return 400 if required fields are missing" name="BlacklistVisitorAPI Action should return 400 if required fields are missing" time="0.003">
+    </testcase>
+    <testcase classname="BlacklistVisitorAPI Action should return 500 if transaction fails during create" name="BlacklistVisitorAPI Action should return 500 if transaction fails during create" time="0.001">
+    </testcase>
+    <testcase classname="BlacklistVisitorAPI Action should return 500 if transaction fails during update" name="BlacklistVisitorAPI Action should return 500 if transaction fails during update" time="0.001">
+    </testcase>
+    <testcase classname="deleteBlacklistVisitor Action should successfully delete a blacklist entry" name="deleteBlacklistVisitor Action should successfully delete a blacklist entry" time="0.001">
+    </testcase>
+    <testcase classname="deleteBlacklistVisitor Action should return 401 Unauthorized if session is invalid" name="deleteBlacklistVisitor Action should return 401 Unauthorized if session is invalid" time="0.001">
+    </testcase>
+    <testcase classname="deleteBlacklistVisitor Action should throw error if transaction fails during delete" name="deleteBlacklistVisitor Action should throw error if transaction fails during delete" time="0.022">
+    </testcase>
+    <testcase classname="blacklistInfo Action should return a list of all blacklist entries with visitor details" name="blacklistInfo Action should return a list of all blacklist entries with visitor details" time="0.001">
+    </testcase>
+    <testcase classname="blacklistInfo Action should return an empty array if no blacklist entries exist" name="blacklistInfo Action should return an empty array if no blacklist entries exist" time="0.004">
+    </testcase>
+    <testcase classname="blacklistInfo Action should return the error object if prisma findMany fails" name="blacklistInfo Action should return the error object if prisma findMany fails" time="0.001">
+    </testcase>
+    <testcase classname="blacklistInfo Action should proceed even if session is null (userid not used in query)" name="blacklistInfo Action should proceed even if session is null (userid not used in query)" time="0.001">
+    </testcase>
+    <testcase classname="getblacklistInfo Action should return the blacklist entry if found by visitor ID" name="getblacklistInfo Action should return the blacklist entry if found by visitor ID" time="0.001">
+    </testcase>
+    <testcase classname="getblacklistInfo Action should return null if no blacklist entry is found for the visitor ID" name="getblacklistInfo Action should return null if no blacklist entry is found for the visitor ID" time="0.001">
+    </testcase>
+    <testcase classname="getblacklistInfo Action should return the error object if prisma findUnique fails" name="getblacklistInfo Action should return the error object if prisma findUnique fails" time="0.001">
+    </testcase>
+    <testcase classname="getblacklistInfo Action should proceed even if session is null (userid not used in query)" name="getblacklistInfo Action should proceed even if session is null (userid not used in query)" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="createUser Action" errors="0" failures="0" skipped="0" timestamp="2025-04-10T01:15:52" time="1.932" tests="18">
+    <testcase classname="createUser Action should successfully create a new user" name="createUser Action should successfully create a new user" time="0.013">
+    </testcase>
+    <testcase classname="createUser Action should return 409 if username is already taken" name="createUser Action should return 409 if username is already taken" time="0.001">
+    </testcase>
+    <testcase classname="createUser Action should return 500 if prisma create fails" name="createUser Action should return 500 if prisma create fails" time="0.001">
+    </testcase>
+    <testcase classname="getUsers Action should return the user object if found" name="getUsers Action should return the user object if found" time="0">
+    </testcase>
+    <testcase classname="getUsers Action should return null if user is not found" name="getUsers Action should return null if user is not found" time="0.001">
+    </testcase>
+    <testcase classname="getUsers Action should handle non-integer IDs gracefully (prisma might return null)" name="getUsers Action should handle non-integer IDs gracefully (prisma might return null)" time="0">
+    </testcase>
+    <testcase classname="updateUser Action should update user successfully (with password change)" name="updateUser Action should update user successfully (with password change)" time="0.001">
+    </testcase>
+    <testcase classname="updateUser Action should update user successfully (without password change)" name="updateUser Action should update user successfully (without password change)" time="0.001">
+    </testcase>
+    <testcase classname="updateUser Action should wipe security fields when role changes to admin/resident" name="updateUser Action should wipe security fields when role changes to admin/resident" time="0">
+    </testcase>
+    <testcase classname="updateUser Action should wipe resident/security fields when role changes to admin" name="updateUser Action should wipe resident/security fields when role changes to admin" time="0.001">
+    </testcase>
+    <testcase classname="updateUser Action should return 404 if user to update is not found" name="updateUser Action should return 404 if user to update is not found" time="0">
+    </testcase>
+    <testcase classname="updateUser Action should return 400 if username is missing in update data" name="updateUser Action should return 400 if username is missing in update data" time="0.001">
+    </testcase>
+    <testcase classname="updateUser Action should return 500 if prisma update fails" name="updateUser Action should return 500 if prisma update fails" time="0.001">
+    </testcase>
+    <testcase classname="deleteUser Action should delete user successfully" name="deleteUser Action should delete user successfully" time="0.001">
+    </testcase>
+    <testcase classname="deleteUser Action should throw an error if prisma delete fails" name="deleteUser Action should throw an error if prisma delete fails" time="0.021">
+    </testcase>
+    <testcase classname="usersInfo Action should return a list of all users" name="usersInfo Action should return a list of all users" time="0.001">
+    </testcase>
+    <testcase classname="usersInfo Action should return an empty array if no users exist" name="usersInfo Action should return an empty array if no users exist" time="0">
+    </testcase>
+    <testcase classname="usersInfo Action should return the error object if prisma findMany fails" name="usersInfo Action should return the error object if prisma findMany fails" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="updateEntryExitStatus Action" errors="0" failures="0" skipped="0" timestamp="2025-04-10T01:15:52" time="2.181" tests="28">
+    <testcase classname="updateEntryExitStatus Action should return 404 if schedule is not found" name="updateEntryExitStatus Action should return 404 if schedule is not found" time="0.012">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action should return 400 if visitor type is unknown" name="updateEntryExitStatus Action should return 400 if visitor type is unknown" time="0">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action should return 500 if initial schedule lookup fails" name="updateEntryExitStatus Action should return 500 if initial schedule lookup fails" time="0.001">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor should return 403 if schedule is inactive" name="updateEntryExitStatus Action One-Time Visitor should return 403 if schedule is inactive" time="0">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor should return 403 and update status to inactive if exit date passed" name="updateEntryExitStatus Action One-Time Visitor should return 403 and update status to inactive if exit date passed" time="0.002">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor should return 400 if action is invalid for one-time" name="updateEntryExitStatus Action One-Time Visitor should return 400 if action is invalid for one-time" time="0">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry Only] should create log if none exists" name="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry Only] should create log if none exists" time="0.001">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry Only] should update log if exists without entry time" name="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry Only] should update log if exists without entry time" time="0.001">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Exit Only] should update log if entry exists without exit" name="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Exit Only] should update log if entry exists without exit" time="0">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry &amp; Exit] should create log if none exists" name="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry &amp; Exit] should create log if none exists" time="0.001">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry &amp; Exit] should update log if exists without entry time" name="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry &amp; Exit] should update log if exists without entry time" time="0.001">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry &amp; Exit] should update exit time if entry exists without exit" name="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Entry &amp; Exit] should update exit time if entry exists without exit" time="0">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Neither] should set exit_time to null if log exists with exit_time" name="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Neither] should set exit_time to null if log exists with exit_time" time="0.001">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Neither] should set entry_time to null if log exists with entry_time only" name="updateEntryExitStatus Action One-Time Visitor Action: updateOneTime [Neither] should set entry_time to null if log exists with entry_time only" time="0">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action Recurring Visitor should return 403 if schedule is inactive" name="updateEntryExitStatus Action Recurring Visitor should return 403 if schedule is inactive" time="0">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action Recurring Visitor should return 403 and update status if exit date passed" name="updateEntryExitStatus Action Recurring Visitor should return 403 and update status if exit date passed" time="0.001">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action Recurring Visitor should return 400 if action is invalid for recurring" name="updateEntryExitStatus Action Recurring Visitor should return 400 if action is invalid for recurring" time="0.001">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action Recurring Visitor Action: logEntry should create log if no open log exists" name="updateEntryExitStatus Action Recurring Visitor Action: logEntry should create log if no open log exists" time="0">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action Recurring Visitor Action: logEntry should return 400 if an open log already exists" name="updateEntryExitStatus Action Recurring Visitor Action: logEntry should return 400 if an open log already exists" time="0.001">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action Recurring Visitor Action: logExit should update log if an open log exists" name="updateEntryExitStatus Action Recurring Visitor Action: logExit should update log if an open log exists" time="0">
+    </testcase>
+    <testcase classname="updateEntryExitStatus Action Recurring Visitor Action: logExit should return 400 if no open log exists" name="updateEntryExitStatus Action Recurring Visitor Action: logExit should return 400 if no open log exists" time="0">
+    </testcase>
+    <testcase classname="visitorsLog Action should return a list of all visitor logs with visitor details" name="visitorsLog Action should return a list of all visitor logs with visitor details" time="0.001">
+    </testcase>
+    <testcase classname="visitorsLog Action should return an empty array if no logs exist" name="visitorsLog Action should return an empty array if no logs exist" time="0.001">
+    </testcase>
+    <testcase classname="visitorsLog Action should return error object if prisma findMany fails" name="visitorsLog Action should return error object if prisma findMany fails" time="0.001">
+    </testcase>
+    <testcase classname="visitorsInfo Action should return schedules for the logged-in resident" name="visitorsInfo Action should return schedules for the logged-in resident" time="0.001">
+    </testcase>
+    <testcase classname="visitorsInfo Action should return an empty array if no schedules exist for the resident" name="visitorsInfo Action should return an empty array if no schedules exist for the resident" time="0.001">
+    </testcase>
+    <testcase classname="visitorsInfo Action should return error object if prisma findMany fails" name="visitorsInfo Action should return error object if prisma findMany fails" time="0.001">
+    </testcase>
+    <testcase classname="visitorsInfo Action should return empty array if session is null (where clause uses NaN)" name="visitorsInfo Action should return empty array if session is null (where clause uses NaN)" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="createVisitorFeedback Action" errors="0" failures="0" skipped="0" timestamp="2025-04-10T01:15:52" time="2.18" tests="12">
+    <testcase classname="createVisitorFeedback Action should successfully create visitor feedback within a transaction" name="createVisitorFeedback Action should successfully create visitor feedback within a transaction" time="0.01">
+    </testcase>
+    <testcase classname="createVisitorFeedback Action should return a 400 error if scheduleId is missing" name="createVisitorFeedback Action should return a 400 error if scheduleId is missing" time="0.001">
+    </testcase>
+    <testcase classname="createVisitorFeedback Action should return a 400 error if rating is missing" name="createVisitorFeedback Action should return a 400 error if rating is missing" time="0">
+    </testcase>
+    <testcase classname="createVisitorFeedback Action should return a 400 error if comments are missing" name="createVisitorFeedback Action should return a 400 error if comments are missing" time="0">
+    </testcase>
+    <testcase classname="createVisitorFeedback Action should return a 500 error if the transaction fails" name="createVisitorFeedback Action should return a 500 error if the transaction fails" time="0.001">
+    </testcase>
+    <testcase classname="getVisitorSchedule Action should return &quot;exists&quot; if feedback for the schedule ID already exists" name="getVisitorSchedule Action should return &quot;exists&quot; if feedback for the schedule ID already exists" time="0">
+    </testcase>
+    <testcase classname="getVisitorSchedule Action should return the schedule details if feedback does not exist and schedule is found" name="getVisitorSchedule Action should return the schedule details if feedback does not exist and schedule is found" time="0.001">
+    </testcase>
+    <testcase classname="getVisitorSchedule Action should return null if feedback does not exist and schedule is not found" name="getVisitorSchedule Action should return null if feedback does not exist and schedule is not found" time="0">
+    </testcase>
+    <testcase classname="getVisitorSchedule Action should still check for feedback and schedule even if session is null" name="getVisitorSchedule Action should still check for feedback and schedule even if session is null" time="0">
+    </testcase>
+    <testcase classname="getAllVisitorFeedback Action should return a list of all feedback with schedule details" name="getAllVisitorFeedback Action should return a list of all feedback with schedule details" time="0">
+    </testcase>
+    <testcase classname="getAllVisitorFeedback Action should return an empty array if no feedback exists" name="getAllVisitorFeedback Action should return an empty array if no feedback exists" time="0">
+    </testcase>
+    <testcase classname="getAllVisitorFeedback Action should propagate error if Prisma findMany fails" name="getAllVisitorFeedback Action should propagate error if Prisma findMany fails" time="0.013">
+    </testcase>
+  </testsuite>
+  <testsuite name="isValidSchedule Action" errors="0" failures="0" skipped="0" timestamp="2025-04-10T01:15:52" time="2.196" tests="23">
+    <testcase classname="isValidSchedule Action should return valid: true and code 200 for an existing schedule ID" name="isValidSchedule Action should return valid: true and code 200 for an existing schedule ID" time="0.009">
+    </testcase>
+    <testcase classname="isValidSchedule Action should return valid: false, error message and code 404 for a non-existent schedule ID" name="isValidSchedule Action should return valid: false, error message and code 404 for a non-existent schedule ID" time="0.001">
+    </testcase>
+    <testcase classname="isValidSchedule Action should return valid: false, error message and code 400 for an invalid ID format (NaN)" name="isValidSchedule Action should return valid: false, error message and code 400 for an invalid ID format (NaN)" time="0">
+    </testcase>
+    <testcase classname="getSchedule Action should return the schedule with visitors and logs when found for the user" name="getSchedule Action should return the schedule with visitors and logs when found for the user" time="0.001">
+    </testcase>
+    <testcase classname="getSchedule Action should return null if the schedule is not found" name="getSchedule Action should return null if the schedule is not found" time="0">
+    </testcase>
+    <testcase classname="getSchedule Action should return null if the schedule belongs to a different resident" name="getSchedule Action should return null if the schedule belongs to a different resident" time="0.001">
+    </testcase>
+    <testcase classname="getSchedule Action should return null if there is no active session" name="getSchedule Action should return null if there is no active session" time="0">
+    </testcase>
+    <testcase classname="getVisitors Action should return the visitor details if found and not blacklisted" name="getVisitors Action should return the visitor details if found and not blacklisted" time="0.001">
+    </testcase>
+    <testcase classname="getVisitors Action should return &quot;exists&quot; if the visitor is blacklisted" name="getVisitors Action should return &quot;exists&quot; if the visitor is blacklisted" time="0">
+    </testcase>
+    <testcase classname="getVisitors Action should return null if the visitor is not found and not blacklisted" name="getVisitors Action should return null if the visitor is not found and not blacklisted" time="0">
+    </testcase>
+    <testcase classname="getAllVisitors Action should return a list of distinct visitors, excluding those on the blacklist" name="getAllVisitors Action should return a list of distinct visitors, excluding those on the blacklist" time="0.001">
+    </testcase>
+    <testcase classname="getAllVisitors Action should return an empty array if all distinct visitors are blacklisted" name="getAllVisitors Action should return an empty array if all distinct visitors are blacklisted" time="0">
+    </testcase>
+    <testcase classname="getAllVisitors Action should return an empty array if no visitors exist" name="getAllVisitors Action should return an empty array if no visitors exist" time="0">
+    </testcase>
+    <testcase classname="getAllVisitors Action should return null if session is null (based on code structure)" name="getAllVisitors Action should return null if session is null (based on code structure)" time="0.001">
+    </testcase>
+    <testcase classname="updateIndividualSchedule Action should successfully update the schedule and associated visitor within a transaction" name="updateIndividualSchedule Action should successfully update the schedule and associated visitor within a transaction" time="0.001">
+    </testcase>
+    <testcase classname="updateIndividualSchedule Action should return a 400 error if required fields are missing" name="updateIndividualSchedule Action should return a 400 error if required fields are missing" time="0.001">
+    </testcase>
+    <testcase classname="updateIndividualSchedule Action should return a 500 error if the transaction fails" name="updateIndividualSchedule Action should return a 500 error if the transaction fails" time="0">
+    </testcase>
+    <testcase classname="updateGroupSchedule Action should update schedule, update/create/delete visitors correctly" name="updateGroupSchedule Action should update schedule, update/create/delete visitors correctly" time="0.001">
+    </testcase>
+    <testcase classname="updateGroupSchedule Action should return 400 if required schedule fields are missing" name="updateGroupSchedule Action should return 400 if required schedule fields are missing" time="0.001">
+    </testcase>
+    <testcase classname="updateGroupSchedule Action should return 500 and specific error if trying to delete a visitor with entry logs" name="updateGroupSchedule Action should return 500 and specific error if trying to delete a visitor with entry logs" time="0.003">
+    </testcase>
+    <testcase classname="updateGroupSchedule Action should return 500 if a database error occurs during transaction" name="updateGroupSchedule Action should return 500 if a database error occurs during transaction" time="0.001">
+    </testcase>
+    <testcase classname="deleteSchedule Action should delete the schedule and associated visitors within a transaction" name="deleteSchedule Action should delete the schedule and associated visitors within a transaction" time="0.001">
+    </testcase>
+    <testcase classname="deleteSchedule Action should throw an error if the transaction fails" name="deleteSchedule Action should throw an error if the transaction fails" time="0.028">
+    </testcase>
+  </testsuite>
+</testsuites>

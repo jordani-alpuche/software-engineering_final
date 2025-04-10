@@ -52,3 +52,11 @@ jobs:
       # Run tests using npm test
       - name: Run tests
         run: npm test
+
+      # Publish test results
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        with:
+          name: Jest Tests
+          path: ./reports/junit.xml
+          reporter: java-junit
