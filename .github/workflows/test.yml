@@ -10,6 +10,10 @@ env:
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/testdb?schema=public"
   CI: true
 
+permissions:
+  checks: write
+  contents: read # This is usually already the default, but it's good to be explicit
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -53,7 +57,7 @@ jobs:
       - name: Run tests
         run: npm test
 
-      # Debug step: List directory content
+      # Debug step: List directory contents
       - name: Debug - List Files
         run: ls -R
 
