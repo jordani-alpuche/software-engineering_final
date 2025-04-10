@@ -12,7 +12,7 @@ env:
 
 permissions:
   checks: write
-  contents: read # This is usually already the default, but it's good to be explicit
+  contents: read
 
 jobs:
   test:
