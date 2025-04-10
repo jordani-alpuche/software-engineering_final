@@ -53,7 +53,7 @@ jobs:
       - name: Run tests
         run: npm test
 
-      # Debug step: List directory contents
+      # Debug step: List directory content
       - name: Debug - List Files
         run: ls -R
 
