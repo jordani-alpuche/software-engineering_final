@@ -53,6 +53,10 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # Debug step: List directory contents
+      - name: Debug - List Files
+        run: ls -R
+
       # Publish test results
       - name: Publish Test Results
         uses: dorny/test-reporter@v1
