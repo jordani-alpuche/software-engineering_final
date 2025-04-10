@@ -8,7 +8,11 @@ import { authOptions } from "@/lib/auth";
 import notfound from "@/app/404"; // Import the notfound component
 import AlreadyExists from "@/app/exists";
 
-const page = async ({ searchParams }) => {
+const page = async ({
+  searchParams,
+}: {
+  searchParams: { vid: string; c: string };
+}) => {
   // Extract the vid from the searchParams (query string)
   const { vid, c } = await searchParams;
   const visitorId = Number(vid);
@@ -45,7 +49,7 @@ const page = async ({ searchParams }) => {
   } else if (visitorData === "exists") {
     return <AlreadyExists />; // Redirect to already exists page if visitor is already blacklisted
   }
-  const userid = session?.user.id;
+  // const userid = session?.user.id;
   return <BlacklistVisitor visitorData={visitorData} type={c} />;
 };
 
