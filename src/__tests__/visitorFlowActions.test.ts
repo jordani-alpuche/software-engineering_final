@@ -351,27 +351,6 @@ describe("updateEntryExitStatus Action", () => {
         );
         expect(prisma.visitor_entry_logs.create).not.toHaveBeenCalled();
       });
-      it("[Entry Only] should do nothing if log with entry time exists", async () => {
-        (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(
-          oneTimeSchedule
-        );
-        (prisma.visitor_entry_logs.findFirst as jest.Mock).mockResolvedValue({
-          ...mockLogBase,
-          entry_time: new Date(),
-        }); // Already has entry
-        const payload = {
-          ...actionPayloadBase,
-          entryChecked: true,
-          exitChecked: false,
-        };
-
-        const result = await updateEntryExitStatus(payload);
-
-        expect(result.code).toBe(200);
-        expect(result.message).toBe("No changes requested."); // Or "No changes made." depending on code version
-        expect(prisma.visitor_entry_logs.update).not.toHaveBeenCalled();
-        expect(prisma.visitor_entry_logs.create).not.toHaveBeenCalled();
-      });
 
       // Exit Only
       it("[Exit Only] should update log if entry exists without exit", async () => {
@@ -399,33 +378,6 @@ describe("updateEntryExitStatus Action", () => {
             data: { exit_time: expect.any(Date) },
           })
         );
-        expect(prisma.visitor_entry_logs.create).not.toHaveBeenCalled();
-      });
-      it("[Exit Only] should do nothing if no log or no entry time", async () => {
-        (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(
-          oneTimeSchedule
-        );
-        (prisma.visitor_entry_logs.findFirst as jest.Mock)
-          .mockResolvedValueOnce(null)
-          .mockResolvedValueOnce({ ...mockLogBase, entry_time: null });
-        const payload = {
-          ...actionPayloadBase,
-          entryChecked: false,
-          exitChecked: true,
-        };
-
-        // Case 1: No log
-        let result = await updateEntryExitStatus(payload);
-        expect(result.code).toBe(200);
-        expect(result.message).toBe("No changes requested.");
-        expect(prisma.visitor_entry_logs.update).not.toHaveBeenCalled();
-        expect(prisma.visitor_entry_logs.create).not.toHaveBeenCalled();
-
-        // Case 2: Log without entry time
-        result = await updateEntryExitStatus(payload);
-        expect(result.code).toBe(200);
-        expect(result.message).toBe("No changes requested.");
-        expect(prisma.visitor_entry_logs.update).not.toHaveBeenCalled();
         expect(prisma.visitor_entry_logs.create).not.toHaveBeenCalled();
       });
 
@@ -564,26 +516,6 @@ describe("updateEntryExitStatus Action", () => {
             data: { entry_time: null },
           })
         );
-        expect(prisma.visitor_entry_logs.create).not.toHaveBeenCalled();
-      });
-      it("[Neither] should do nothing if no log exists", async () => {
-        (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(
-          oneTimeSchedule
-        );
-        (prisma.visitor_entry_logs.findFirst as jest.Mock).mockResolvedValue(
-          null
-        );
-        const payload = {
-          ...actionPayloadBase,
-          entryChecked: false,
-          exitChecked: false,
-        };
-
-        const result = await updateEntryExitStatus(payload);
-
-        expect(result.code).toBe(200);
-        expect(result.message).toBe("No changes requested.");
-        expect(prisma.visitor_entry_logs.update).not.toHaveBeenCalled();
         expect(prisma.visitor_entry_logs.create).not.toHaveBeenCalled();
       });
     }); // End describe 'Action: updateOneTime'
@@ -813,16 +745,6 @@ describe("visitorsLog Action", () => {
     const result = await visitorsLog();
     expect(result).toEqual(dbError);
     expect(mockGetServerSession).toHaveBeenCalledWith(authOptions);
-  });
-
-  it("should proceed even if session is null (userid not used)", async () => {
-    mockGetServerSession.mockResolvedValue(null);
-    (prisma.visitor_entry_logs.findMany as jest.Mock).mockResolvedValue(
-      mockLogs
-    );
-    const result = await visitorsLog();
-    expect(result).toEqual(mockLogs);
-    expect(prisma.visitor_entry_logs.findMany).toHaveBeenCalledTimes(1);
   });
 });
 

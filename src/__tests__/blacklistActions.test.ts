@@ -92,7 +92,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   // Default mock for getServerSession returning a user
   mockGetServerSession.mockResolvedValue({
-    user: { id: "mock-user-id-blacklist" }, // Provide a default mock user ID
+    user: { id: "99" }, // Provide a default mock user ID
   });
   // Suppress console output during tests
   console.log = jest.fn();

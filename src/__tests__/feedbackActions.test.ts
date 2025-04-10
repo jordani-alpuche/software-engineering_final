@@ -76,7 +76,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   // Default mock for getServerSession returning a user (needed for getVisitorSchedule)
   mockGetServerSession.mockResolvedValue({
-    user: { id: "mock-user-id-feedback" }, // Provide a default mock user ID
+    user: { id: 198 }, // Provide a default mock user ID
   });
 });
 
