@@ -29,20 +29,26 @@ jobs:
           --health-retries 5
 
     steps:
+      # Checkout the code from the repository
       - uses: actions/checkout@v3
 
+      # Set up Node.js with a specific version
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: "18"
 
+      # Install dependencies using npm ci with --legacy-peer-deps to resolve dependency conflicts
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
+      # Generate the Prisma client
       - name: Generate Prisma client
         run: npx prisma generate
 
+      # Run Prisma migrations
       - name: Run Prisma migrations
         run: npx prisma migrate deploy
 
+      # Run tests using npm test
       - name: Run tests
         run: npm test
