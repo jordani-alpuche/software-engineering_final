@@ -1,16 +1,18 @@
-name: Run Jest Tests
+name: Run Tests
 
 on:
   push:
-    branches:
-      - main
-      - dev
+    branches: [main]
   pull_request:
+    branches: [main]
+
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/testdb?schema=public"
+  CI: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:15
@@ -26,31 +28,21 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
-      CI: true
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Generate Prisma Client
+      - name: Generate Prisma client
         run: npx prisma generate
 
-      - name: Run migrations
+      - name: Run Prisma migrations
         run: npx prisma migrate deploy
 
-      # Optional: if you have a seeding script
-      # - name: Seed database
-      #   run: npm run seed
-
-      - name: Run Jest tests
-        run: npm test -- --passWithNoTests
+      - name: Run tests
+        run: npm test
