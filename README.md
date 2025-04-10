@@ -21,7 +21,7 @@ This is a **Gate Management System** built with **Next.js 15**, **Prisma ORM**, 
 
 ## 🏗️ Folder Structure
 
-
+```bash
 src/
 ├── app/         # App router structure with pages and layouts
 │   ├── (auth)/login      # Login page
