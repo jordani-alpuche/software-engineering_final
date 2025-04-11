@@ -9,9 +9,9 @@ const prisma = new PrismaClient({
 
 // Validate schedule ID existence
 export async function isValidSchedule(id: number) {
-  if (isNaN(id)) {
-    return { valid: false, error: "Invalid ID format", code: 400 };
-  }
+  // if (isNaN(id)) {
+  //   return { valid: false, error: "Invalid ID format", code: 400 };
+  // }
 
   const schedule = await prisma.visitors_schedule.findUnique({
     where: { id },
