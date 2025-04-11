@@ -94,7 +94,7 @@ beforeEach(() => {
 
 // --- Test Suite for isValidSchedule ---
 describe("isValidSchedule Action", () => {
-  it("should return valid: true and code 200 for an existing schedule ID", async () => {
+  it("should return valid: true and code 200 for an existing schedule ID when the security officer scan qrcode", async () => {
     const scheduleId = 1;
     (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue({
       id: scheduleId /* other fields */,
@@ -108,7 +108,7 @@ describe("isValidSchedule Action", () => {
     });
   });
 
-  it("should return valid: false, error message and code 404 for a non-existent schedule ID", async () => {
+  it("should return valid: false, error message and code 404 for a non-existent schedule ID when the security officer scan qrcode", async () => {
     const scheduleId = 999;
     (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(null);
 
@@ -124,7 +124,7 @@ describe("isValidSchedule Action", () => {
     });
   });
 
-  it("should return valid: false, error message and code 400 for an invalid ID format (NaN)", async () => {
+  it("should return valid: false, error message and code 400 for an invalid ID format (NaN) when the security officer scan qrcode", async () => {
     const invalidId = NaN;
     const result = await isValidSchedule(invalidId);
 
