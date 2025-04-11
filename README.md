@@ -97,6 +97,7 @@ visitiors, visitors_schedule, visitor_entry_logs, visitor_feedback
 entry_log, blacklist_visitors
 ```
 
+```
 Prerequisites
 Make sure you have the following installed:
 
@@ -104,6 +105,7 @@ Node.js v18 or higher
 PostgreSQL v15
 npm or yarn
 Environment Variables
+```
 
 Create a .env file in the root of your project and add the following:
 
@@ -115,11 +117,13 @@ NEXTAUTH_SECRET="Your Password"
 
 DATABASE_URL="postgresql://username:password@localhost:5432/software_engineering?schema=public&connection_limit=1"
 
+```
+
 # Install tsx to be able to run typescript files
 
 npm i tsx --legacy-peer-deps
 
-# create user
+# Create user
 
 Edit /src/app/utils/createUser.ts with your required parameter
 
@@ -141,7 +145,5 @@ npm run dev
 
 Access the app at:
 http://localhost:3000
-
-```
 
 ```
