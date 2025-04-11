@@ -36,7 +36,7 @@ export default function Layout({ children }: LayoutProps) {
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">
-                    Welcome {session?.user.name}
+                    Welcome {session?.user?.name}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
