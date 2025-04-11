@@ -21,24 +21,72 @@ This is a **Gate Management System** built with **Next.js 15**, **Prisma ORM**, 
 
 ## 🏗️ Folder Structure
 
-```bash
-src/
-├── app/         # App router structure with pages and layouts
-│   ├── (auth)/login      # Login page
-│   ├── (pages)/dashboard   # Main dashboard
-│   └── ...             # Other page routes like users, visitors, etc.
-├── api/         # Next.js API routes (REST endpoints)
-│   ├── auth          # Auth with NextAuth.js
-│   ├── users         # User CRUD
-│   ├── visitors      # Visitor scheduling, logs, updates
-├── components/    # UI components including forms, lists, and loaders
-│   └── ui/         # Shadcn UI components
-├── services/      # API helper functions
-├── utils/         # Utilities like hashing, QR generation
-├── middleware.ts  # Middleware (e.g. for authentication)
-├── globals.css    # Global styles
-└── providers.tsx  # Providers like Theme and Session
+```
+
+src
+├── .github               # GitHub specific configurations
+│   └── workflows        # CI/CD workflows
+│       └── test.yml     # GitHub Actions workflow for testing
+├── app                   # Next.js application directory
+│   │
+│   ├── (auth)            # Authentication related pages (Route Group)
+│   │   └── login         # Login page
+│   │       ├── page.js   # Login page component
+│   │       ├── page.js.map
+│   │       └── page_client-reference-manifest.js
+│   │
+│   ├── (dashboard)       # Dashboard pages (Route Group)
+│   │   └── dashboard     # Main dashboard
+│   │       ├── page.js   # Dashboard component
+│   │       ├── page.js.map
+│   │       └── page_client-reference-manifest.js
+│   │
+│   ├── (pages)           # Additional pages (Route Group)
+│   │   ├── blacklist     # Blacklisting functionality
+│   │   │   ├── blacklistvisitor/
+│   │   │   ├── createblacklistuser/
+│   │   │   ├── createblacklistvisitor/
+│   │   │   ├── listblacklistuser/
+│   │   │   └── listblacklistvisitor/
+│   │   ├── createUser/   # User creation page
+│   │   ├── dashboard/    # Another dashboard page
+│   │   ├── feedback/     # Feedback functionality
+│   │   │   ├── createfeedback/
+│   │   │   ├── listfeedback/
+│   │   │   └── visitorfeedback/[id]/ # Dynamic route for visitor feedback
+│   │   ├── scan/         # Scanning functionality
+│   │   ├── usercreation/ # User creation page
+│   │   ├── users/        # User management
+│   │   │   ├── createuser/
+│   │   │   ├── createusers/
+│   │   │   ├── listuser/
+│   │   │   ├── listusers/
+│   │   │   └── updateuser/[id]/ # Dynamic route for user update
+│   │   └── visitors/     # Visitor management
+│   │       ├── listVisitors/
+│   │       ├── newGroupVisitor/
+│   │       ├── newIndividualVisitor/
+│   │       ├── newvisitor/
+│   │       ├── updatevisitor/[id]/ # Dynamic route for visitor update
+│   │       ├── viewvisitor/[id]/   # Dynamic route for viewing visitor
+│   │       └── vistorlog/
+│   │
+│   └── api               # API routes
+│       ├── accesspoint/
+│       │   └── list/     # API to list access points
+│       └── auth/
+│           └── [...nextauth]/ # NextAuth.js API route (for authentication)
+│
+└── lib                 # Libraries and utilities
+├── auth.ts         # Authentication logic
+├── prisma.ts       # Prisma database client
+└── utils.ts        # Utility functions
+
+```
+
+```
 Getting Started
+
 📦 Prisma Models
 This project includes Prisma models for:
 
@@ -47,8 +95,7 @@ users, login_log, notifications, resident_vehicle
 visitiors, visitors_schedule, visitor_entry_logs, visitor_feedback
 
 entry_log, blacklist_visitors
-
-You can find and edit them in the prisma/schema.prisma file.
+```
 
 Prerequisites
 Make sure you have the following installed:
@@ -57,34 +104,44 @@ Node.js v18 or higher
 PostgreSQL v15
 npm or yarn
 Environment Variables
+
 Create a .env file in the root of your project and add the following:
 
-Code snippet
-
 # Auth secret
-NEXTAUTH_SECRET="SuperSecretPasswordSIB"
+
+NEXTAUTH_SECRET="Your Password"
 
 # PostgreSQL database connection
-DATABASE_URL="postgresql://postgres:jalpuche@localhost:5432/software_engineering?schema=public&connection_limit=1"
+
+DATABASE_URL="postgresql://username:password@localhost:5432/software_engineering?schema=public&connection_limit=1"
+
+# Install tsx to be able to run typescript files
+
+npm i tsx --legacy-peer-deps
+
+# create user
+
+Edit /src/app/utils/createUser.ts with your required parameter
+
+After run npx tsx /src/app/utils/createUser.ts it will create the user in the Database
 
 # App URL
+
 NEXTAUTH_URL="http://localhost:3000"
 Getting Started
 Install dependencies:
 
 npm install --legacy-peer-deps
+
 Push Prisma schema to your DB:
-
 npx prisma db push
+
 Start the development server:
-
 npm run dev
-Access the app at:
 
+Access the app at:
 http://localhost:3000
-Command	Description
-npm run dev	Start development server
-npm run build	Build for production
-npm run lint	Run ESLint
-npx prisma studio	Open Prisma GUI for DB Browse
+
+```
+
 ```
