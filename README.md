@@ -72,17 +72,11 @@ NEXTAUTH_URL="http://localhost:3000"
 Getting Started
 Install dependencies:
 
-Bash
-
 npm install --legacy-peer-deps
 Push Prisma schema to your DB:
 
-Bash
-
 npx prisma db push
 Start the development server:
-
-Bash
 
 npm run dev
 Access the app at:
