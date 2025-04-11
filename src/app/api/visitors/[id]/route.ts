@@ -7,7 +7,7 @@ const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
 
-// Validate schedule ID existence
+// Validate schedule ID existence1
 export async function isValidSchedule(id: number) {
   if (isNaN(id)) {
     return { valid: false, error: "Invalid ID format", code: 400 };
