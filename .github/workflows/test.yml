@@ -2,9 +2,9 @@ name: Run Tests
 
 on:
   push:
-    branches: [main, se_presentation]
+    branches: [main, se_presentation, se_presentation_failed]
   pull_request:
-    branches: [main, se_presentation]
+    branches: [main, se_presentation, se_presentation_failed]
 
 env:
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/testdb?schema=public"
