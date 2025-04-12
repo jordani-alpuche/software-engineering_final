@@ -117,6 +117,10 @@ NEXTAUTH_SECRET="Your Password"
 
 DATABASE_URL="postgresql://username:password@localhost:5432/software_engineering?schema=public&connection_limit=1"
 
+# App URL
+
+NEXTAUTH_URL="http://localhost:3000"
+
 ```
 
 # Install tsx to be able to run typescript files
@@ -129,9 +133,6 @@ Edit /src/app/utils/createUser.ts with your required parameter
 
 After run npx tsx /src/app/utils/createUser.ts it will create the user in the Database
 
-# App URL
-
-NEXTAUTH_URL="http://localhost:3000"
 Getting Started
 Install dependencies:
 
