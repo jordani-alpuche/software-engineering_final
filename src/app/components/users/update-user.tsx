@@ -25,8 +25,6 @@ import {
 } from "@/components/ui/select";
 import Loading from "@/app/components/loading";
 import { updateUser } from "@/app/api/users/[id]/route";
-import { updateSecurity } from "@/app/api/security/[id]/route";
-import { update } from "@/app/api/resident/[id]/route";
 
 const formSchema = z
   .object({

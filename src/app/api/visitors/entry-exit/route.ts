@@ -25,6 +25,19 @@ interface ActionResult {
   data?: any;
 }
 
+/*
+  @description: 
+  This function updates the entry/exit status of a visitor in the database.
+  It handles both one-time and recurring visitors based on the schedule type.
+  It checks if the schedule is active and updates the entry/exit logs accordingly.
+  It also handles the case where a visitor is already logged in or out.
+  It returns a success or error message based on the operation performed.
+  If the schedule is inactive or the exit date has been reached, it updates the status to inactive.
+  It also handles the case where a visitor is already logged in or out.
+  It returns a success or error message based on the operation performed.
+  It also revalidates the path to ensure the latest data is fetched.
+  
+*/
 export async function updateEntryExitStatus(
   payload: EntryExitPayload
 ): Promise<ActionResult> {

@@ -9,6 +9,7 @@ const page = async () => {
   return (
     <div>
       <ListUsers userInformation={userData} />
+      {/* Pass the userData to ListUsers component */}
     </div>
   );
 };

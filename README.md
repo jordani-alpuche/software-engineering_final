@@ -148,3 +148,10 @@ Access the app at:
 http://localhost:3000
 
 ```
+
+```
+# Run Tests
+
+To run the tests use npm test
+
+```

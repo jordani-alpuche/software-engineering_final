@@ -8,6 +8,11 @@ const prisma = new PrismaClient({
 });
 
 // Validate schedule ID existence
+/*
+ ** @description: This function checks if a schedule ID is valid and exists in the database.
+ ** Is when scanning the QR code, it will check if the schedule ID is valid or not.
+ ** @param {number} id - The ID of the schedule to validate.
+ */
 export async function isValidSchedule(id: number) {
   if (isNaN(id)) {
     return { valid: false, error: "Invalid ID format", code: 400 };
@@ -24,6 +29,14 @@ export async function isValidSchedule(id: number) {
   }
 }
 
+/*
+ ** @description: This function retrieves a specific visitor schedule from the database using its ID.
+ ** filters by resident ID to ensure the user can only access their own schedules.
+ ** @param {number} id - The ID of the schedule to retrieve.
+ ** @returns: The visitor schedule object or null if not found.
+ ** @throws: Error if the database query fails.
+ */
+
 // Fetch a schedule by ID
 export async function getSchedule(id: number) {
   const session = await getServerSession(authOptions);
@@ -39,6 +52,13 @@ export async function getSchedule(id: number) {
 
   return schedule || null;
 }
+
+/*
+ ** @description: This function retrieves a specific visitor schedules by ID without restrictions from the database.
+ ** It checks if the visitor is blacklisted before fetching their schedule.
+ ** @returns: An array of visitor schedules or an error message.
+ ** @throws: Error if the database query fails.
+ */
 
 export async function getVisitors(vid: number) {
   const visitorId = Number(vid);
@@ -63,6 +83,11 @@ export async function getVisitors(vid: number) {
   return visitor || null; // Still return null if visitor doesn't exist
 }
 
+/*
+ ** @description: this api is used to get all the visitors from the database that is not blacklisted.
+ ** @returns: An array of visitors or null if not found.
+ ** @throws: Error if the database query fails.
+ */
 export async function getAllVisitors() {
   const session = await getServerSession(authOptions);
 
@@ -97,6 +122,14 @@ export async function getAllVisitors() {
 
   return filteredVisitors || null;
 }
+
+/*
+ ** @description:  updates an individual schedule by ID in the database.
+ ** @param {number} id - The ID of the schedule to update.
+ ** @param {object} data - The updated schedule data.
+ ** @returns: An object containing the success status, HTTP status code, message, and updated schedule data.
+ ** @throws: Error if the database query fails or if required fields are missing.
+ */
 
 // Update a Schedule by ID
 export async function updateIndividualSchedule(id: number, data: any) {
@@ -163,6 +196,14 @@ export async function updateIndividualSchedule(id: number, data: any) {
     };
   }
 }
+
+/*
+ ** @description: this api is used to update the group schedule by ID in the database.
+ ** @param {number} id - The ID of the schedule to update.
+ ** @param {object} data - The updated schedule data.
+ ** @returns: An object containing the success status, HTTP status code, message, and updated schedule data.
+ ** @throws: Error if the database query fails or if required fields are missing.
+ */
 
 export async function updateGroupSchedule(id: number, data: any) {
   try {
@@ -301,6 +342,13 @@ export async function updateGroupSchedule(id: number, data: any) {
     };
   }
 }
+
+/*
+** @description: this api is used to delete a schedule by ID in the database.
+** @param {number} id - The ID of the schedule to delete.
+** @returns: An object containing the success status and message.
+/** @throws: Error if the database query fails.
+*/
 
 // Delete a schedule by ID
 export async function deleteSchedule(id: number) {

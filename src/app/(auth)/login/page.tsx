@@ -4,8 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 const page = () => {
   return (
     <>
-      {/* <ToastContainer /> */}
-      <LoginForm />
+      <LoginForm /> {/* LoginForm component for user login */}
     </>
   );
 };

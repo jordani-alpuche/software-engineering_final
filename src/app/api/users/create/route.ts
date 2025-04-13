@@ -4,6 +4,15 @@ import { hashPassword } from "@/app/utils/hashPassword"; // Adjust the import as
 
 const prisma = new PrismaClient();
 
+/*
+ ** @description: This function creates a new user in the database.
+ ** the data is passed to the user as a parameter.
+ ** @param {object} data - The user data to be created.
+ ** verifies if the username is taken already
+ ** hashes the password before storing it in the database.
+ ** @returns: An object containing the success status, HTTP status code, and message.
+ */
+
 export async function createUser(data: any) {
   try {
     // Check if the username already exists

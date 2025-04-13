@@ -6,25 +6,27 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import notfound from "@/app/404"; // Import the notfound component
 
-const page = async (props) => {
-  const session = await getServerSession(authOptions);
+const page = async () => {
+  const session = await getServerSession(authOptions); // Get session from next-auth
 
   if (!session || !session.user?.id) {
+    // Check if session exists and user ID is present
     // Redirect to login page if session has expired
     return redirect("/api/auth/signin");
   }
 
-  const visitorGetData = (await getAllVisitors()) || {};
-  const userid = session?.user.id;
+  const visitorGetData = (await getAllVisitors()) || {}; // Fetch all visitors data from the API
+  const userid = session?.user.id; // Get the user ID from the session
 
   // console.log("Visitor Data:", visitorGetData);
   // console.log("Schedule Data:", visitorGetData);
 
   if (Object.keys(visitorGetData).length === 0) {
-    return notfound();
+    // Check if visitor data is empty
+    return notfound(); // Redirect to 404 page if visitor data is not found
   } else {
     return (
-      <SelectVisitorToBlacklist visitorsData={visitorGetData} userid={userid} />
+      <SelectVisitorToBlacklist visitorsData={visitorGetData} userid={userid} /> // Pass the fetched visitor data to the component
     );
   }
 };

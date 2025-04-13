@@ -5,6 +5,18 @@ import { compare } from "bcrypt";
 
 const prisma = new PrismaClient();
 
+/*
+  @description: 
+  This function handles user authentication using NextAuth.js.
+  It uses the Prisma client to interact with the database and verify user credentials.
+  It also logs successful and failed login attempts in the login_log table.
+  It returns a session object containing user information.
+  It also checks for failed login attempts in the last 30 minutes and restricts access if there are too many failures.
+  It uses JWT for session management and includes a secret for security.
+  It also includes a custom sign-in page for user authentication.
+  It uses the CredentialsProvider for username and password authentication.
+*/
+
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",

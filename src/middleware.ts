@@ -22,6 +22,11 @@ export default async function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
+  // Redirect to /dashboard if the user tries to access the root ("/") path
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
   // If token is missing, redirect to sign-in page
   if (isProtected && !token) {
     return NextResponse.redirect(new URL("/api/auth/signin", request.url));

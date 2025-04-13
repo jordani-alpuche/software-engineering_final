@@ -5,20 +5,22 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
 
-const page = async (props) => {
-  const session = await getServerSession(authOptions);
+const page = async () => {
+  const session = await getServerSession(authOptions); // Get session from next-auth
 
   if (!session || !session.user?.id) {
+    // Check if session exists and user ID is present
     // Redirect to login page if session has expired
     return redirect("/api/auth/signin");
   }
 
-  const feedbackData = (await getAllVisitorFeedback()) || [];
-  console.log("feedbackData", feedbackData);
+  const feedbackData = (await getAllVisitorFeedback()) || []; // Fetch all visitor feedback data from the API
+  // console.log("feedbackData", feedbackData);
 
   return (
     <div>
-      <ListVisitorFeedback visitorFeedbackInformation={feedbackData} />
+      <ListVisitorFeedback visitorFeedbackInformation={feedbackData} />{" "}
+      {/* Pass the fetched feedback data to the component */}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Ensures the component is rendered on the client side
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
@@ -33,8 +33,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import CreateBlacklistUser from "./create-update-blacklistvisitor";
+import CreateBlacklistUser from "./create-update-blacklistvisitor"; // Modal or component for handling blacklist create/update
 
+// Renders placeholder loading rows while the actual data is being fetched
 const SkeletonRow = () => (
   <TableRow>
     {Array(6)
@@ -47,31 +48,34 @@ const SkeletonRow = () => (
   </TableRow>
 );
 
+// Main component: Displays a list of existing visitors in a searchable, paginated, and sortable table
 export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
-  const [data, setData] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [data, setData] = React.useState([]); // Actual data to be displayed in the table
+  const [loading, setLoading] = React.useState(true); // UI flag for loading state
+  const [sorting, setSorting] = React.useState<SortingState>([]); // Keeps track of current sort configuration
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  );
+  ); // Keeps track of column filters
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({}); // Controls visibility of table columns
 
-  const router = useRouter();
+  const router = useRouter(); // Next.js router for navigation
 
+  // Fetch data only once when the component mounts
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        setData(visitorsData);
+        setData(visitorsData); // Assign the prop data to local state
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data:", error); // Error handling
       } finally {
-        setLoading(false);
+        setLoading(false); // Disable loading spinner
       }
     };
     fetchData();
   }, []);
 
+  // Define the structure of a single visitor
   type User = {
     id: number;
     visitor_first_name: string;
@@ -81,15 +85,15 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
     visitor_schedule_id: number;
   };
 
+  // Define all table columns including how data should be rendered per column
   const columns: ColumnDef<User>[] = [
     {
-      accessorKey: "visitor_first_name",
+      accessorKey: "visitor_first_name", // Column key from the data
       header: "Visitor First Name",
       cell: ({ row }) => (
         <div className="lowercase">{row.getValue("visitor_first_name")}</div>
       ),
     },
-
     {
       accessorKey: "visitor_last_name",
       header: "Visitor Last Name",
@@ -97,7 +101,6 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
         <div className="lowercase">{row.getValue("visitor_last_name")}</div>
       ),
     },
-
     {
       accessorKey: "visitor_id_type",
       header: "ID Type",
@@ -105,7 +108,6 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
         <div className="lowercase">{row.getValue("visitor_id_type")}</div>
       ),
     },
-
     {
       accessorKey: "visitor_id_number",
       header: "ID Number",
@@ -113,13 +115,12 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
         <div className="lowercase">{row.getValue("visitor_id_number")}</div>
       ),
     },
-
     {
-      id: "actions",
-      enableHiding: false,
+      id: "actions", // Special column for row-specific actions
+      enableHiding: false, // This column should always be visible
       header: "Actions",
       cell: ({ row }) => {
-        const visitors = row.original;
+        const visitors = row.original; // The actual row data
 
         return (
           <DropdownMenu>
@@ -133,6 +134,7 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => {
+                  // Redirect user to blacklist creation page with visitor ID in query
                   router.push(
                     `/blacklist/blacklistvisitor?vid=${encodeURIComponent(
                       visitors.id.toString()
@@ -149,24 +151,27 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
     },
   ];
 
+  // Setup the TanStack table instance
   const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    state: { sorting, columnFilters, columnVisibility },
+    getCoreRowModel: getCoreRowModel(), // Basic row model
+    getPaginationRowModel: getPaginationRowModel(), // Enable pagination support
+    getSortedRowModel: getSortedRowModel(), // Enable sorting
+    getFilteredRowModel: getFilteredRowModel(), // Enable filtering
+    onSortingChange: setSorting, // Attach sorting state
+    onColumnFiltersChange: setColumnFilters, // Attach filter state
+    onColumnVisibilityChange: setColumnVisibility, // Attach column visibility state
+    state: { sorting, columnFilters, columnVisibility }, // Local state values used by the table
   });
 
   return (
     <div className="p-4 md:p-7 lg:p-8">
+      {/* Page Title */}
       <h1 className="text-4xl font-bold text-center mb-6">Existing Visitors</h1>
+
+      {/* Filter box for first name */}
       <div className="flex items-center py-4">
-        {/* {console.log(table.getAllColumns())} */}
         <Input
           placeholder="Filter First Name..."
           value={
@@ -182,6 +187,8 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
           className="max-w-sm"
         />
       </div>
+
+      {/* Table container with horizontal scroll */}
       <div className="overflow-x-auto rounded-md border">
         <Table className="min-w-full">
           <TableHeader>
@@ -198,12 +205,15 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
+            {/* If loading, show placeholder rows */}
             {loading ? (
               Array(6)
                 .fill(0)
                 .map((_, index) => <SkeletonRow key={index} />)
             ) : table.getRowModel().rows.length ? (
+              // Render each row in the table
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
@@ -217,6 +227,7 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
                 </TableRow>
               ))
             ) : (
+              // No matching records
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
@@ -230,6 +241,7 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
         </Table>
       </div>
 
+      {/* Pagination Controls */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"

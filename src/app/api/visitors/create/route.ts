@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 // const prisma = new PrismaClient({
 //   log: ["query", "info", "warn", "error"],
 // });
+
 interface GroupVisitorData {
   resident_id: number;
   visitors: {
@@ -39,6 +40,13 @@ interface IndividualVisitorData {
   comments?: string;
   sg_type: number;
 }
+
+/*
+  This function creates a group visitor schedule in the database.
+  It first checks if the required fields are present and valid.
+  If any member of the group is blacklisted, it returns an error message.
+  If all checks pass, it creates the visitor schedule and visitors in a transaction.
+*/
 export async function createGroupVisitor(data: GroupVisitorData) {
   try {
     if (
@@ -163,6 +171,13 @@ export async function createGroupVisitor(data: GroupVisitorData) {
     };
   }
 }
+
+/*
+  This function creates an individual visitor schedule in the database.
+  It first checks if the required fields are present and valid.
+  If the visitor is blacklisted, it returns an error message.
+  If all checks pass, it creates the visitor schedule and visitor in a transaction.
+*/
 
 export async function createIndividualVisitor(data: IndividualVisitorData) {
   try {

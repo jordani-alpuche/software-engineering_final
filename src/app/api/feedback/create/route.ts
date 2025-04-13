@@ -5,6 +5,13 @@ const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
 
+/*
+ ** @description: This function creates a new visitor feedback entry in the database.
+ ** @param {object} data - The feedback data to be created.
+ ** @returns: An object containing the success status, HTTP status code, message, and created feedback data.
+ ** @throws: Error if the database query fails or if required fields are missing.
+ */
+
 export async function createVisitorFeedback(data: any) {
   try {
     if (!data.scheduleId || !data.rating || !data.comments) {

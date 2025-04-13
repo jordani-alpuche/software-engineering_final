@@ -3,7 +3,7 @@ import UserCreation from "@/app/components/users/create-user";
 const page = async () => {
   return (
     <div>
-      <UserCreation />
+      <UserCreation /> {/* UserCreation component for creating a new user */}
     </div>
   );
 };

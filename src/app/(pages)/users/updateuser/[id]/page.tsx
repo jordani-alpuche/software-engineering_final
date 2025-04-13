@@ -11,6 +11,7 @@ const UpdateUser = async ({ params }: { params: { id: number } }) => {
   return (
     <div>
       <UpdateUsers userData={userData} />
+      {/* Pass the userData to UpdateUsers component */}
     </div>
   );
 };

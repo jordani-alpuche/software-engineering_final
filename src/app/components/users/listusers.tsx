@@ -43,7 +43,7 @@ export type User = {
   status: string;
   first_name: string;
   last_name: string;
-};
+}; // Define the User type with the required fields
 
 const SkeletonRow = () => (
   <TableRow>
@@ -55,19 +55,20 @@ const SkeletonRow = () => (
         </TableCell>
       ))}
   </TableRow>
-);
+); // Skeleton row to show loading state for the table
 
 export default function ListUsers({ userInformation }) {
-  const [data, setData] = React.useState<User[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  // Initialize state variables
+  const [data, setData] = React.useState<User[]>([]); // Data for the table
+  const [loading, setLoading] = React.useState(true); // Loading state
+  const [sorting, setSorting] = React.useState<SortingState>([]); // Sorting state for table columns
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({}); // Visibility for table columns
 
-  const router = useRouter();
+  const router = useRouter(); // Router for navigation
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -80,9 +81,10 @@ export default function ListUsers({ userInformation }) {
       }
     };
     fetchData();
-  }, []);
+  }, []); // Effect hook to fetch data when the component mounts
 
   const columns: ColumnDef<User>[] = [
+    // Defining the structure for user data
     {
       accessorKey: "first_name",
       header: "First Name",

@@ -7,6 +7,12 @@ const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
 
+/*
+ ** @description: This function retrieves a specific visitor feedback from the database using its ID.
+ ** @param {number} id - The ID of the feedback to retrieve.
+ ** @returns: The visitor feedback object or null if not found.
+ */
+
 export async function getVisitorSchedule(id: number) {
   const session = await getServerSession(authOptions);
   const userid = session?.user.id;
@@ -29,6 +35,12 @@ export async function getVisitorSchedule(id: number) {
 
   return schedule || null;
 }
+
+/*
+ ** @description: This function retrieves all visitor feedback from the database.
+ ** @returns: An array of visitor feedback or an error message.
+ ** @throws: Error if the database query fails.
+ */
 
 export async function getAllVisitorFeedback() {
   const feedback = await prisma.visitor_feedback.findMany({

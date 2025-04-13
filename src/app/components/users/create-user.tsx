@@ -96,29 +96,31 @@ export default function MyForm() {
     setIsLoading(true); // Show loading spinner
     setError("");
 
-    const userData = { ...values };
+    const userData = { ...values }; // Spread operator to create a new object with the form values
 
     try {
-      const createUserReturn = await createUser(userData);
-      console.log("return", createUserReturn);
+      const createUserReturn = await createUser(userData); // Call the API to create the user
+      // console.log("return", createUserReturn);
       if (createUserReturn?.success === false) {
+        // Check if the API call was unsuccessful
         if (createUserReturn?.message === "taken") {
+          // Check if the error message indicates a taken username
           setError(
             createUserReturn?.message ||
               "Username is already taken. Please choose another."
-          );
-          toast.error("Username is already taken. Please choose another.");
+          ); // Set the error message in the state
+          toast.error("Username is already taken. Please choose another."); // Show error toast notification
         } else {
-          setError(createUserReturn?.message || "An unknown error occurred");
-          toast.error(createUserReturn?.message || "An unknown error occurred");
+          setError(createUserReturn?.message || "An unknown error occurred"); // Set the error message in the state
+          toast.error(createUserReturn?.message || "An unknown error occurred"); // Show error toast notification
         }
       } else {
-        toast.success("User created successfully");
-        router.push("/users/listusers");
+        toast.success("User created successfully"); // Show success toast notification
+        router.push("/users/listusers"); // Redirect to the list users page
       }
     } catch (error) {
-      setError("An error occurred while creating the user");
-      toast.error("An error occurred while creating the user");
+      setError("An error occurred while creating the user"); // Set the error message in the state
+      toast.error("An error occurred while creating the user"); // Show error toast notification
     } finally {
       setIsLoading(false); // Hide loading spinner after 1 second
     }
@@ -130,8 +132,10 @@ export default function MyForm() {
         <Loading />
       ) : (
         <Form {...form}>
+          {" "}
+          {/* Form component from your UI library  and spread the form components */}
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit)} // Handle form submission
             className="space-y-8 max-w-3xl mx-auto py-10 px-4"
           >
             {/* User Information Section */}

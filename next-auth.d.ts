@@ -10,7 +10,7 @@ declare module "next-auth" {
 
   interface Session {
     // Make user optional here to align with default types and optional chaining usage
-    user?: User & DefaultSession["user"];
+    user: User & DefaultSession["user"];
     expires: string;
     error?: string; // Make optional if it's not always present
     username?: string; // Make optional if it's not always present on the session root

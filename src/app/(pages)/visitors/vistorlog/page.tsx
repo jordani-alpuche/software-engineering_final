@@ -3,7 +3,7 @@ import VisitorsLog from "@/app/components/visitors/visitor-log";
 import { visitorsLog } from "@/app/api/visitors/entrylog/route";
 
 const page = async (props) => {
-  const visitorLog = (await visitorsLog()) || [];
+  const visitorLog = (await visitorsLog()) || []; // Fetch the visitor log data from the API
 
   // console.log("visitorLog", visitorLog);
   return (

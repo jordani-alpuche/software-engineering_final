@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/table";
 import { deleteBlacklistVisitor } from "@/app/api/blacklist/[id]/route";
 
+// Skeleton loader row used when data is loading
 const SkeletonRow = () => (
   <TableRow>
     {Array(6)
@@ -48,31 +49,32 @@ const SkeletonRow = () => (
 );
 
 export default function BlacklistVisitors({ blacklistData }) {
-  // console.log("Blacklist Data:", blacklistData);
-  const [data, setData] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [data, setData] = React.useState([]); // Table data
+  const [loading, setLoading] = React.useState(true); // Loading state
+  const [sorting, setSorting] = React.useState<SortingState>([]); // Sorting state
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  );
+  ); // Column filter state
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({}); // Visibility state
 
   const router = useRouter();
 
+  // Load initial blacklist data on component mount
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        setData(blacklistData);
+        setData(blacklistData); // Set the provided blacklist data
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false once done
       }
     };
     fetchData();
   }, []);
 
+  // Define blacklist row structure
   type Blacklist = {
     id: number;
     visitor_id: number;
@@ -89,6 +91,7 @@ export default function BlacklistVisitors({ blacklistData }) {
     };
   };
 
+  // Define table columns with accessor functions and custom renderers
   const columns: ColumnDef<Blacklist>[] = [
     {
       id: "visitor_first_name",
@@ -122,7 +125,6 @@ export default function BlacklistVisitors({ blacklistData }) {
         <div className="lowercase">{row.getValue("visitor_id_number")}</div>
       ),
     },
-
     {
       accessorKey: "status",
       header: "Status",
@@ -130,7 +132,6 @@ export default function BlacklistVisitors({ blacklistData }) {
         <div className="lowercase">{row.getValue("status")}</div>
       ),
     },
-
     {
       id: "actions",
       enableHiding: false,
@@ -148,6 +149,8 @@ export default function BlacklistVisitors({ blacklistData }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+              {/* Update blacklist reason */}
               <DropdownMenuItem
                 onClick={() => {
                   router.push(
@@ -160,6 +163,7 @@ export default function BlacklistVisitors({ blacklistData }) {
                 Update Blacklist Reason
               </DropdownMenuItem>
 
+              {/* Delete blacklist visitor */}
               <DropdownMenuItem
                 onClick={async () => {
                   if (
@@ -184,30 +188,8 @@ export default function BlacklistVisitors({ blacklistData }) {
                 Delete Blacklist Visitor
               </DropdownMenuItem>
 
-              {/* <DropdownMenuItem
-                onClick={async () => {
-                  if (
-                    window.confirm(
-                      "Are you sure you want to delete this schedule?"
-                    )
-                  ) {
-                    const blacklistDelete = await deleteBlacklistVisitor(
-                      blacklist.id
-                    );
-
-                    // if (blacklistDelete.code === 200) {
-                    //   alert("Schedule deleted successfully");
-                    //   // setData((prevData) =>
-                    //   //   prevData.filter((u) => u.id !== blacklist.id)
-                    //   // );
-                    // } else {
-                    //   alert("Error deleting blacklist visitor");
-                    // }
-                  }
-                }}
-              >
-                Delete From Blacklist
-              </DropdownMenuItem> */}
+              {/* Placeholder for future action */}
+              {/* <DropdownMenuItem>...</DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -215,6 +197,7 @@ export default function BlacklistVisitors({ blacklistData }) {
     },
   ];
 
+  // Initialize react-table with defined states and row models
   const table = useReactTable({
     data,
     columns,
@@ -233,8 +216,9 @@ export default function BlacklistVisitors({ blacklistData }) {
       <h1 className="text-4xl font-bold text-center mb-6">
         Blacklist Visitors
       </h1>
+
+      {/* Filter input for visitor first name */}
       <div className="flex items-center py-4">
-        {/* {console.log(table.getAllColumns())} */}
         <Input
           placeholder="Filter First Name..."
           value={
@@ -250,6 +234,8 @@ export default function BlacklistVisitors({ blacklistData }) {
           className="max-w-sm"
         />
       </div>
+
+      {/* Table UI */}
       <div className="overflow-x-auto rounded-md border">
         <Table className="min-w-full">
           <TableHeader>
@@ -268,10 +254,12 @@ export default function BlacklistVisitors({ blacklistData }) {
           </TableHeader>
           <TableBody>
             {loading ? (
+              // Show skeleton loaders while loading
               Array(6)
                 .fill(0)
                 .map((_, index) => <SkeletonRow key={index} />)
             ) : table.getRowModel().rows.length ? (
+              // Show actual rows if data is present
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
@@ -285,6 +273,7 @@ export default function BlacklistVisitors({ blacklistData }) {
                 </TableRow>
               ))
             ) : (
+              // Show message if no results
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
@@ -298,6 +287,7 @@ export default function BlacklistVisitors({ blacklistData }) {
         </Table>
       </div>
 
+      {/* Pagination controls */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"

@@ -8,7 +8,12 @@ const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
 
-// Fetch a user by ID
+/*
+ ** @description: This function get a secific user from the database.
+ ** @param {number} id - The ID of the user to retrieve.
+ ** @returns: The user object or null if not found.
+ ** @throws: Error if the database query fails.
+ */
 export async function getUsers(id: number) {
   const user = await prisma.users.findUnique({
     where: { id: Number(id) },
@@ -17,7 +22,12 @@ export async function getUsers(id: number) {
   return user || null; // Return user object or null if not found
 }
 
-// Update a user by ID
+/*
+ ** @description: This function update user in the database.
+ **@param {object} data - The user data to be updated.
+ ** @returns: An object containing the success status, HTTP status code, message, and updated user data.
+ ** @throws: Error if the database query fails or if required fields are missing.
+ */
 export async function updateUser(id: number, data: any) {
   const userData = { ...data };
 
@@ -83,7 +93,10 @@ export async function updateUser(id: number, data: any) {
   }
 }
 
-// Delete a user by ID
+/*
+ ** @description: This function deletes a user from the database using their ID.
+ ** @param {number} id - The ID of the user to delete.
+ */
 export async function deleteUser(id: number) {
   try {
     await prisma.users.delete({
