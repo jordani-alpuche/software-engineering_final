@@ -4,12 +4,12 @@ import { hashPassword } from "./hashPassword";
 const prisma = new PrismaClient();
 
 export async function createUser() {
-  const hashedPassword = await hashPassword("Inadroj1"); // Hashing the password before saving
+  const hashedPassword = await hashPassword("mypassword"); // Hashing the password before saving
 
   try {
     const user = await prisma.users.create({
       data: {
-        username: "jalpuche", // Username for the new admin
+        username: "myusername", // Username for the new admin
         password: hashedPassword, // Hashed password
         role: "admin", // Admin role
         status: "active", // Set status to active
