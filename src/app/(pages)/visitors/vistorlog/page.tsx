@@ -1,6 +1,6 @@
 import React from "react";
 import VisitorsLog from "@/app/components/visitors/visitor-log";
-import { visitorsLog } from "@/app/api/visitors/entrylog/route";
+import { visitorsLog } from "@/lib/serverActions/visitors/entrylog/route";
 
 const page = async (props) => {
   const visitorLog = (await visitorsLog()) || []; // Fetch the visitor log data from the API

@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
-import { updateEntryExitStatus } from "@/app/api/visitors/entry-exit/route";
+import { updateEntryExitStatus } from "@/lib/serverActions/visitors/entry-exit/route";
 
 import { format, toZonedTime } from "date-fns-tz";
 

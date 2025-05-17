@@ -1,12 +1,12 @@
 import React from "react";
 import ListVisitors from "@/app/components/visitors/list-visitors";
-import { visitorsInfo } from "@/app/api/visitors/list/route";
+import { visitorsInfo } from "@/lib/serverActions/visitors/list/route";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
 import notfound from "@/app/404"; // Import the notfound component
 
-const visitors = async () => {
+const visitors = async (props) => {
   const session = await getServerSession(authOptions); // Get the session from NextAuth
 
   if (!session || !session.user?.id) {

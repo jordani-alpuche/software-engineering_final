@@ -1,6 +1,6 @@
 import React from "react";
 import ViewVisitors from "@/app/components/visitors/view-visitors";
-import { getSchedule } from "@/app/api/visitors/[id]/route";
+import { getSchedule } from "@/lib/serverActions/visitors/[id]/route";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file

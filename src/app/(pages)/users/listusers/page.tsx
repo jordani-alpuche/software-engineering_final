@@ -1,6 +1,6 @@
 import React from "react";
 import ListUsers from "@/app/components/users/listusers";
-import { usersInfo } from "@/app/api/users/list/route";
+import { usersInfo } from "@/lib/serverActions/users/list/route";
 const page = async () => {
   const userData = (await usersInfo()) || [];
   // console.log(JSON.stringify(userData, null, 2));

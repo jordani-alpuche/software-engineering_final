@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { isValidSchedule } from "@/app/api/visitors/[id]/route"; // Adjust path as needed
+import { isValidSchedule } from "@/lib/serverActions/visitors/[id]/route"; // Adjust path as needed
 
 export default function QRScanner() {
   // State to store the scanned QR code data

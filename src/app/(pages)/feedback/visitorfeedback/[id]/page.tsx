@@ -1,6 +1,6 @@
 import React from "react";
 import CreateFeedback from "@/app/components/feedback/create-feedback";
-import { getVisitorSchedule } from "@/app/api/feedback/[id]/route";
+import { getVisitorSchedule } from "@/lib/serverActions/feedback/[id]/route";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Import authentication logic
 import { redirect } from "next/navigation";

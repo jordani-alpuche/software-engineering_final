@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Loading from "@/app/components/loading";
 
 // Import API function to blacklist a visitor
-import { BlacklistVisitorAPI } from "@/app/api/blacklist/create-update/route";
+import { BlacklistVisitorAPI } from "@/lib/serverActions/blacklist/create-update/route";
 
 // Define schema using Zod for form validation; requires a non-empty "reason"
 const formSchema = z.object({

@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteUser } from "@/app/api/users/[id]/route";
+import { deleteUser } from "@/lib/serverActions/users/[id]/route";
 
 export type User = {
   id: number;

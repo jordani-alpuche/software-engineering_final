@@ -1,7 +1,7 @@
 import React from "react";
 import UpdateVisitors from "@/app/components/visitors/individual/update-visitors"; // Adjust path if necessary
 import UpdateGroupVisitors from "@/app/components/visitors/group/update-visitors"; // Adjust path if necessary
-import { getSchedule } from "@/app/api/visitors/[id]/route";
+import { getSchedule } from "@/lib/serverActions/visitors/[id]/route";
 import { notFound } from "next/navigation";
 
 const UpdateVisitor = async ({ params }) => {

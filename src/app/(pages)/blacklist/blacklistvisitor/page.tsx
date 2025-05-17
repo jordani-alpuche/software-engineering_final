@@ -1,7 +1,7 @@
 import React from "react";
 import BlacklistVisitor from "@/app/components/blacklist/create-update-blacklistvisitor";
-import { getVisitors } from "@/app/api/visitors/[id]/route";
-import { getblacklistInfo } from "@/app/api/blacklist/list/route";
+import { getVisitors } from "@/lib/serverActions/visitors/[id]/route";
+import { getblacklistInfo } from "@/lib/serverActions/blacklist/list/route";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";

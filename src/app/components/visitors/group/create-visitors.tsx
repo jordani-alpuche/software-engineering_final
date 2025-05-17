@@ -27,7 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { useRouter } from "next/navigation";
-import { createGroupVisitor } from "@/app/api/visitors/create/route";
+import { createGroupVisitor } from "@/lib/serverActions/visitors/create/route";
 import Loading from "@/app/components/loading"; // Import your loading component
 import { set } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";

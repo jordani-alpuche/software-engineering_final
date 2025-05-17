@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteSchedule } from "@/app/api/visitors/[id]/route";
+import { deleteSchedule } from "@/lib/serverActions/visitors/[id]/route";
 
 const SkeletonRow = () => (
   <TableRow>

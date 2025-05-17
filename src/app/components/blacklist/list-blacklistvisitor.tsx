@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteBlacklistVisitor } from "@/app/api/blacklist/[id]/route";
+import { deleteBlacklistVisitor } from "@/lib/serverActions/blacklist/[id]/route";
 
 // Skeleton loader row used when data is loading
 const SkeletonRow = () => (

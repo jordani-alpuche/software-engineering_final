@@ -1,10 +1,9 @@
 import React from "react";
 import BlacklistVisitors from "@/app/components/blacklist/list-blacklistvisitor";
-import { blacklistInfo } from "@/app/api/blacklist/list/route";
+import { blacklistInfo } from "@/lib/serverActions/blacklist/list/route";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
-import notfound from "@/app/404"; // Import the notfound component
 
 const visitors = async () => {
   const session = await getServerSession(authOptions); // get session from next-auth
