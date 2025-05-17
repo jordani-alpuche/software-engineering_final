@@ -7,18 +7,19 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import notfound from "@/app/404"; // Import the notfound component
 import AlreadyExists from "@/app/exists";
+import { BlackListVisitorsProps } from "@/app/types/interfaces";
 
 const page = async ({
   searchParams,
 }: {
-  searchParams: { vid: string; c: string }; // Define the type of searchParams
-  // searchParams: { vid: string; c: string } | undefined; // Define the type of searchParams
+  searchParams?: { vid: string; c: string };
 }) => {
-  // Extract the vid from the searchParams (query string)
-  const { vid, c } = await searchParams; // Extract vid and c from searchParams
+  // const { vid, c } = searchParams;
+  const vid = await searchParams?.vid; // Get the vid from search parameters
+  const c = await searchParams?.c; // Get the c from search parameters
   const visitorId = Number(vid);
   let visitorData;
-  console.log("value of c: ", typeof c); // Log the value of c
+  // console.log("value of c: ", typeof c); // Log the value of c
 
   // Validate vid
   if (!vid || isNaN(Number(vid))) {

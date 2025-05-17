@@ -1,9 +1,6 @@
 // types/interfaces.ts
 export interface BlackListVisitorsProps {
-  searchParams: {
-    vid?: string;
-    c?: string;
-  };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export interface VisitorData {
