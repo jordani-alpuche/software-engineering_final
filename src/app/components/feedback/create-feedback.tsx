@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form"; // UI components for the form structure
 import { Rating } from "@/components/ui/rating"; // Rating component
 import { Textarea } from "@/components/ui/textarea"; // Textarea component
-import { createVisitorFeedback } from "@/lib/serverActions/feedback/create/route"; // API call for submitting feedback
+import { createVisitorFeedback } from "@/lib/serverActions/feedback/create/CreateFeedbackActions"; // API call for submitting feedback
 
 // Define the validation schema for the form using Zod
 const formSchema = z.object({

@@ -1,7 +1,7 @@
 import React from "react";
 import UpdateUsers from "@/app/components/users/update-user";
 
-import { getUsers } from "@/lib/serverActions/users/[id]/route";
+import { getUsers } from "@/lib/serverActions/users/update/UpdateUsersActions";
 
 const UpdateUser = async ( props: {params?: Promise<{ id: string }>;}) => {
 

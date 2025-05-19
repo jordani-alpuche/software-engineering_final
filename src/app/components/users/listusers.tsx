@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteUser } from "@/lib/serverActions/users/[id]/route";
+import { deleteUser } from "@/lib/serverActions/users/update/UpdateUsersActions";
 
 export type User = {
   id: number;
@@ -58,6 +58,7 @@ const SkeletonRow = () => (
 ); // Skeleton row to show loading state for the table
 
 export default function ListUsers({ userInformation }:any) {
+  console.log("userInformation", userInformation);
   // Initialize state variables
   const [data, setData] = React.useState<User[]>([]); // Data for the table
   const [loading, setLoading] = React.useState(true); // Loading state

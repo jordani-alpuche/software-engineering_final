@@ -1,6 +1,6 @@
 import React from "react";
 import BlacklistVisitors from "@/app/components/blacklist/list-blacklistvisitor";
-import { blacklistInfo } from "@/lib/serverActions/blacklist/list/route";
+import { blacklistInfo } from "@/lib/serverActions/blacklist/list/ListBlacklistActions";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";

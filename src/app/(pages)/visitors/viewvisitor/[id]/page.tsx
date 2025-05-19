@@ -1,13 +1,13 @@
 import React from "react";
 import ViewVisitors from "@/app/components/visitors/view-visitors";
-import { getSchedule } from "@/lib/serverActions/visitors/[id]/route";
+import { getSchedule } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import notfound from "@/app/404"; // Import the notfound component
 import { ScheduleData } from "@/app/types/interfaces"; // Import the ScheduleData interface
-const page = async (
-  props: {params?: Promise<{ id: string }>;}) => {
+
+const page = async ( props: {params?: Promise<{ id: string }>;}) => {
   const params = await props.params; // Get the search parameters from the props
   const  params_id  = await params?.id; // Extract the id from the params (URL parameters)
 const scheduleId = Number(params_id); // Convert the id to a number

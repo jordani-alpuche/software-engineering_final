@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteSchedule } from "@/lib/serverActions/visitors/[id]/route";
+import { deleteSchedule } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
 
 // Skeleton row to show loading state for the table
 const SkeletonRow = () => (

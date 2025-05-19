@@ -28,7 +28,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { useRouter } from "next/navigation";
-import { createIndividualVisitor } from "@/lib/serverActions/visitors/create/route";
+import { createIndividualVisitor } from "@/lib/serverActions/visitors/create/CreateVisitorActions";
 import Loading from "@/app/components/loading"; // Import your loading component
 import { set } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";

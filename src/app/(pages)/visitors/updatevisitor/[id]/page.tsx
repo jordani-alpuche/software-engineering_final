@@ -1,10 +1,10 @@
 import React from "react";
 import UpdateVisitors from "@/app/components/visitors/individual/update-visitors"; // Adjust path if necessary
 import UpdateGroupVisitors from "@/app/components/visitors/group/update-visitors"; // Adjust path if necessary
-import { getSchedule } from "@/lib/serverActions/visitors/[id]/route";
+import { getSchedule } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
 import { notFound } from "next/navigation";
 import {ScheduleData} from "@/app/types/interfaces"; // Import the ScheduleData interface
-const UpdateVisitor = async (props: {params?: Promise<{ id: string }>;}) => {
+const UpdateVisitor = async ( props: {params?: Promise<{ id: string }>;}) => {
 
 const params = await props.params;
 const params_id = await params?.id;

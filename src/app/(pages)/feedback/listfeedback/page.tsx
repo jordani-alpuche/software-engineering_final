@@ -1,9 +1,10 @@
 import React from "react";
 import ListVisitorFeedback from "@/app/components/feedback/list-feedback";
-import { getAllVisitorFeedback } from "@/lib/serverActions/feedback/[id]/route";
+import { getAllVisitorFeedback } from "@/lib/serverActions/feedback/gets/GetFeebackActions";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
+
 async function page() {
   const session = await getServerSession(authOptions); // Get session from next-auth
 

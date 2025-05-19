@@ -1,11 +1,10 @@
 import React from "react";
 import SelectVisitorToBlacklist from "@/app/components/blacklist/select-visitor";
-import { getAllVisitors } from "@/lib/serverActions/visitors/[id]/route";
+import { getAllVisitors } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
 import {  redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import notfound from "@/app/404"; // Import the notfound component
-
 async function page()  {
   const session = await getServerSession(authOptions); // Get session from next-auth
 

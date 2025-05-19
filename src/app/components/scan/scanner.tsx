@@ -9,7 +9,7 @@ import {
 } from "html5-qrcode";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { isValidSchedule } from "@/lib/serverActions/visitors/[id]/route";
+import { isValidSchedule } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
 
 const SCANNER_ELEMENT_ID = "qr-scanner-region";
 

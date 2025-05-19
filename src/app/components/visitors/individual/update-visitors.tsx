@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
-import { updateIndividualSchedule } from "@/lib/serverActions/visitors/[id]/route";
+import { updateIndividualSchedule } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
 import Loading from "@/app/components/loading"; // Import your loading component
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";

@@ -3,9 +3,7 @@
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
+const prisma = new PrismaClient();
 
 interface EntryExitPayload {
   visitorId: number | string;
@@ -62,6 +60,8 @@ export async function updateEntryExitStatus(
     }
 
     if (schedule.visitor_type === "one-time") {
+
+      if (schedule.visitor_exit_date !== null) {
       const exitDate = new Date(schedule.visitor_exit_date); // convert to Date object
       const now = new Date(); // current date and time
 
@@ -77,6 +77,7 @@ export async function updateEntryExitStatus(
           message: "Schedule is inactive or exit date has been reached.",
         };
       }
+    }
 
       if (action === "updateOneTime") {
         let operationPerformed = false;
@@ -207,10 +208,10 @@ export async function updateEntryExitStatus(
         };
       }
     } else if (schedule.visitor_type === "recurring") {
-      const exitDate = new Date(schedule.visitor_exit_date); // convert to Date object
-      const now = new Date(); // current date and time
 
-      
+      if (schedule.visitor_exit_date !== null) {
+      const exitDate = new Date(schedule.visitor_exit_date); // convert to Date object
+      const now = new Date(); // current date and time      
 
       if (schedule.status === "inactive" || exitDate < now) {
         await prisma.visitors_schedule.update({
@@ -224,6 +225,7 @@ export async function updateEntryExitStatus(
           message: "Schedule is inactive or exit date has been reached.",
         };
       }
+    }
 
       if (action === "logEntry") {
         const openLog = await prisma.visitor_entry_logs.findFirst({

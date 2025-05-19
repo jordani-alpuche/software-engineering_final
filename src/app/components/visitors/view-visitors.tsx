@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
-import { updateEntryExitStatus } from "@/lib/serverActions/visitors/entry-exit/route";
+import { updateEntryExitStatus } from "@/lib/serverActions/visitors/entry-exit/ExitLogActions";
 import { useHasMounted } from "@/hooks/useHasMounted";
 import { format, toZonedTime } from "date-fns-tz";
 
@@ -323,28 +323,28 @@ if (!hasMounted) return null;
       )}
       
       <form className="p-6">
-      <h1 className="text-4xl font-extrabold mb-8 text-gray-900 tracking-tight">
+<h1 className="text-3xl sm:text-4xl font-extrabold mb-6 sm:mb-8 text-gray-900 tracking-tight">
   Visitor Details
 </h1>
 
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-6 p-8 border border-gray-200 rounded-2xl shadow-lg bg-gradient-to-br from-white to-indigo-50">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-4 sm:mt-6 p-4 sm:p-6 lg:p-8 border border-gray-200 rounded-2xl shadow-lg bg-gradient-to-br from-white to-indigo-50">
   <div>
-    <p className="text-gray-700 text-lg">
+    <p className="text-gray-700 text-base sm:text-lg">
       <strong className="text-indigo-700">Phone:</strong> {scheduleData.visitor_phone}
     </p>
   </div>
   <div>
-    <p className="text-gray-700 text-lg">
+    <p className="text-gray-700 text-base sm:text-lg">
       <strong className="text-indigo-700">Email:</strong> {scheduleData.visitor_email}
     </p>
   </div>
   <div>
-    <p className="text-gray-700 text-lg">
+    <p className="text-gray-700 text-base sm:text-lg">
       <strong className="text-indigo-700">License Plate:</strong> {scheduleData.license_plate || "N/A"}
     </p>
   </div>
   <div>
-    <p className="text-gray-700 text-lg">
+    <p className="text-gray-700 text-base sm:text-lg">
       <strong className="text-indigo-700">Visitor Type:</strong>{" "}
       <span
         className={`font-semibold px-2 py-1 rounded-md ${
@@ -358,7 +358,7 @@ if (!hasMounted) return null;
     </p>
   </div>
   <div>
-    <p className="text-gray-700 text-lg flex items-center">
+    <p className="text-gray-700 text-base sm:text-lg flex items-center">
       <strong className="text-indigo-700 mr-2">Status:</strong>{" "}
       <span
         className={`inline-block px-4 py-1 rounded-full font-semibold text-white transition-colors duration-300 ${
@@ -373,7 +373,7 @@ if (!hasMounted) return null;
   </div>
 </div>
 
-<div className="mt-10 space-y-6 mb-10 p-8 border border-gray-200 rounded-2xl shadow-lg bg-gradient-to-tr from-white to-indigo-50 text-gray-800 text-lg leading-relaxed">
+<div className="mt-8 sm:mt-10 space-y-4 sm:space-y-6 mb-10 p-4 sm:p-6 lg:p-8 border border-gray-200 rounded-2xl shadow-lg bg-gradient-to-tr from-white to-indigo-50 text-gray-800 text-base sm:text-lg leading-relaxed">
   <p>
     <strong className="text-indigo-700">Scheduled Entry:</strong>{" "}
     {formatDateTimes(scheduleData.visitor_entry_date)}
@@ -390,28 +390,27 @@ if (!hasMounted) return null;
 </div>
 
 {scheduleData.visitor_qrcode && (
-  <div className="mt-10 mb-12 p-8 border border-gray-200 rounded-2xl shadow-lg text-center bg-white">
-    <h2 className="text-2xl font-bold mb-6 text-indigo-800 tracking-wide">QR Code</h2>
+  <div className="mt-10 mb-12 p-4 sm:p-6 lg:p-8 border border-gray-200 rounded-2xl shadow-lg text-center bg-white">
+    <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-indigo-800 tracking-wide">QR Code</h2>
     <div className="flex justify-center">
-      <QRCodeCanvas value={scheduleData.visitor_qrcode} size={200} />
+      <QRCodeCanvas value={scheduleData.visitor_qrcode} size={180} />
     </div>
   </div>
 )}
 
-
-      <h2 className="text-3xl font-extrabold mt-10 mb-6 text-indigo-900 tracking-tight">
+<h2 className="text-2xl sm:text-3xl font-extrabold mt-10 mb-6 text-indigo-900 tracking-tight">
   Visitors on Schedule
 </h2>
 
-<div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-gradient-to-br from-white to-indigo-50 p-6">
+<div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-gradient-to-br from-white to-indigo-50 p-4 sm:p-6">
   <Table className="min-w-full table-auto border-collapse border border-gray-300 rounded-lg">
     <TableHeader>
       <TableRow className="bg-indigo-100">
-        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">First Name</TableHead>
-        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Last Name</TableHead>
-        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">ID Type</TableHead>
-        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">ID Number</TableHead>
-        <TableHead className="py-3 px-4 text-indigo-800 font-semibold text-center">
+        <TableHead className="py-2 sm:py-3 px-2 sm:px-4 text-indigo-800 font-semibold">First Name</TableHead>
+        <TableHead className="py-2 sm:py-3 px-2 sm:px-4 text-indigo-800 font-semibold">Last Name</TableHead>
+        <TableHead className="py-2 sm:py-3 px-2 sm:px-4 text-indigo-800 font-semibold">ID Type</TableHead>
+        <TableHead className="py-2 sm:py-3 px-2 sm:px-4 text-indigo-800 font-semibold">ID Number</TableHead>
+        <TableHead className="py-2 sm:py-3 px-2 sm:px-4 text-indigo-800 font-semibold text-center">
           {scheduleData.visitor_type === "one-time" ? "Entry/Exit Status" : "Actions"}
         </TableHead>
       </TableRow>
@@ -419,10 +418,7 @@ if (!hasMounted) return null;
     <TableBody>
       {scheduleData.visitiors?.length === 0 && (
         <TableRow>
-          <TableCell
-            colSpan={5}
-            className="text-center text-gray-500 py-6 italic"
-          >
+          <TableCell colSpan={5} className="text-center text-gray-500 py-6 italic">
             No visitors listed for this schedule.
           </TableCell>
         </TableRow>
@@ -451,21 +447,19 @@ if (!hasMounted) return null;
             key={visitor.id}
             className="border-b border-gray-200 hover:bg-indigo-50 transition-colors duration-200"
           >
-            <TableCell className="py-3 px-4">{visitor.visitor_first_name || "N/A"}</TableCell>
-            <TableCell className="py-3 px-4">{visitor.visitor_last_name || "N/A"}</TableCell>
-            <TableCell className="py-3 px-4">{visitor.visitor_id_type || "N/A"}</TableCell>
-            <TableCell className="py-3 px-4">{visitor.visitor_id_number || "N/A"}</TableCell>
-            <TableCell className="py-3 px-4 text-center">
+            <TableCell className="py-2 sm:py-3 px-2 sm:px-4">{visitor.visitor_first_name || "N/A"}</TableCell>
+            <TableCell className="py-2 sm:py-3 px-2 sm:px-4">{visitor.visitor_last_name || "N/A"}</TableCell>
+            <TableCell className="py-2 sm:py-3 px-2 sm:px-4">{visitor.visitor_id_type || "N/A"}</TableCell>
+            <TableCell className="py-2 sm:py-3 px-2 sm:px-4">{visitor.visitor_id_number || "N/A"}</TableCell>
+            <TableCell className="py-2 sm:py-3 px-2 sm:px-4 text-center">
               {scheduleData.visitor_type === "one-time" ? (
-                <div className="flex justify-center items-center space-x-6">
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-6">
                   <label className="flex items-center space-x-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       className="form-checkbox h-5 w-5 text-indigo-600 hover:text-indigo-800 transition-colors"
                       checked={oneTimeStatus?.entry || false}
-                      onChange={() =>
-                        handleCheckboxChange(visitor.id, "entry")
-                      }
+                      onChange={() => handleCheckboxChange(visitor.id, "entry")}
                       disabled={isLoading || isOneTimeFullyChecked}
                     />
                     <span className="text-indigo-700 font-medium">Entry</span>
@@ -476,32 +470,25 @@ if (!hasMounted) return null;
                       className="form-checkbox h-5 w-5 text-red-600 hover:text-red-800 transition-colors"
                       checked={oneTimeStatus?.exit || false}
                       disabled={
-                        !oneTimeStatus?.entry ||
-                        isLoading ||
-                        isOneTimeFullyChecked
+                        !oneTimeStatus?.entry || isLoading || isOneTimeFullyChecked
                       }
-                      onChange={() =>
-                        handleCheckboxChange(visitor.id, "exit")
-                      }
+                      onChange={() => handleCheckboxChange(visitor.id, "exit")}
                     />
                     <span className="text-red-700 font-medium">Exit</span>
                   </label>
                 </div>
               ) : (
-                <div className="flex justify-center space-x-3">
+                <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
                   <Button
                     type="button"
                     size="sm"
                     variant="outline"
                     className="border-green-500 text-green-700 hover:bg-green-100 focus:ring-2 focus:ring-green-300"
-                    onClick={() =>
-                      handleRecurringAction(visitor.id, "logEntry")
-                    }
+                    onClick={() => handleRecurringAction(visitor.id, "logEntry")}
                     disabled={
                       !!currentStatus?.isInside ||
                       isLoading ||
-                      (!!currentStatus?.isInside &&
-                        !!currentStatus?.lastLogExitTime)
+                      (!!currentStatus?.isInside && !!currentStatus?.lastLogExitTime)
                     }
                     aria-label={`Log entry for ${visitor.visitor_first_name}`}
                   >
@@ -512,14 +499,11 @@ if (!hasMounted) return null;
                     size="sm"
                     variant="outline"
                     className="border-red-500 text-red-700 hover:bg-red-100 focus:ring-2 focus:ring-red-300"
-                    onClick={() =>
-                      handleRecurringAction(visitor.id, "logExit")
-                    }
+                    onClick={() => handleRecurringAction(visitor.id, "logExit")}
                     disabled={
                       !!currentStatus?.isInside ||
                       isLoading ||
-                      (!!currentStatus?.isInside &&
-                        !!currentStatus?.lastLogExitTime)
+                      (!!currentStatus?.isInside && !!currentStatus?.lastLogExitTime)
                     }
                     aria-label={`Log exit for ${visitor.visitor_first_name}`}
                   >
@@ -535,93 +519,93 @@ if (!hasMounted) return null;
   </Table>
 </div>
 
-<h2 className="text-3xl font-extrabold mt-12 mb-6 text-indigo-900 tracking-tight">
+<h2 className="text-2xl sm:text-3xl font-extrabold mt-12 mb-6 text-indigo-900 tracking-tight">
   Entry/Exit Log History
 </h2>
 
-<div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-gradient-to-br from-white to-indigo-50 p-6">
+<div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-gradient-to-br from-white to-indigo-50 p-4 sm:p-6">
   <Table className="min-w-full table-auto border-collapse border border-gray-300 rounded-lg">
     <TableHeader>
       <TableRow className="bg-indigo-100">
-        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Visitor Name</TableHead>
-        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Entry Time</TableHead>
-        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Exit Time</TableHead>
-        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Status</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {scheduleData.visitor_entry_logs?.length === 0 && (
-        <TableRow>
-          <TableCell
-            colSpan={4}
-            className="text-center text-gray-500 py-6 italic"
-          >
-            No log entries yet.
-          </TableCell>
-        </TableRow>
-      )}
-      {scheduleData.visitor_entry_logs
-        ?.slice()
-        .sort(
-          (a, b) =>
-            new Date(b.entry_time || 0).getTime() -
-            new Date(a.entry_time || 0).getTime()
-        )
-        .map((log) => {
-          const visitorInfo = scheduleData.visitiors.find(
-            (v) => v.id === log.visitor_id
-          );
-          const visitorName = visitorInfo
-            ? `${visitorInfo.visitor_first_name || ""} ${
-                visitorInfo.visitor_last_name || ""
-              }`.trim()
-            : `Visitor ID: ${log.visitor_id}`;
-          const isCurrentlyInside = !log.exit_time && !!log.entry_time;
-
-          return (
-            <TableRow
-              key={log.id}
-              className="border-b border-gray-200 hover:bg-indigo-50 transition-colors duration-200"
-            >
-              <TableCell className="py-3 px-4">{visitorName}</TableCell>
-              <TableCell className="py-3 px-4">{formatDateTimes(log.entry_time)}</TableCell>
-              <TableCell className="py-3 px-4">{formatDateTimes(log.exit_time)}</TableCell>
-              <TableCell className="py-3 px-4">
-                {isCurrentlyInside ? (
-                  <span className="font-semibold text-green-600">Currently Inside</span>
-                ) : log.exit_time ? (
-                  <span className="text-red-600">Exited</span>
-                ) : (
-                  "N/A"
-                )}
-              </TableCell>
+        <TableHead className="py-2 sm:py-3 px-2 sm:px-4 text-indigo-800 font-semibold">Visitor Name</TableHead>
+        <TableHead className="py-2 sm:py-3 px-2 sm:px-4 text-indigo-800 font-semibold">Entry Time</TableHead>
+        <TableHead className="py-2 sm:py-3 px-2 sm:px-4 text-indigo-800 font-semibold">Exit Time</TableHead>
+        <TableHead className="py-2 sm:py-3 px-2 sm:px-4 text-indigo-800 font-semibold">Status</TableHead>
             </TableRow>
-          );
-        })}
-    </TableBody>
-  </Table>
-</div>
+          </TableHeader>
+          <TableBody>
+            {scheduleData.visitor_entry_logs?.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="text-center text-gray-500 py-6 italic"
+                >
+                  No log entries yet.
+                </TableCell>
+              </TableRow>
+            )}
+            {scheduleData.visitor_entry_logs
+              ?.slice()
+              .sort(
+                (a, b) =>
+                  new Date(b.entry_time || 0).getTime() -
+                  new Date(a.entry_time || 0).getTime()
+              )
+              .map((log) => {
+                const visitorInfo = scheduleData.visitiors.find(
+                  (v) => v.id === log.visitor_id
+                );
+                const visitorName = visitorInfo
+                  ? `${visitorInfo.visitor_first_name || ""} ${
+                      visitorInfo.visitor_last_name || ""
+                    }`.trim()
+                  : `Visitor ID: ${log.visitor_id}`;
+                const isCurrentlyInside = !log.exit_time && !!log.entry_time;
 
-<div className="flex space-x-4 mt-8 mb-12">
-  {scheduleData.visitor_type === "one-time" && (
-    <Button
-      type="button"
-      onClick={handleUpdateStatus}
-      className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300"
-      disabled={isLoading}
-    >
-      Update One-Time Status
-    </Button>
-  )}
-  <Button
-    type="button"
-    onClick={() => router.back()}
-    className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 focus:ring-4 focus:ring-gray-300"
-    disabled={isLoading}
-  >
-    Back
-  </Button>
-</div>
+                return (
+                  <TableRow
+                    key={log.id}
+                    className="border-b border-gray-200 hover:bg-indigo-50 transition-colors duration-200"
+                  >
+                    <TableCell className="py-3 px-4">{visitorName}</TableCell>
+                    <TableCell className="py-3 px-4">{formatDateTimes(log.entry_time)}</TableCell>
+                    <TableCell className="py-3 px-4">{formatDateTimes(log.exit_time)}</TableCell>
+                    <TableCell className="py-3 px-4">
+                      {isCurrentlyInside ? (
+                        <span className="font-semibold text-green-600">Currently Inside</span>
+                      ) : log.exit_time ? (
+                        <span className="text-red-600">Exited</span>
+                      ) : (
+                        "N/A"
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex space-x-4 mt-8 mb-12">
+        {scheduleData.visitor_type === "one-time" && (
+          <Button
+            type="button"
+            onClick={handleUpdateStatus}
+            className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300"
+            disabled={isLoading}
+          >
+            Update One-Time Status
+          </Button>
+        )}
+        <Button
+          type="button"
+          onClick={() => router.back()}
+          className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 focus:ring-4 focus:ring-gray-300"
+          disabled={isLoading}
+        >
+          Back
+        </Button>
+      </div>
 
       </form>
       <ToastContainer

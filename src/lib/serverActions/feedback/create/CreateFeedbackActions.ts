@@ -1,9 +1,7 @@
 "use server";
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
+const prisma = new PrismaClient();
 
 /*
  ** @description: This function creates a new visitor feedback entry in the database.

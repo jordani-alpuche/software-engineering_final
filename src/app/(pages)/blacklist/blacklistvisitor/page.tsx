@@ -1,13 +1,12 @@
 import React from "react";
 import BlacklistVisitor from "@/app/components/blacklist/create-update-blacklistvisitor";
-import { getVisitors } from "@/lib/serverActions/visitors/[id]/route";
-import { getblacklistInfo } from "@/lib/serverActions/blacklist/list/route";
+import { getVisitors } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
+import { getblacklistInfo } from "@/lib/serverActions/blacklist/list/ListBlacklistActions";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import notfound from "@/app/404"; // Import the notfound component
 import AlreadyExists from "@/app/exists";
-
 const page = async (
   props: {searchParams?: Promise<{ vid: string; c: string }>;}) => {
     

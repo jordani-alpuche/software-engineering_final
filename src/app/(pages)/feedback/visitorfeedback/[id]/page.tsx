@@ -1,14 +1,13 @@
 import React from "react";
 import CreateFeedback from "@/app/components/feedback/create-feedback";
-import { getVisitorSchedule } from "@/lib/serverActions/feedback/[id]/route";
+import { getVisitorSchedule } from "@/lib/serverActions/feedback/gets/GetFeebackActions";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Import authentication logic
 import { redirect } from "next/navigation";
 import notfound from "@/app/404"; // Import the notfound component
 import FeedbackAlreadyExists from "@/app/feedbackexists"; // Import the feedback already exists component
 
-const page = async (
-  props: {params?: Promise<{ id: string }>;}) => {
+const page = async ( props: {params?: Promise<{ id: string }>;}) => {
 
   const params = await props.params; // Get the search parameters from the props
   const  params_id  = await params?.id; // Extract the id from the params (URL parameters)

@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Loading from "@/app/components/loading";
-import { updateUser } from "@/lib/serverActions/users/[id]/route";
+import { updateUser } from "@/lib/serverActions/users/update/UpdateUsersActions";
 
 const formSchema = z
   .object({

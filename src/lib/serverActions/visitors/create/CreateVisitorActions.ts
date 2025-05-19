@@ -70,8 +70,17 @@ export async function createGroupVisitor(data: GroupVisitorData) {
       };
     }
 
+    // Normalize visitor_id_number
+    const cleanVisitors = data.visitors.map((visitor) => ({
+      ...visitor,
+      visitor_id_number: visitor.visitor_id_number.trim().toLowerCase(),
+    }));
+
+    // Normalize visitor_email
+    const visitorEmail = data.visitor_email.trim().toLowerCase();
+
     // Validate visitor fields
-    const invalidVisitors = data.visitors.some(
+    const invalidVisitors = cleanVisitors.some(
       (visitor) =>
         !visitor.visitor_first_name ||
         !visitor.visitor_last_name ||
@@ -88,9 +97,7 @@ export async function createGroupVisitor(data: GroupVisitorData) {
     }
 
     // Check if any member of the group is blacklisted
-    for (const member of data.visitors) {
-      // console.log("Checking member:", member); // Log the member being checked
-
+    for (const member of cleanVisitors) {
       const blacklisted = await prisma.blacklist_visitors.findFirst({
         where: {
           visitiors: {
@@ -117,12 +124,13 @@ export async function createGroupVisitor(data: GroupVisitorData) {
           visitiors: true,
         },
       });
+
       // Create visitor schedule
       const visitorSchedule = await tx.visitors_schedule.create({
         data: {
           resident_id: data.resident_id,
           visitor_phone: data.visitor_phone,
-          visitor_email: data.visitor_email,
+          visitor_email: visitorEmail,
           status: data.status,
           visitor_type: data.visitor_type,
           license_plate: data.license_plate,
@@ -136,7 +144,7 @@ export async function createGroupVisitor(data: GroupVisitorData) {
 
       // Create multiple visitors and link them to the schedule
       await tx.visitiors.createMany({
-        data: data.visitors.map((visitor: any) => ({
+        data: cleanVisitors.map((visitor: any) => ({
           visitor_first_name: visitor.visitor_first_name,
           visitor_last_name: visitor.visitor_last_name,
           visitor_id_type: visitor.visitor_id_type,
@@ -204,7 +212,11 @@ export async function createIndividualVisitor(data: IndividualVisitorData) {
       };
     }
 
-    // Check if the visitor is blacklisted by visitor_id_type and visitor_id_number
+    // Normalize ID number and email
+    data.visitor_id_number = data.visitor_id_number.trim().toLowerCase();
+    const visitorEmail = data.visitor_email.trim().toLowerCase();
+
+    // Check if the visitor is blacklisted
     const blacklistedVisitor = await prisma.blacklist_visitors.findFirst({
       where: {
         visitiors: {
@@ -224,14 +236,12 @@ export async function createIndividualVisitor(data: IndividualVisitorData) {
 
     const qr_code = "123456789"; // Generate dynamically in production
 
-    // Start a transaction to create both visitor and schedule
     const result = await prisma.$transaction(async (tx) => {
-      // Create visitor schedule first
       const visitorSchedule = await tx.visitors_schedule.create({
         data: {
           resident_id: data.resident_id,
           visitor_phone: data.visitor_phone,
-          visitor_email: data.visitor_email,
+          visitor_email: visitorEmail,
           status: data.status,
           visitor_type: data.visitor_type,
           license_plate: data.license_plate,
@@ -252,7 +262,6 @@ export async function createIndividualVisitor(data: IndividualVisitorData) {
         },
       });
 
-      // Create visitor and link to schedule
       await tx.visitiors.create({
         data: {
           visitor_first_name: data.visitor_first_name,

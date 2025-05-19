@@ -4,9 +4,7 @@ import { PrismaClient } from "@prisma/client";
 // import { bcrypt } from "bcryptjs";
 import { hashPassword } from "@/app/utils/hashPassword"; // Adjust path if necessary
 
-const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
+const prisma = new PrismaClient();
 
 /*
  ** @description: This function get a secific user from the database.

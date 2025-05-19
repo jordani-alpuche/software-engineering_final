@@ -1,10 +1,9 @@
 import React from "react";
 import ListVisitors from "@/app/components/visitors/list-visitors";
-import { visitorsInfo } from "@/lib/serverActions/visitors/list/route";
+import { visitorsInfo } from "@/lib/serverActions/visitors/list/ListVisitorActions";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
-
 async function visitors () {
   const session = await getServerSession(authOptions); // Get the session from NextAuth
 
@@ -15,7 +14,6 @@ async function visitors () {
   }
 
   const visitorData = (await visitorsInfo()) || []; // Fetch visitor data from the API
-  console.log("visitorData", visitorData); // Log the visitor data for debugging
 
   return (
     <div>
