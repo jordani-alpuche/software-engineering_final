@@ -48,7 +48,7 @@ const SkeletonRow = () => (
   </TableRow>
 );
 
-export default function BlacklistVisitors({ blacklistData }) {
+export default function BlacklistVisitors({ blacklistData }: any) {
   const [data, setData] = React.useState([]); // Table data
   const [loading, setLoading] = React.useState(true); // Loading state
   const [sorting, setSorting] = React.useState<SortingState>([]); // Sorting state
@@ -177,7 +177,7 @@ export default function BlacklistVisitors({ blacklistData }) {
                     if (blacklistDelete.success) {
                       alert("blacklist visitor deleted successfully");
                       setData((prevData) =>
-                        prevData.filter((u) => u.id !== blacklist.id)
+                        prevData.filter((u:any) => u.id !== blacklist.id)
                       );
                     } else {
                       alert("Error deleting blacklist visitor");

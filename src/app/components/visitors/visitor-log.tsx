@@ -47,7 +47,7 @@ const SkeletonRow = () => (
   </TableRow>
 );
 
-export default function VisitorsLog({ visitorLog }) {
+export default function VisitorsLog({ visitorLog }:any) {
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -120,17 +120,26 @@ export default function VisitorsLog({ visitorLog }) {
     },
 
     {
-      accessorKey: "exit_time",
-      header: "Exit Time",
-      cell: ({ row }) => {
-        const exitTime = row.getValue("exit_time");
-        return (
-          <div className="lowercase">
-            {exitTime ? new Date(exitTime).toLocaleString() : "N/A"}
-          </div>
-        );
-      },
-    },
+  accessorKey: "exit_time",
+  header: "Exit Time",
+  cell: ({ row }) => {
+    const exitTime = row.getValue("exit_time");
+
+    const dateValue =
+      exitTime && typeof exitTime === "string"
+        ? new Date(exitTime)
+        : exitTime instanceof Date
+        ? exitTime
+        : null;
+
+    return (
+      <div className="lowercase">
+        {dateValue ? dateValue.toLocaleString() : "N/A"}
+      </div>
+    );
+  },
+},
+
 
     {
       accessorKey: "status",

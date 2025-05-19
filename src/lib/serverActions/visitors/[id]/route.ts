@@ -259,7 +259,7 @@ export async function updateGroupSchedule(id: number, data: any) {
 
       const existingVisitorIds = existingVisitors.map((v) => v.id);
       const submittedVisitorIds = data.visitors
-        .map((v) => v.id)
+        .map((v:any) => v.id)
         .filter(Boolean);
 
       // Update existing visitors and create new ones if necessary

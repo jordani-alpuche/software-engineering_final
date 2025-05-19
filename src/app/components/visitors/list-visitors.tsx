@@ -47,7 +47,7 @@ const SkeletonRow = () => (
   </TableRow>
 );
 
-export default function ListVisitors({ visitorInformation }) {
+export default function ListVisitors({ visitorInformation }:any) {
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -198,7 +198,7 @@ export default function ListVisitors({ visitorInformation }) {
                     if (scheduleDelete.success) {
                       alert("Schedule deleted successfully");
                       setData((prevData) =>
-                        prevData.filter((u) => u.id !== schedule.id)
+                        prevData.filter((u:any) => u.id !== schedule.id)
                       );
                     } else {
                       alert("Error deleting Schedule");

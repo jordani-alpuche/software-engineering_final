@@ -49,7 +49,7 @@ const SkeletonRow = () => (
 );
 
 // Main component: Displays a list of existing visitors in a searchable, paginated, and sortable table
-export default function SelectVisitorToBlacklist({ visitorsData, userid }) {
+export default function SelectVisitorToBlacklist({ visitorsData, userid }:any) {
   const [data, setData] = React.useState([]); // Actual data to be displayed in the table
   const [loading, setLoading] = React.useState(true); // UI flag for loading state
   const [sorting, setSorting] = React.useState<SortingState>([]); // Keeps track of current sort configuration

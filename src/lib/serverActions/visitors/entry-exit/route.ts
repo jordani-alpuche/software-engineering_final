@@ -14,8 +14,8 @@ interface EntryExitPayload {
   action: "logEntry" | "logExit" | "updateOneTime";
   entryChecked?: boolean;
   exitChecked?: boolean;
-  visitorExit: string | Date;
-  status: string;
+  // visitorExit: string | Date;
+  // status: string;
 }
 
 interface ActionResult {
@@ -50,8 +50,7 @@ export async function updateEntryExitStatus(
       entryChecked,
       exitChecked,
       // visitorEntry,
-      visitorExit,
-      status,
+      // status,
     } = payload;
 
     const schedule = await prisma.visitors_schedule.findUnique({
@@ -153,6 +152,14 @@ export async function updateEntryExitStatus(
             });
             operationPerformed = true;
           }
+
+          // update schedule status to inactive
+          await prisma.visitors_schedule.update({
+            where: { id: Number(scheduleId) },
+            data: { status: "inactive" },
+          });
+
+
         } else if (!entryChecked && !exitChecked) {
           // Neither checked, cancel the log
           if (existingLog) {
@@ -202,6 +209,8 @@ export async function updateEntryExitStatus(
     } else if (schedule.visitor_type === "recurring") {
       const exitDate = new Date(schedule.visitor_exit_date); // convert to Date object
       const now = new Date(); // current date and time
+
+      
 
       if (schedule.status === "inactive" || exitDate < now) {
         await prisma.visitors_schedule.update({

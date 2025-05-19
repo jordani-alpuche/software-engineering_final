@@ -57,7 +57,7 @@ const SkeletonRow = () => (
   </TableRow>
 ); // Skeleton row to show loading state for the table
 
-export default function ListUsers({ userInformation }) {
+export default function ListUsers({ userInformation }:any) {
   // Initialize state variables
   const [data, setData] = React.useState<User[]>([]); // Data for the table
   const [loading, setLoading] = React.useState(true); // Loading state

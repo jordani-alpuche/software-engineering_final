@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Loading from "@/app/components/loading";
-
+import {ExtendedVisitor} from "@/app/types/interfaces";
 // Import API function to blacklist a visitor
 import { BlacklistVisitorAPI } from "@/lib/serverActions/blacklist/create-update/route";
 
@@ -31,9 +31,9 @@ const formSchema = z.object({
 });
 
 // The main BlacklistVisitor component which accepts visitorData and type as props
-export default function BlacklistVisitor({ visitorData, type }) {
+export default function BlacklistVisitor({ visitorData, type } : any) {
   // Log the incoming visitor data for debugging purposes
-  console.log("Visitor data:", visitorData);
+  console.log("Visitor datas:", visitorData);
 
   // Set up Next.js router instance for navigation
   const router = useRouter();

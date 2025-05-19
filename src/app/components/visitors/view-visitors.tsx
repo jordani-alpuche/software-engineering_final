@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { updateEntryExitStatus } from "@/lib/serverActions/visitors/entry-exit/route";
-
+import { useHasMounted } from "@/hooks/useHasMounted";
 import { format, toZonedTime } from "date-fns-tz";
 
 const timeZone = "America/Belize";
@@ -71,6 +71,7 @@ export default function ViewVisitors({
   scheduleData: ScheduleData;
   userid: number;
 }) {
+  const hasMounted = useHasMounted();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [scheduleData, setScheduleData] =
@@ -97,6 +98,8 @@ export default function ViewVisitors({
   const [recurringVisitorStatus, setRecurringVisitorStatus] = useState<
     VisitorCurrentStatus[]
   >([]);
+
+   
 
   useEffect(() => {
     if (scheduleData.visitor_type === "recurring") {
@@ -146,8 +149,12 @@ export default function ViewVisitors({
     });
   };
 
-  const handleUpdateStatus = async (e?: React.FormEvent<HTMLFormElement>) => {
-    e?.preventDefault();
+  // const handleUpdateStatus = async (e?: React.FormEvent<HTMLFormElement>) => {
+  //   e?.preventDefault();
+  const handleUpdateStatus = async (
+  e?: React.MouseEvent<HTMLButtonElement>
+): Promise<void> => {
+  e?.preventDefault();
     if (scheduleData.visitor_type !== "one-time") return;
 
     setIsLoading(true);
@@ -198,11 +205,6 @@ export default function ViewVisitors({
       toast.success("All one-time visitor statuses updated successfully!");
       window.location.reload();
     }
-    // else {
-    //   toast.warning(
-    //     "Some visitor statuses could not be updated. See individual errors."
-    //   );
-    // }
 
     setIsLoading(false);
   };
@@ -278,6 +280,25 @@ export default function ViewVisitors({
     }
   };
 
+const formatDateTimes = (dateTime: Date | string | null | undefined): string => {
+  if (!dateTime) return "N/A";
+  try {
+    const date = new Date(dateTime);
+    const datePart = date.toISOString().substring(0, 10);
+    const timePart = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+    return `${datePart} ${timePart}`;
+  } catch {
+    return "Invalid Date";
+  }
+};
+
+if (!hasMounted) return null;
+
   return (
     <>
       {isLoading && (
@@ -300,292 +321,308 @@ export default function ViewVisitors({
           Processing...
         </div>
       )}
+      
       <form className="p-6">
-        <h1 className="text-3xl font-bold mb-6">Visitor Details</h1>
+      <h1 className="text-4xl font-extrabold mb-8 text-gray-900 tracking-tight">
+  Visitor Details
+</h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 p-4 border rounded mb-6">
-          <div>
-            <p>
-              <strong>Phone:</strong> {scheduleData.visitor_phone}
-            </p>
-          </div>
-          <div>
-            <p>
-              <strong>Email:</strong> {scheduleData.visitor_email}
-            </p>
-          </div>
-          <div>
-            <p>
-              <strong>License Plate:</strong>{" "}
-              {scheduleData.license_plate || "N/A"}
-            </p>
-          </div>
-          <div>
-            <p>
-              <strong>Visitor Type:</strong>{" "}
-              <span
-                className={`font-semibold ${
-                  scheduleData.visitor_type === "recurring"
-                    ? "text-purple-700"
-                    : "text-blue-700"
-                }`}
-              >
-                {scheduleData.visitor_type}
-              </span>
-            </p>
-          </div>
-          <div>
-            <p>
-              <strong>Status:</strong> {scheduleData.status || "N/A"}
-            </p>
-          </div>
-        </div>
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-6 p-8 border border-gray-200 rounded-2xl shadow-lg bg-gradient-to-br from-white to-indigo-50">
+  <div>
+    <p className="text-gray-700 text-lg">
+      <strong className="text-indigo-700">Phone:</strong> {scheduleData.visitor_phone}
+    </p>
+  </div>
+  <div>
+    <p className="text-gray-700 text-lg">
+      <strong className="text-indigo-700">Email:</strong> {scheduleData.visitor_email}
+    </p>
+  </div>
+  <div>
+    <p className="text-gray-700 text-lg">
+      <strong className="text-indigo-700">License Plate:</strong> {scheduleData.license_plate || "N/A"}
+    </p>
+  </div>
+  <div>
+    <p className="text-gray-700 text-lg">
+      <strong className="text-indigo-700">Visitor Type:</strong>{" "}
+      <span
+        className={`font-semibold px-2 py-1 rounded-md ${
+          scheduleData.visitor_type === "recurring"
+            ? "bg-purple-200 text-purple-800"
+            : "bg-blue-200 text-blue-800"
+        } shadow-sm`}
+      >
+        {scheduleData.visitor_type}
+      </span>
+    </p>
+  </div>
+  <div>
+    <p className="text-gray-700 text-lg flex items-center">
+      <strong className="text-indigo-700 mr-2">Status:</strong>{" "}
+      <span
+        className={`inline-block px-4 py-1 rounded-full font-semibold text-white transition-colors duration-300 ${
+          scheduleData.status?.toLowerCase() === "active"
+            ? "bg-green-600 hover:bg-green-700 shadow-lg"
+            : "bg-red-600 hover:bg-red-700 shadow-lg"
+        }`}
+      >
+        {scheduleData.status || "N/A"}
+      </span>
+    </p>
+  </div>
+</div>
 
-        <div className="mt-6 space-y-4 mb-6 p-4 border rounded">
-          <p>
-            <strong>Scheduled Entry:</strong>{" "}
-            {new Date(scheduleData.visitor_entry_date).toDateString()}
-          </p>
-          <p>
-            <strong>Scheduled Exit:</strong>{" "}
-            {new Date(scheduleData.visitor_exit_date).toDateString()}
-          </p>
-          {scheduleData.comments && (
-            <p>
-              <strong>Comments:</strong> {scheduleData.comments}
-            </p>
-          )}
-        </div>
-        {scheduleData.visitor_qrcode && (
-          <div className="mt-6 mb-8 p-4 border rounded text-center">
-            <h2 className="text-xl font-semibold mb-4">QRCode</h2>
-            <div className="flex justify-center">
-              <QRCodeCanvas value={scheduleData.visitor_qrcode} size={180} />
-            </div>
-          </div>
-        )}
+<div className="mt-10 space-y-6 mb-10 p-8 border border-gray-200 rounded-2xl shadow-lg bg-gradient-to-tr from-white to-indigo-50 text-gray-800 text-lg leading-relaxed">
+  <p>
+    <strong className="text-indigo-700">Scheduled Entry:</strong>{" "}
+    {formatDateTimes(scheduleData.visitor_entry_date)}
+  </p>
+  <p>
+    <strong className="text-indigo-700">Scheduled Exit:</strong>{" "}
+    {formatDateTimes(scheduleData.visitor_exit_date)}
+  </p>
+  {scheduleData.comments && (
+    <p>
+      <strong className="text-indigo-700">Comments:</strong> {scheduleData.comments}
+    </p>
+  )}
+</div>
 
-        <h2 className="text-2xl font-semibold mt-8">Visitors on Schedule</h2>
-        <div className="overflow-x-auto mt-4">
-          <Table className="min-w-full border">
-            <TableHeader>
-              <TableRow className="bg-gray-100">
-                <TableHead>First Name</TableHead>
-                <TableHead>Last Name</TableHead>
-                <TableHead>ID Type</TableHead>
-                <TableHead>ID Number</TableHead>
-                <TableHead className="text-center">
-                  {scheduleData.visitor_type === "one-time"
-                    ? "Entry/Exit Status"
-                    : "Actions"}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {scheduleData.visitiors?.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center text-gray-500 py-4"
-                  >
-                    No visitors listed for this schedule.
-                  </TableCell>
-                </TableRow>
-              )}
-              {scheduleData.visitiors?.map((visitor, index) => {
-                const currentStatus =
-                  scheduleData.visitor_type === "recurring"
-                    ? getRecurringStatus(visitor.id)
-                    : undefined;
-                const oneTimeStatus =
-                  scheduleData.visitor_type === "one-time"
-                    ? visitorStatuses.find((vs) => vs.id === visitor.id)
-                    : undefined;
+{scheduleData.visitor_qrcode && (
+  <div className="mt-10 mb-12 p-8 border border-gray-200 rounded-2xl shadow-lg text-center bg-white">
+    <h2 className="text-2xl font-bold mb-6 text-indigo-800 tracking-wide">QR Code</h2>
+    <div className="flex justify-center">
+      <QRCodeCanvas value={scheduleData.visitor_qrcode} size={200} />
+    </div>
+  </div>
+)}
 
-                const isOneTimeFullyChecked =
-                  scheduleData.visitor_type === "one-time" &&
-                  oneTimeStatus?.entry &&
-                  oneTimeStatus?.exit;
 
-                const isRecurringExited =
-                  scheduleData.visitor_type === "recurring" &&
-                  currentStatus?.lastLogExitTime;
+      <h2 className="text-3xl font-extrabold mt-10 mb-6 text-indigo-900 tracking-tight">
+  Visitors on Schedule
+</h2>
 
-                return (
-                  <TableRow
-                    key={visitor.id}
-                    className="border-b hover:bg-gray-50"
-                  >
-                    <TableCell>{visitor.visitor_first_name || "N/A"}</TableCell>
-                    <TableCell>{visitor.visitor_last_name || "N/A"}</TableCell>
-                    <TableCell>{visitor.visitor_id_type || "N/A"}</TableCell>
-                    <TableCell>{visitor.visitor_id_number || "N/A"}</TableCell>
-                    <TableCell className="text-center">
-                      {scheduleData.visitor_type === "one-time" ? (
-                        <div className="flex justify-center items-center space-x-4">
-                          <label className="flex items-center space-x-1 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="form-checkbox h-5 w-5 text-blue-600"
-                              checked={oneTimeStatus?.entry || false}
-                              onChange={() =>
-                                handleCheckboxChange(visitor.id, "entry")
-                              }
-                              disabled={isLoading || isOneTimeFullyChecked}
-                            />
-                            <span>Entry</span>
-                          </label>
-                          <label className="flex items-center space-x-1 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="form-checkbox h-5 w-5 text-red-600"
-                              checked={oneTimeStatus?.exit || false}
-                              disabled={
-                                !oneTimeStatus?.entry ||
-                                isLoading ||
-                                isOneTimeFullyChecked
-                              }
-                              onChange={() =>
-                                handleCheckboxChange(visitor.id, "exit")
-                              }
-                            />
-                            <span>Exit</span>
-                          </label>
-                        </div>
-                      ) : (
-                        <div className="flex justify-center space-x-2">
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            className="border-green-500 text-green-700 hover:bg-green-50"
-                            onClick={() =>
-                              handleRecurringAction(visitor.id, "logEntry")
-                            }
-                            disabled={
-                              currentStatus?.isInside ||
-                              isLoading ||
-                              (currentStatus?.isInside &&
-                                currentStatus?.lastLogExitTime)
-                            }
-                            aria-label={`Log entry for ${visitor.visitor_first_name}`}
-                          >
-                            Log Entry
-                          </Button>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            className="border-red-500 text-red-700 hover:bg-red-50"
-                            onClick={() =>
-                              handleRecurringAction(visitor.id, "logExit")
-                            }
-                            disabled={
-                              !currentStatus?.isInside ||
-                              isLoading ||
-                              (currentStatus?.isInside &&
-                                currentStatus?.lastLogExitTime)
-                            }
-                            aria-label={`Log exit for ${visitor.visitor_first_name}`}
-                          >
-                            Log Exit
-                          </Button>
-                        </div>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
-
-        <h2 className="text-2xl font-semibold mt-10">Entry/Exit Log History</h2>
-        <div className="overflow-x-auto mt-4">
-          <Table className="min-w-full border">
-            <TableHeader>
-              <TableRow className="bg-gray-100">
-                <TableHead>Visitor Name</TableHead>
-                <TableHead>Entry Time</TableHead>
-                <TableHead>Exit Time</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {scheduleData.visitor_entry_logs?.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="text-center text-gray-500 py-4"
-                  >
-                    No log entries yet.
-                  </TableCell>
-                </TableRow>
-              )}
-              {scheduleData.visitor_entry_logs
-                ?.slice()
-                .sort(
-                  (a, b) =>
-                    new Date(b.entry_time || 0).getTime() -
-                    new Date(a.entry_time || 0).getTime()
-                )
-                .map((log) => {
-                  const visitorInfo = scheduleData.visitiors.find(
-                    (v) => v.id === log.visitor_id
-                  );
-                  const visitorName = visitorInfo
-                    ? `${visitorInfo.visitor_first_name || ""} ${
-                        visitorInfo.visitor_last_name || ""
-                      }`.trim()
-                    : `Visitor ID: ${log.visitor_id}`;
-                  const isCurrentlyInside = !log.exit_time && !!log.entry_time;
-
-                  return (
-                    <TableRow
-                      key={log.id}
-                      className="border-b hover:bg-gray-50"
-                    >
-                      <TableCell>{visitorName}</TableCell>
-                      <TableCell>{formatDateTime(log.entry_time)}</TableCell>
-                      <TableCell>{formatDateTime(log.exit_time)}</TableCell>
-                      <TableCell>
-                        {isCurrentlyInside ? (
-                          <span className="font-semibold text-green-600">
-                            Currently Inside
-                          </span>
-                        ) : log.exit_time ? (
-                          <span className="text-red-600">Exited</span>
-                        ) : (
-                          "N/A"
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </div>
-
-        <div className="flex space-x-4 mt-8">
-          {scheduleData.visitor_type === "one-time" && (
-            <Button
-              type="button"
-              onClick={handleUpdateStatus}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
-              disabled={isLoading}
-            >
-              Update One-Time Status
-            </Button>
-          )}
-          <Button
-            type="button"
-            onClick={() => router.back()}
-            className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600"
-            disabled={isLoading}
+<div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-gradient-to-br from-white to-indigo-50 p-6">
+  <Table className="min-w-full table-auto border-collapse border border-gray-300 rounded-lg">
+    <TableHeader>
+      <TableRow className="bg-indigo-100">
+        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">First Name</TableHead>
+        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Last Name</TableHead>
+        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">ID Type</TableHead>
+        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">ID Number</TableHead>
+        <TableHead className="py-3 px-4 text-indigo-800 font-semibold text-center">
+          {scheduleData.visitor_type === "one-time" ? "Entry/Exit Status" : "Actions"}
+        </TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {scheduleData.visitiors?.length === 0 && (
+        <TableRow>
+          <TableCell
+            colSpan={5}
+            className="text-center text-gray-500 py-6 italic"
           >
-            Back
-          </Button>
-        </div>
+            No visitors listed for this schedule.
+          </TableCell>
+        </TableRow>
+      )}
+      {scheduleData.visitiors?.map((visitor) => {
+        const currentStatus =
+          scheduleData.visitor_type === "recurring"
+            ? getRecurringStatus(visitor.id)
+            : undefined;
+        const oneTimeStatus =
+          scheduleData.visitor_type === "one-time"
+            ? visitorStatuses.find((vs) => vs.id === visitor.id)
+            : undefined;
+
+        const isOneTimeFullyChecked =
+          scheduleData.visitor_type === "one-time" &&
+          oneTimeStatus?.entry &&
+          oneTimeStatus?.exit;
+
+        const isRecurringExited =
+          scheduleData.visitor_type === "recurring" &&
+          currentStatus?.lastLogExitTime;
+
+        return (
+          <TableRow
+            key={visitor.id}
+            className="border-b border-gray-200 hover:bg-indigo-50 transition-colors duration-200"
+          >
+            <TableCell className="py-3 px-4">{visitor.visitor_first_name || "N/A"}</TableCell>
+            <TableCell className="py-3 px-4">{visitor.visitor_last_name || "N/A"}</TableCell>
+            <TableCell className="py-3 px-4">{visitor.visitor_id_type || "N/A"}</TableCell>
+            <TableCell className="py-3 px-4">{visitor.visitor_id_number || "N/A"}</TableCell>
+            <TableCell className="py-3 px-4 text-center">
+              {scheduleData.visitor_type === "one-time" ? (
+                <div className="flex justify-center items-center space-x-6">
+                  <label className="flex items-center space-x-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-indigo-600 hover:text-indigo-800 transition-colors"
+                      checked={oneTimeStatus?.entry || false}
+                      onChange={() =>
+                        handleCheckboxChange(visitor.id, "entry")
+                      }
+                      disabled={isLoading || isOneTimeFullyChecked}
+                    />
+                    <span className="text-indigo-700 font-medium">Entry</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-red-600 hover:text-red-800 transition-colors"
+                      checked={oneTimeStatus?.exit || false}
+                      disabled={
+                        !oneTimeStatus?.entry ||
+                        isLoading ||
+                        isOneTimeFullyChecked
+                      }
+                      onChange={() =>
+                        handleCheckboxChange(visitor.id, "exit")
+                      }
+                    />
+                    <span className="text-red-700 font-medium">Exit</span>
+                  </label>
+                </div>
+              ) : (
+                <div className="flex justify-center space-x-3">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="border-green-500 text-green-700 hover:bg-green-100 focus:ring-2 focus:ring-green-300"
+                    onClick={() =>
+                      handleRecurringAction(visitor.id, "logEntry")
+                    }
+                    disabled={
+                      !!currentStatus?.isInside ||
+                      isLoading ||
+                      (!!currentStatus?.isInside &&
+                        !!currentStatus?.lastLogExitTime)
+                    }
+                    aria-label={`Log entry for ${visitor.visitor_first_name}`}
+                  >
+                    Log Entry
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="border-red-500 text-red-700 hover:bg-red-100 focus:ring-2 focus:ring-red-300"
+                    onClick={() =>
+                      handleRecurringAction(visitor.id, "logExit")
+                    }
+                    disabled={
+                      !!currentStatus?.isInside ||
+                      isLoading ||
+                      (!!currentStatus?.isInside &&
+                        !!currentStatus?.lastLogExitTime)
+                    }
+                    aria-label={`Log exit for ${visitor.visitor_first_name}`}
+                  >
+                    Log Exit
+                  </Button>
+                </div>
+              )}
+            </TableCell>
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  </Table>
+</div>
+
+<h2 className="text-3xl font-extrabold mt-12 mb-6 text-indigo-900 tracking-tight">
+  Entry/Exit Log History
+</h2>
+
+<div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-gradient-to-br from-white to-indigo-50 p-6">
+  <Table className="min-w-full table-auto border-collapse border border-gray-300 rounded-lg">
+    <TableHeader>
+      <TableRow className="bg-indigo-100">
+        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Visitor Name</TableHead>
+        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Entry Time</TableHead>
+        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Exit Time</TableHead>
+        <TableHead className="py-3 px-4 text-indigo-800 font-semibold">Status</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {scheduleData.visitor_entry_logs?.length === 0 && (
+        <TableRow>
+          <TableCell
+            colSpan={4}
+            className="text-center text-gray-500 py-6 italic"
+          >
+            No log entries yet.
+          </TableCell>
+        </TableRow>
+      )}
+      {scheduleData.visitor_entry_logs
+        ?.slice()
+        .sort(
+          (a, b) =>
+            new Date(b.entry_time || 0).getTime() -
+            new Date(a.entry_time || 0).getTime()
+        )
+        .map((log) => {
+          const visitorInfo = scheduleData.visitiors.find(
+            (v) => v.id === log.visitor_id
+          );
+          const visitorName = visitorInfo
+            ? `${visitorInfo.visitor_first_name || ""} ${
+                visitorInfo.visitor_last_name || ""
+              }`.trim()
+            : `Visitor ID: ${log.visitor_id}`;
+          const isCurrentlyInside = !log.exit_time && !!log.entry_time;
+
+          return (
+            <TableRow
+              key={log.id}
+              className="border-b border-gray-200 hover:bg-indigo-50 transition-colors duration-200"
+            >
+              <TableCell className="py-3 px-4">{visitorName}</TableCell>
+              <TableCell className="py-3 px-4">{formatDateTimes(log.entry_time)}</TableCell>
+              <TableCell className="py-3 px-4">{formatDateTimes(log.exit_time)}</TableCell>
+              <TableCell className="py-3 px-4">
+                {isCurrentlyInside ? (
+                  <span className="font-semibold text-green-600">Currently Inside</span>
+                ) : log.exit_time ? (
+                  <span className="text-red-600">Exited</span>
+                ) : (
+                  "N/A"
+                )}
+              </TableCell>
+            </TableRow>
+          );
+        })}
+    </TableBody>
+  </Table>
+</div>
+
+<div className="flex space-x-4 mt-8 mb-12">
+  {scheduleData.visitor_type === "one-time" && (
+    <Button
+      type="button"
+      onClick={handleUpdateStatus}
+      className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300"
+      disabled={isLoading}
+    >
+      Update One-Time Status
+    </Button>
+  )}
+  <Button
+    type="button"
+    onClick={() => router.back()}
+    className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 focus:ring-4 focus:ring-gray-300"
+    disabled={isLoading}
+  >
+    Back
+  </Button>
+</div>
+
       </form>
       <ToastContainer
         position="top-right"

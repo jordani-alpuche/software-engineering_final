@@ -4,8 +4,7 @@ import { getAllVisitorFeedback } from "@/lib/serverActions/feedback/[id]/route";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
-
-const page = async (props) => {
+async function page() {
   const session = await getServerSession(authOptions); // Get session from next-auth
 
   if (!session || !session.user?.id) {
@@ -15,7 +14,7 @@ const page = async (props) => {
   }
 
   const feedbackData = (await getAllVisitorFeedback()) || []; // Fetch all visitor feedback data from the API
-  // console.log("feedbackData", feedbackData);
+  
 
   return (
     <div>

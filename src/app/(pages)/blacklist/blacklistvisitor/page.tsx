@@ -7,19 +7,19 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import notfound from "@/app/404"; // Import the notfound component
 import AlreadyExists from "@/app/exists";
-import { BlackListVisitorsProps } from "@/app/types/interfaces";
 
-const page = async ({
-  searchParams,
-}: {
-  searchParams?: { vid: string; c: string };
-}) => {
-  // const { vid, c } = searchParams;
+const page = async (
+  props: {searchParams?: Promise<{ vid: string; c: string }>;}) => {
+    
+  const searchParams = await props.searchParams;
+
   const vid = await searchParams?.vid; // Get the vid from search parameters
-  const c = await searchParams?.c; // Get the c from search parameters
+  const formStatus = await searchParams?.c; // Get the c from search parameters
   const visitorId = Number(vid);
+  const c = String(formStatus); // Convert c to a string
+  
+
   let visitorData;
-  // console.log("value of c: ", typeof c); // Log the value of c
 
   // Validate vid
   if (!vid || isNaN(Number(vid))) {
@@ -46,7 +46,7 @@ const page = async ({
     // console.log("Visitor data update:", visitorData); // Log the fetched visitor data
   }
 
-  console.log("Visitor data:", visitorData); // Log the fetched visitor data
+  // console.log("Visitor data:", visitorData); // Log the fetched visitor data
   // If visitor data is found, return the component to create blacklist
   if (!visitorData) {
     // Check if visitor data is not found

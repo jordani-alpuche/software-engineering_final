@@ -157,13 +157,13 @@ model visitors_schedule {
   created_at          DateTime?            @default(now()) @db.Timestamp(6)
   visitor_type        String               @db.VarChar(100)
   license_plate       String               @db.VarChar(20)
-  visitor_entry_date  DateTime             @db.Date
-  visitor_exit_date   DateTime             @db.Date
   visitor_qrcode      String?
   visitor_qrcode_url  String?              @db.VarChar(255)
   visitor_qrcode_path String?              @db.VarChar(255)
   comments            String?              @db.VarChar(255)
   sg_type             Int
+  visitor_entry_date  DateTime?            @default(now()) @db.Timestamp(6)
+  visitor_exit_date   DateTime?            @default(now()) @db.Timestamp(6)
   visitiors           visitiors[]
   visitor_entry_logs  visitor_entry_logs[]
   visitor_feedback    visitor_feedback[]

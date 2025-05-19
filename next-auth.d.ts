@@ -3,17 +3,27 @@ import { DefaultSession } from "next-auth";
 declare module "next-auth" {
   interface User {
     id: string;
-    email: string; // Ensure this matches the actual type if it can be null
-    role: string;
     username: string;
+    role: string;
   }
 
   interface Session {
-    // Make user optional here to align with default types and optional chaining usage
-    user: User & DefaultSession["user"];
+    user: {
+      id: string;
+      username: string;
+      role: string;
+    } & DefaultSession["user"];
     expires: string;
-    error?: string; // Make optional if it's not always present
-    username?: string; // Make optional if it's not always present on the session root
+    accessToken?: string;
+    error?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT extends DefaultJWT {
+    id: string;
+    username: string;
+    role: string;
     accessToken?: string;
   }
 }

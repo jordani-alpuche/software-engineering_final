@@ -48,7 +48,7 @@ const SkeletonRow = () => (
   </TableRow>
 );
 
-export default function ListVisitorFeedback({ visitorFeedbackInformation }) {
+export default function ListVisitorFeedback({ visitorFeedbackInformation }:any) {
   // Initialize state variables
   const [data, setData] = React.useState([]); // Data for the table
   const [loading, setLoading] = React.useState(true); // Loading state

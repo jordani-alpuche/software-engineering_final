@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
 
-const visitors = async () => {
+async function visitors() {
   const session = await getServerSession(authOptions); // get session from next-auth
 
   if (!session || !session.user?.id) {
@@ -16,7 +16,6 @@ const visitors = async () => {
 
   const blacklistData = (await blacklistInfo()) || []; // Fetch blacklist data from the API
 
-  // console.log("visitorData", visitorData);
 
   return (
     <div>

@@ -56,7 +56,7 @@ const formSchema = z
     }
   );
 
-export default function UpdateUsers({ userData }) {
+export default function UpdateUsers({ userData }:any) {
   // let form = {};
   const router = useRouter();
   const params = useParams();
@@ -114,7 +114,7 @@ export default function UpdateUsers({ userData }) {
         router.push("/users/listusers"); // Redirect after successful update
       } catch (error) {
         setError("An error occurred while saving the user");
-        toast.error(error.message);
+        toast.error("An error occurred while saving the user");
       } finally {
         setIsLoading(false);
       }

@@ -24,7 +24,7 @@ const formSchema = z.object({
   comments: z.string(), // Comments must be a string
 });
 
-export default function CreateFeedback({ scheduleData }) {
+export default function CreateFeedback({ scheduleData }:any) {
   // Initialize the form using react-hook-form with Zod resolver for validation
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

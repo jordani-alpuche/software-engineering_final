@@ -3,9 +3,11 @@ import UpdateUsers from "@/app/components/users/update-user";
 
 import { getUsers } from "@/lib/serverActions/users/[id]/route";
 
-const UpdateUser = async ({ params }) => {
-  const { id: userId } = await params;
+const UpdateUser = async ( props: {params?: Promise<{ id: string }>;}) => {
 
+const params = await props.params;
+  const params_id = await params?.id;
+const userId = Number(params_id);
   const userData = (await getUsers(userId)) || {};
 
   return (

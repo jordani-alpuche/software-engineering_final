@@ -24,6 +24,7 @@ interface GroupVisitorData {
   comments?: string;
   sg_type: number;
 }
+
 interface IndividualVisitorData {
   resident_id: number;
   visitor_first_name: string;
@@ -144,7 +145,7 @@ export async function createGroupVisitor(data: GroupVisitorData) {
         })),
       });
 
-      const qr_code_url = `http://localhost:3000/visitors/viewvisitor/${visitorSchedule.id}`;
+      const qr_code_url = `https://gatecommunity.techadmin.me/visitors/viewvisitor/${visitorSchedule.id}`;
 
       await tx.visitors_schedule.update({
         where: { id: visitorSchedule.id },
@@ -242,7 +243,7 @@ export async function createIndividualVisitor(data: IndividualVisitorData) {
         },
       });
 
-      const qr_code_url = `http://localhost:3000/visitors/viewvisitor/${visitorSchedule.id}`;
+      const qr_code_url = `https://gatecommunity.techadmin.me/visitors/viewvisitor/${visitorSchedule.id}`;
 
       await tx.visitors_schedule.update({
         where: { id: visitorSchedule.id },
