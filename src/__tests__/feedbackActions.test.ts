@@ -2,11 +2,11 @@
 
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
-import { createVisitorFeedback } from "@/app/api/feedback/create/route"; // Adjust import path
+import { createVisitorFeedback } from "@/lib/serverActions/feedback/create/CreateFeedbackActions"; // Adjust import path
 import {
   getVisitorSchedule,
   getAllVisitorFeedback,
-} from "@/app/api/feedback/[id]/route"; // Adjust import path
+} from "@/lib/serverActions/feedback/gets/GetFeebackActions"; // Adjust import path
 import { authOptions } from "@/lib/auth"; // Assuming this is the correct path
 
 // --- Mock Prisma Client ---

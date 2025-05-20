@@ -3,7 +3,7 @@
 import {
   createGroupVisitor,
   createIndividualVisitor,
-} from "@/app/api/visitors/create/route"; // Adjust the import path
+} from "@/lib/serverActions/visitors/create/CreateVisitorActions"; // Adjust the import path
 import { prisma } from "@/lib/prisma"; // Import the actual prisma instance path
 
 // --- Mock Prisma Client ---

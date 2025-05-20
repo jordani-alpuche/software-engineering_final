@@ -3,9 +3,9 @@
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
 import { revalidatePath } from "next/cache";
-import { updateEntryExitStatus } from "@/app/api/visitors/entry-exit/route"; // Adjust path
-import { visitorsLog } from "@/app/api/visitors/entrylog/route"; // Adjust path
-import { visitorsInfo } from "@/app/api/visitors/list/route"; // Adjust path
+import { updateEntryExitStatus } from "@/lib/serverActions/visitors/entry-exit/ExitLogActions"; // Adjust path
+import { visitorsLog } from "@/lib/serverActions/visitors/entrylog/EntryLogActions"; // Adjust path
+import { visitorsInfo } from "@/lib/serverActions/visitors/list/ListVisitorActions"; // Adjust path
 import { authOptions } from "@/lib/auth"; // Assuming this is the correct path
 
 // --- Mock Prisma Client ---

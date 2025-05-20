@@ -2,9 +2,9 @@
 
 import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "@/app/utils/hashPassword"; // Adjust path if necessary
-import { createUser } from "@/app/api/users/create/route"; // Adjusted path assuming 'app' not 'ap'
-import { getUsers, updateUser, deleteUser } from "@/app/api/users/[id]/route"; // Adjust path if necessary
-import { usersInfo } from "@/app/api/users/list/route"; // Adjust path if necessary
+import { createUser } from "@/lib/serverActions/users/create/CreateUserActions"; // Adjusted path assuming 'app' not 'ap'
+import { getUsers, updateUser, deleteUser } from "@/lib/serverActions/users/update/UpdateUsersActions"; // Adjust path if necessary
+import { usersInfo } from "@/lib/serverActions/users/list/ListUsersActions"; // Adjust path if necessary
 
 // --- Mock Prisma Client ---
 jest.mock("@prisma/client", () => {

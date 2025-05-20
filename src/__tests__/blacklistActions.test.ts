@@ -2,12 +2,12 @@
 
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
-import { BlacklistVisitorAPI } from "@/app/api/blacklist/create-update/route"; // Adjust path
-import { deleteBlacklistVisitor } from "@/app/api/blacklist/[id]/route"; // Adjust path
+import { BlacklistVisitorAPI } from "@/lib/serverActions/blacklist/create-update/CreateUpdateBlacklistActions"; // Adjust path
+import { deleteBlacklistVisitor } from "@/lib/serverActions/blacklist/delete/DeleteBlacklistAction"; // Adjust path
 import {
   blacklistInfo,
   getblacklistInfo,
-} from "@/app/api/blacklist/list/route"; // Adjust path
+} from "@/lib/serverActions/blacklist/list/ListBlacklistActions"; // Adjust path
 import { authOptions } from "@/lib/auth"; // Assuming this is the correct path
 
 // --- Mock Prisma Client ---

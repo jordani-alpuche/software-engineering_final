@@ -10,7 +10,7 @@ import {
   updateIndividualSchedule,
   updateGroupSchedule,
   deleteSchedule,
-} from "@/app/api/visitors/[id]/route"; // Adjust the import path to your actual file
+} from "@/lib/serverActions/visitors/update/UpdateVisitorActions"; // Adjust the import path to your actual file
 import { authOptions } from "@/lib/auth"; // Assuming this is the correct path
 
 // --- Mock Prisma Client ---
