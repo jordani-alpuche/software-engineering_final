@@ -40,12 +40,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {
           title: "New Individual Visitor Schedule",
           url: "/visitors/newIndividualVisitor",
-          roles: ["resident"],
+          roles: ["resident", "admin"],
         },
         {
           title: "New Group Visitor Schedule",
           url: "/visitors/newGroupVisitor",
-          roles: ["resident"],
+          roles: ["resident", "admin"],
         },
         {
           title: "List Vistors",

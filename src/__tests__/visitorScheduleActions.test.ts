@@ -10,11 +10,10 @@ import {
   updateIndividualSchedule,
   updateGroupSchedule,
   deleteSchedule,
-} from "@/lib/serverActions/visitors/update/UpdateVisitorActions"; // Adjust the import path to your actual file
-import { authOptions } from "@/lib/auth"; // Assuming this is the correct path
+} from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
+import { authOptions } from "@/lib/auth";
 
 // --- Mock Prisma Client ---
-// We mock the specific methods used by the server actions.
 jest.mock("@prisma/client", () => {
   const mockPrismaClient = {
     visitors_schedule: {
@@ -23,7 +22,6 @@ jest.mock("@prisma/client", () => {
       delete: jest.fn(),
     },
     visitiors: {
-      // Ensure table name matches your schema (visitiors vs visitors)
       findUnique: jest.fn(),
       findMany: jest.fn(),
       updateMany: jest.fn(),
@@ -38,10 +36,7 @@ jest.mock("@prisma/client", () => {
     visitor_entry_logs: {
       findMany: jest.fn(),
     },
-    // Mock the $transaction method
     $transaction: jest.fn().mockImplementation(async (callback) => {
-      // The transaction mock executes the callback immediately,
-      // passing a mocked transaction client ('tx')
       const mockTx = {
         visitors_schedule: {
           findUnique: jest.fn(),
@@ -64,11 +59,7 @@ jest.mock("@prisma/client", () => {
         visitor_entry_logs: {
           findMany: jest.fn(),
         },
-        // Add other models/methods used within transactions if needed
       };
-      // Simulate successful transaction execution by default
-      // You might need to specifically mock return values within individual tests
-      // if the logic depends on intermediate results.
       return await callback(mockTx);
     }),
   };
@@ -80,15 +71,14 @@ jest.mock("next-auth/next");
 const mockGetServerSession = getServerSession as jest.Mock;
 
 // --- Prisma Instance (using the mock) ---
-// Instantiate the mocked client
 const prisma = new PrismaClient();
 
 // --- Helper to reset mocks before each test ---
 beforeEach(() => {
   jest.clearAllMocks();
-  // Default mock for getServerSession returning a user
+  // Default mock for getServerSession returning a user with no role (admin or security)
   mockGetServerSession.mockResolvedValue({
-    user: { id: 12 }, // Provide a default mock user ID
+    user: { id: 12 },
   });
 });
 
@@ -97,7 +87,7 @@ describe("isValidSchedule Action", () => {
   it("should return valid: true and code 200 for an existing schedule ID when the security officer scan qrcode", async () => {
     const scheduleId = 1;
     (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue({
-      id: scheduleId /* other fields */,
+      id: scheduleId,
     });
 
     const result = await isValidSchedule(scheduleId);
@@ -140,14 +130,13 @@ describe("isValidSchedule Action", () => {
 // --- Test Suite for getSchedule ---
 describe("getSchedule Action", () => {
   const scheduleId = 5;
-  const userId = 12; // Match the default mock session
+  const userId = 12;
 
-  it("should return the schedule with visitors and logs when found for the user", async () => {
+  it("should return the schedule with visitors and logs when found for the user (admin/security)", async () => {
     const mockSchedule = {
       id: scheduleId,
       resident_id: userId,
       visitor_phone: "123",
-      /* other fields */
       visitiors: [
         {
           id: 10,
@@ -172,6 +161,36 @@ describe("getSchedule Action", () => {
 
     expect(result).toEqual(mockSchedule);
     expect(mockGetServerSession).toHaveBeenCalledWith(authOptions);
+    // Only expect resident_id in where clause if role is "resident"
+    expect(prisma.visitors_schedule.findUnique).toHaveBeenCalledWith({
+      where: { id: scheduleId },
+      include: {
+        visitiors: true,
+        visitor_entry_logs: true,
+      },
+    });
+  });
+
+  it("should return the schedule with visitors and logs when found for a resident", async () => {
+    // Set session role to resident
+    mockGetServerSession.mockResolvedValue({
+      user: { id: userId, role: "resident" },
+    });
+    const mockSchedule = {
+      id: scheduleId,
+      resident_id: userId,
+      visitor_phone: "123",
+      visitiors: [],
+      visitor_entry_logs: [],
+    };
+    (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(
+      mockSchedule
+    );
+
+    const result = await getSchedule(scheduleId);
+
+    expect(result).toEqual(mockSchedule);
+    expect(mockGetServerSession).toHaveBeenCalledWith(authOptions);
     expect(prisma.visitors_schedule.findUnique).toHaveBeenCalledWith({
       where: { id: scheduleId, resident_id: userId },
       include: {
@@ -181,7 +200,26 @@ describe("getSchedule Action", () => {
     });
   });
 
-  it("should return null if the schedule is not found", async () => {
+  it("should return null if the schedule is not found (admin/security)", async () => {
+    (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(null);
+
+    const result = await getSchedule(scheduleId);
+
+    expect(result).toBeNull();
+    expect(mockGetServerSession).toHaveBeenCalledWith(authOptions);
+    expect(prisma.visitors_schedule.findUnique).toHaveBeenCalledWith({
+      where: { id: scheduleId },
+      include: {
+        visitiors: true,
+        visitor_entry_logs: true,
+      },
+    });
+  });
+
+  it("should return null if the schedule is not found (resident)", async () => {
+    mockGetServerSession.mockResolvedValue({
+      user: { id: userId, role: "resident" },
+    });
     (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(null);
 
     const result = await getSchedule(scheduleId);
@@ -198,18 +236,17 @@ describe("getSchedule Action", () => {
   });
 
   it("should return null if the schedule belongs to a different resident", async () => {
-    // Simulate session returning a different user ID
     mockGetServerSession.mockResolvedValue({
-      user: { id: 13 },
+      user: { id: 13, role: "resident" },
     });
-    (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(null); // Prisma findUnique would return null in this case
+    (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(null);
 
     const result = await getSchedule(scheduleId);
 
     expect(result).toBeNull();
     expect(mockGetServerSession).toHaveBeenCalledWith(authOptions);
     expect(prisma.visitors_schedule.findUnique).toHaveBeenCalledWith({
-      where: { id: scheduleId, resident_id: 13 }, // Check it uses the correct resident_id
+      where: { id: scheduleId, resident_id: 13 },
       include: {
         visitiors: true,
         visitor_entry_logs: true,
@@ -218,15 +255,12 @@ describe("getSchedule Action", () => {
   });
 
   it("should return null if there is no active session", async () => {
-    mockGetServerSession.mockResolvedValue(null); // Simulate no session
-    // Prisma call might still happen but with resident_id: NaN, likely returning null
+    mockGetServerSession.mockResolvedValue(null);
     (prisma.visitors_schedule.findUnique as jest.Mock).mockResolvedValue(null);
 
     const result = await getSchedule(scheduleId);
 
     expect(result).toBeNull();
-    // Depending on implementation, findUnique might be called with NaN or undefined for resident_id
-    // Let's check it was called, the exact where clause might vary based on JS/TS coercion.
     expect(prisma.visitors_schedule.findUnique).toHaveBeenCalled();
   });
 });

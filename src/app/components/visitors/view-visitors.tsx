@@ -182,7 +182,7 @@ export default function ViewVisitors({
         const result: ActionResult = await updateEntryExitStatus(payload);
         // console.log(`API Result for visitor ${status.id}:`, result);
 
-        if (result.code === 403) {
+        if (result.code === 406 || result.code === 403) {
           allSuccessful = false;
           const message = `Visitor ${status.id}: ${result.message}`;
           // errorMessages.push(message);

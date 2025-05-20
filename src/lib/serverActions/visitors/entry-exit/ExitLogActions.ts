@@ -1,4 +1,4 @@
-// api/visitors/entry-exit/route.ts
+// /src/lib/serverActions/visitors/entry-exit/ExitLogActions
 "use server";
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
