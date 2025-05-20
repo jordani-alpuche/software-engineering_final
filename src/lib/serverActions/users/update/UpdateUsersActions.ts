@@ -151,7 +151,7 @@ export async function deleteUser(id: number) {
   const role = session.user.role;
 
   // Optional: Allow only certain roles
-  if (!["resident"].includes(role)) {
+  if (!["admin"].includes(role)) {
     return {
       success: false,
       code: 403,
