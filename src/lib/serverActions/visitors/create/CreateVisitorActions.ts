@@ -204,10 +204,12 @@ export async function createGroupVisitor(data: GroupVisitorData) {
             }
         });
 
+       
+
       return visitorSchedule;
     });
 
-
+      const sendemail = await sendEmail(visitorEmail, result.visitor_qrcode!,"visitor");
 
     return {
       success: true,
@@ -372,7 +374,7 @@ export async function createIndividualVisitor(data: IndividualVisitorData) {
       return updatedVisitorSchedule;
     });
 
-    const sendemail = await sendEmail(visitorEmail, result.visitor_qrcode!);
+    const sendemail = await sendEmail(visitorEmail, result.visitor_qrcode!,"visitor");
     // console.log("Email sent:", sendemail);
 
     // if(sendemail.status !== 200) {

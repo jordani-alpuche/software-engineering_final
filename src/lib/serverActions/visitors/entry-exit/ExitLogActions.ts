@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Import authentication logic
-
+import { sendEmail } from "@/app/utils/sendEmail"; // Import your email sending function
 const prisma = new PrismaClient();
 
 interface EntryExitPayload {
@@ -184,6 +184,11 @@ export async function updateEntryExitStatus(
             data: { status: "inactive" },
           });
 
+          //  = schedule.visitor_email;
+           const qrcode_url = `https://gatecommunity.techadmin.me/visitorfeedback/${schedule.id}`;
+
+           const sendemail = await sendEmail(schedule.visitor_email, qrcode_url,"feedback");
+
 
         } else if (!entryChecked && !exitChecked) {
           // Neither checked, cancel the log
@@ -295,6 +300,19 @@ export async function updateEntryExitStatus(
             where: { id: openLog.id },
             data: { exit_time: new Date() },
           });
+
+          
+        const feedbackGiven = await prisma.visitor_feedback.findFirst({
+          where: {visitor_schedule_id: Number(schedule.id)},
+        });
+
+        const qrcode_url = `https://gatecommunity.techadmin.me/visitorfeedback/${schedule.id}`;
+
+        if(feedbackGiven == null){
+           await sendEmail(schedule.visitor_email, qrcode_url,"feedback");
+        }
+
+
           return {
             success: true,
             code: 200,
@@ -307,6 +325,7 @@ export async function updateEntryExitStatus(
             message: "No active entry log found for this visitor.",
           };
         }
+
       } else {
         return {
           success: false,
