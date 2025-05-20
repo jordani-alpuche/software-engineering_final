@@ -3,8 +3,11 @@
 import { PrismaClient } from "@prisma/client";
 // import { bcrypt } from "bcryptjs";
 import { hashPassword } from "@/app/utils/hashPassword"; // Adjust path if necessary
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth"; // Import authentication logic
 
 const prisma = new PrismaClient();
+
 
 /*
  ** @description: This function get a secific user from the database.
@@ -13,6 +16,26 @@ const prisma = new PrismaClient();
  ** @throws: Error if the database query fails.
  */
 export async function getUsers(id: number) {
+const session = await getServerSession(authOptions);
+  if (!session) {
+    return {
+      success: false,
+      code: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  const role = session.user.role;
+
+  // Optional: Allow only certain roles
+  if (!["admin"].includes(role)) {
+    return {
+      success: false,
+      code: 403,
+      message: "Forbidden: You do not have permission",
+    };
+  }
+
   const user = await prisma.users.findUnique({
     where: { id: Number(id) },
   });
@@ -27,6 +50,26 @@ export async function getUsers(id: number) {
  ** @throws: Error if the database query fails or if required fields are missing.
  */
 export async function updateUser(id: number, data: any) {
+const session = await getServerSession(authOptions);
+  if (!session) {
+    return {
+      success: false,
+      code: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  const role = session.user.role;
+
+  // Optional: Allow only certain roles
+  if (!["admin"].includes(role)) {
+    return {
+      success: false,
+      code: 403,
+      message: "Forbidden: You do not have permission",
+    };
+  }
+
   const userData = { ...data };
 
   const currentUser = await prisma.users.findUnique({
@@ -96,6 +139,26 @@ export async function updateUser(id: number, data: any) {
  ** @param {number} id - The ID of the user to delete.
  */
 export async function deleteUser(id: number) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return {
+      success: false,
+      code: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  const role = session.user.role;
+
+  // Optional: Allow only certain roles
+  if (!["resident"].includes(role)) {
+    return {
+      success: false,
+      code: 403,
+      message: "Forbidden: You do not have permission",
+    };
+  }
+
   try {
     await prisma.users.delete({
       where: { id: Number(id) },

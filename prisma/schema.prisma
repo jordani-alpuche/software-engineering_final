@@ -55,8 +55,8 @@ model notifications {
   status     String    @default("unread") @db.VarChar(20)
   created_at DateTime? @default(now()) @db.Timestamp(6)
   updated_at DateTime? @default(now()) @db.Timestamp(6)
-  user_id    Int?
-  users      users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "notifications_userid")
+  user_id    Int
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "notifications_userid")
 
   @@index([id], map: "id_1741109344869_index")
   @@index([user_id], map: "resident_id_1741109348633_index")

@@ -4,11 +4,21 @@ import UpdateGroupVisitors from "@/app/components/visitors/group/update-visitors
 import { getSchedule } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
 import { notFound } from "next/navigation";
 import {ScheduleData} from "@/app/types/interfaces"; // Import the ScheduleData interface
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth"; // Import authentication logic
+import { redirect } from "next/navigation";
 const UpdateVisitor = async ( props: {params?: Promise<{ id: string }>;}) => {
 
 const params = await props.params;
 const params_id = await params?.id;
 const scheduleId = Number(params_id);
+
+  const session = await getServerSession(authOptions); // Get session from next-auth
+  if (!session || !session.user?.id) {
+    // Check if session exists and user ID is present
+    // Redirect to login page if session has expired
+    return redirect("/api/auth/signin"); // Redirect to the sign-in page
+  }
 
   const scheduleGetData = (await getSchedule(scheduleId)) as ScheduleData | null; // Fetching schedule data based on the scheduleId
 

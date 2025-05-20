@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import {useHasMounted} from "@/hooks/useHasMounted";
+// import {sendEmail} from "@/app/utils/sendEmail";
 
 const formSchema = z.object({
   resident_id: z.coerce.number(), // Converts string input to a number
@@ -134,9 +135,13 @@ export default function CreateVisitors({ userID: userid }:any) {
       const createVisitorResponse = await createIndividualVisitor(
         formattedData
       );
-      // console.log("Response:", createVisitorResponse);
+      console.log("Response:", createVisitorResponse);
 
-      if (createVisitorResponse.code === 400) {
+      if(createVisitorResponse.code === 408) {
+        toast.error(createVisitorResponse.message);
+        setIsLoading(false);
+      }
+      else if (createVisitorResponse.code === 400) {
         toast.error("Please fill all the required fields");
         setIsLoading(false);
       } else if (createVisitorResponse.code === 500) {
@@ -144,7 +149,7 @@ export default function CreateVisitors({ userID: userid }:any) {
         console.log("Error:", createVisitorResponse);
         setIsLoading(false);
       } else if (createVisitorResponse.code === 200) {
-        toast.success("Visitor created successfully!");
+        toast.success("Visitor created successfully!");        
         router.push("/visitors/listvisitors");
       } else if (createVisitorResponse.code === 403) {
         toast.error("Visitor is blacklisted");

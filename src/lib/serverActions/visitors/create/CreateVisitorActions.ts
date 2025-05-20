@@ -1,7 +1,10 @@
 "use server";
 // import { PrismaClient } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth"; // Import authentication logic
+import  {CreateNotification} from "@/lib/serverActions/notifications/createNotifications"; // Import your notification function
+import { sendEmail } from "@/app/utils/sendEmail"; // Import your email sending function
 // const prisma = new PrismaClient({
 //   log: ["query", "info", "warn", "error"],
 // });
@@ -49,6 +52,28 @@ interface IndividualVisitorData {
   If all checks pass, it creates the visitor schedule and visitors in a transaction.
 */
 export async function createGroupVisitor(data: GroupVisitorData) {
+
+    const session = await getServerSession(authOptions);
+  if (!session) {
+    return {
+      success: false,
+      code: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  const role = session.user.role;
+  const username = session.user.username;
+
+  // Optional: Allow only certain roles
+  if (!["admin","resident"].includes(role)) {
+    return {
+      success: false,
+      code: 403,
+      message: "Forbidden: You do not have permission",
+    };
+  }
+
   try {
     if (
       !data.resident_id ||
@@ -162,8 +187,29 @@ export async function createGroupVisitor(data: GroupVisitorData) {
         },
       });
 
+      // await tx.notifications.create({
+      //   data: {
+      //     user_id: data.resident_id,
+      //     resident_name: , // Replace with actual resident name
+      //     message: `Group visitor schedule created successfully for ${data.visitors.length} visitors.`,
+      //     type: "visitor",
+      //     status: "unread",
+      //   },
+      // })
+
+
+          await tx.notifications.create({
+            data: {
+              user_id: Number(data.resident_id),
+              message: `Schedule has created successfully by ${username} .`,
+              type: "Group visitor"
+            }
+        });
+
       return visitorSchedule;
     });
+
+
 
     return {
       success: true,
@@ -189,6 +235,28 @@ export async function createGroupVisitor(data: GroupVisitorData) {
 */
 
 export async function createIndividualVisitor(data: IndividualVisitorData) {
+ 
+      const session = await getServerSession(authOptions);
+      if (!session) {
+        return {
+          success: false,
+          code: 401,
+          message: "Unauthorized",
+        };
+      }
+
+  const role = session.user.role;
+  const username = session.user.username;
+
+  // Optional: Allow only certain roles
+  if (!["admin","resident"].includes(role)) {
+    return {
+      success: false,
+      code: 403,
+      message: "Forbidden: You do not have permission",
+    };
+  }
+ 
   try {
     // Validate required fields
     if (
@@ -236,6 +304,18 @@ export async function createIndividualVisitor(data: IndividualVisitorData) {
 
     const qr_code = "123456789"; // Generate dynamically in production
 
+
+    // const sendTestEmail = await sendEmail(visitorEmail, "test-link"); 
+    
+    // if (!sendTestEmail) {
+    //   return {
+    //     success: false,
+    //     code: 408,
+    //     message: JSON.stringify(sendTestEmail),
+    //   };
+    // }
+
+
     const result = await prisma.$transaction(async (tx) => {
       const visitorSchedule = await tx.visitors_schedule.create({
         data: {
@@ -271,9 +351,40 @@ export async function createIndividualVisitor(data: IndividualVisitorData) {
           visitor_schedule_id: visitorSchedule.id,
         },
       });
+      
 
-      return visitorSchedule;
+      await tx.notifications.create({
+        data: {
+          user_id: Number(data.resident_id),
+        message: `Schedule has created successfully by ${username} .`,
+          type: "Individual visitor"
+        }
     });
+
+
+
+  // Fetch the updated visitorSchedule with QR code
+  const updatedVisitorSchedule = await tx.visitors_schedule.findFirst({
+    where: { id: visitorSchedule.id },
+  });
+
+  if (!updatedVisitorSchedule) {
+    throw new Error('Failed to retrieve updated visitor schedule');
+  }
+
+      return updatedVisitorSchedule;
+    });
+
+    const sendemail = await sendEmail(visitorEmail, result.visitor_qrcode!);
+    // console.log("Email sent:", sendemail);
+
+    // if(sendemail.status !== 200) {
+    //   return {
+    //     success: false,
+    //     code: 500,
+    //     message: "Failed to send email",
+    //   };
+    // }
 
     return {
       success: true,

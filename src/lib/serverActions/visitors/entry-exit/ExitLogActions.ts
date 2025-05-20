@@ -2,6 +2,8 @@
 "use server";
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth"; // Import authentication logic
 
 const prisma = new PrismaClient();
 
@@ -39,6 +41,28 @@ interface ActionResult {
 export async function updateEntryExitStatus(
   payload: EntryExitPayload
 ): Promise<ActionResult> {
+
+      const session = await getServerSession(authOptions);
+    if (!session) {
+      return {
+        success: false,
+        code: 401,
+        message: "Unauthorized",
+      };
+    }
+  
+    const role = session.user.role;
+  
+    // Optional: Allow only certain roles
+    if (!["admin","security"].includes(role)) {
+      return {
+        success: false,
+        code: 403,
+        message: "Forbidden: You do not have permission",
+      };
+    }
+
+
   try {
     const {
       visitorId,

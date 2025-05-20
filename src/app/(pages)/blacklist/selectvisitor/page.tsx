@@ -4,7 +4,7 @@ import { getAllVisitors } from "@/lib/serverActions/visitors/update/UpdateVisito
 import {  redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
-import notfound from "@/app/404"; // Import the notfound component
+import notfound from "@/app/errors/404/page"; // Import the notfound component
 async function page()  {
   const session = await getServerSession(authOptions); // Get session from next-auth
 

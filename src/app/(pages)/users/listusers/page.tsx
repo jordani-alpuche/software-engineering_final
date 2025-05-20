@@ -4,11 +4,12 @@ import { usersInfo } from "@/lib/serverActions/users/list/ListUsersActions";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
 import { redirect } from "next/navigation";
+
 const page = async () => {
 
     const session = await getServerSession(authOptions); // Get the session from NextAuth
   
-    if (!session || !session.user?.id) {
+    if (!session || !session.user?.id || session.user.role !== "admin") {
       // Check if session exists and user ID is present
       // Redirect to login page if session has expired
       return redirect("/api/auth/signin");

@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { updateEntryExitStatus } from "@/lib/serverActions/visitors/entry-exit/ExitLogActions";
 import { useHasMounted } from "@/hooks/useHasMounted";
 import { format, toZonedTime } from "date-fns-tz";
-
+import { useSession } from "next-auth/react";
 const timeZone = "America/Belize";
 
 interface Visitor {
@@ -76,6 +76,8 @@ export default function ViewVisitors({
   const router = useRouter();
   const [scheduleData, setScheduleData] =
     useState<ScheduleData>(initialScheduleData);
+
+ const { data: session } = useSession();
 
   const [visitorStatuses, setVisitorStatuses] = useState(() => {
     if (scheduleData.visitor_type === "one-time") {
@@ -402,6 +404,8 @@ if (!hasMounted) return null;
   Visitors on Schedule
 </h2>
 
+
+{["admin","security"].includes(session?.user?.role || "") && (
 <div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-gradient-to-br from-white to-indigo-50 p-4 sm:p-6">
   <Table className="min-w-full table-auto border-collapse border border-gray-300 rounded-lg">
     <TableHeader>
@@ -501,9 +505,9 @@ if (!hasMounted) return null;
                     className="border-red-500 text-red-700 hover:bg-red-100 focus:ring-2 focus:ring-red-300"
                     onClick={() => handleRecurringAction(visitor.id, "logExit")}
                     disabled={
-                      !!currentStatus?.isInside ||
+                      !currentStatus?.isInside ||
                       isLoading ||
-                      (!!currentStatus?.isInside && !!currentStatus?.lastLogExitTime)
+                      (!currentStatus?.isInside && !currentStatus?.lastLogExitTime)
                     }
                     aria-label={`Log exit for ${visitor.visitor_first_name}`}
                   >
@@ -519,10 +523,14 @@ if (!hasMounted) return null;
   </Table>
 </div>
 
+
+)}
+
 <h2 className="text-2xl sm:text-3xl font-extrabold mt-12 mb-6 text-indigo-900 tracking-tight">
   Entry/Exit Log History
 </h2>
 
+     
 <div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-gradient-to-br from-white to-indigo-50 p-4 sm:p-6">
   <Table className="min-w-full table-auto border-collapse border border-gray-300 rounded-lg">
     <TableHeader>
@@ -585,6 +593,7 @@ if (!hasMounted) return null;
           </TableBody>
         </Table>
       </div>
+      
 
       <div className="flex space-x-4 mt-8 mb-12">
         {scheduleData.visitor_type === "one-time" && (

@@ -12,8 +12,8 @@ const prisma = new PrismaClient();
  */
 
 export async function getVisitorSchedule(id: number) {
-  const session = await getServerSession(authOptions);
-  const userid = session?.user.id;
+  // const session = await getServerSession(authOptions);
+  // const userid = session?.user.id;
 
   const feedback = await prisma.visitor_feedback.findFirst({
     where: { visitor_schedule_id: Number(id) },
@@ -49,3 +49,19 @@ export async function getAllVisitorFeedback() {
 
   return feedback || null;
 }
+
+/*
+ ** @description: This function retrieves all visitor feedback from the database for a specific user.
+  ** @param {number} id - The ID of the user whose feedback to retrieve.
+  ** @returns: An array of visitor feedback for the user or an error message.
+  ** @throws: Error if the database query fails.
+  */
+
+export async function getSingleVisitorFeedback(id:number) {
+  const feedback = await prisma.visitor_feedback.findFirst({
+   where: { id: Number(id) },
+  });
+
+  return feedback || null;
+}
+

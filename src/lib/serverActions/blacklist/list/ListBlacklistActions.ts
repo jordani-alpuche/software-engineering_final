@@ -14,6 +14,27 @@ const prisma = new PrismaClient();
 export async function blacklistInfo() {
   const session = await getServerSession(authOptions); // Get the session to check user authentication
   const userid = Number(session?.user.id); // Get the user ID from the session
+ 
+  if (!session) {
+    return {
+      success: false,
+      code: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  const role = session.user.role;
+
+  // Optional: Allow only certain roles
+  if (!["admin"].includes(role)) {
+    return {
+      success: false,
+      code: 403,
+      message: "Forbidden: You do not have permission",
+    };
+  }
+
+ 
   try {
     const blacklist = await prisma.blacklist_visitors.findMany({
       include: {
@@ -36,6 +57,25 @@ export async function blacklistInfo() {
 export async function getblacklistInfo(vid: number) {
   const session = await getServerSession(authOptions);
   const userid = Number(session?.user.id);
+  if (!session) {
+    return {
+      success: false,
+      code: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  const role = session.user.role;
+
+  // Optional: Allow only certain roles
+  if (!["admin"].includes(role)) {
+    return {
+      success: false,
+      code: 403,
+      message: "Forbidden: You do not have permission",
+    };
+  }
+
   try {
     const blacklist = await prisma.blacklist_visitors.findUnique({
       where: {

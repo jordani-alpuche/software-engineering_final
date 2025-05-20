@@ -1,6 +1,8 @@
 "use server";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "@/app/utils/hashPassword"; // Adjust the import as necessary
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth"; // Import authentication logic
 
 const prisma = new PrismaClient();
 
@@ -14,6 +16,28 @@ const prisma = new PrismaClient();
  */
 
 export async function createUser(data: any) {
+
+      const session = await getServerSession(authOptions);
+    if (!session) {
+      return {
+        success: false,
+        code: 401,
+        message: "Unauthorized",
+      };
+    }
+  
+    const role = session.user.role;
+  
+    // Optional: Allow only certain roles
+    if (!["admin"].includes(role)) {
+      return {
+        success: false,
+        code: 403,
+        message: "Forbidden: You do not have permission",
+      };
+    }
+  
+
   try {
     // Check if the username already exists
     const existingUser = await prisma.users.findUnique({

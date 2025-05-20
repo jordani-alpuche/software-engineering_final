@@ -35,6 +35,9 @@ import {
 } from "@/components/ui/table";
 import { deleteSchedule } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
 
+import { useSession } from "next-auth/react";
+
+
 const SkeletonRow = () => (
   <TableRow>
     {Array(6)
@@ -58,6 +61,9 @@ export default function ListVisitors({ visitorInformation }:any) {
     React.useState<VisibilityState>({});
 
   const router = useRouter();
+  const { data: session } = useSession();
+const role = session?.user?.role ?? ""; // fallback to empty string if undefined
+
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -180,6 +186,7 @@ export default function ListVisitors({ visitorInformation }:any) {
               >
                 View Schedule
               </DropdownMenuItem>
+              {["admin","resident"].includes(role) && (
               <DropdownMenuItem
                 onClick={() =>
                   router.push(`/visitors/updatevisitor/${schedule.id}`)
@@ -187,6 +194,8 @@ export default function ListVisitors({ visitorInformation }:any) {
               >
                 Update Schedule
               </DropdownMenuItem>
+              )}
+              {["admin"].includes(role) && (
               <DropdownMenuItem
                 onClick={async () => {
                   if (
@@ -208,6 +217,7 @@ export default function ListVisitors({ visitorInformation }:any) {
               >
                 Delete Schedule
               </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );

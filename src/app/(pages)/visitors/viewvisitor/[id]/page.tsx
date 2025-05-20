@@ -4,10 +4,10 @@ import { getSchedule } from "@/lib/serverActions/visitors/update/UpdateVisitorAc
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Auth logic is moved to a separate file
-import notfound from "@/app/404"; // Import the notfound component
+import notfound from "@/app/errors/404/page"; // Import the notfound component
 import { ScheduleData } from "@/app/types/interfaces"; // Import the ScheduleData interface
 
-const page = async ( props: {params?: Promise<{ id: string }>;}) => {
+const page =  async ( props: {params?: Promise<{ id: string }>;}) => {
   const params = await props.params; // Get the search parameters from the props
   const  params_id  = await params?.id; // Extract the id from the params (URL parameters)
 const scheduleId = Number(params_id); // Convert the id to a number
@@ -22,7 +22,7 @@ const scheduleId = Number(params_id); // Convert the id to a number
   }
   const scheduleGetData = (await getSchedule(scheduleId)) as ScheduleData | null; // Fetch schedule data based on the schedule ID
   const userid = Number(session?.user.id); // Get the user ID from the session
-
+console.log("scheduleGetData", scheduleGetData);
   if (!scheduleGetData) {
   return notfound(); // Return 404 if no data found
     }

@@ -34,6 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { deleteBlacklistVisitor } from "@/lib/serverActions/blacklist/delete/DeleteBlacklistAction";
+import { useSession } from "next-auth/react";
 
 // Skeleton loader row used when data is loading
 const SkeletonRow = () => (
@@ -59,6 +60,9 @@ export default function BlacklistVisitors({ blacklistData }: any) {
     React.useState<VisibilityState>({}); // Visibility state
 
   const router = useRouter();
+    const { data: session } = useSession();
+const role = session?.user?.role ?? ""; // fallback to empty string if undefined
+
 
   // Load initial blacklist data on component mount
   React.useEffect(() => {
@@ -150,7 +154,9 @@ export default function BlacklistVisitors({ blacklistData }: any) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-              {/* Update blacklist reason */}
+              {["admin"].includes(role) && (
+
+              
               <DropdownMenuItem
                 onClick={() => {
                   router.push(
@@ -162,8 +168,9 @@ export default function BlacklistVisitors({ blacklistData }: any) {
               >
                 Update Blacklist Reason
               </DropdownMenuItem>
-
-              {/* Delete blacklist visitor */}
+              )}
+                
+                {["admin"].includes(role) && (
               <DropdownMenuItem
                 onClick={async () => {
                   if (
@@ -187,6 +194,8 @@ export default function BlacklistVisitors({ blacklistData }: any) {
               >
                 Delete Blacklist Visitor
               </DropdownMenuItem>
+              )}
+              
 
               {/* Placeholder for future action */}
               {/* <DropdownMenuItem>...</DropdownMenuItem> */}

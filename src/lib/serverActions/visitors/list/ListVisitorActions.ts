@@ -17,10 +17,11 @@ const prisma = new PrismaClient();
 export async function visitorsInfo() {
   const session = await getServerSession(authOptions);
   const userid = Number(session?.user.id);
+  const role = session?.user.role;
   try {
     const visitors = await prisma.visitors_schedule.findMany({
       where: {
-        resident_id: userid,
+        ...(role === "resident" && { resident_id: Number(userid) }),
       },
       include: { visitiors: true }, // Include visitor details
       orderBy: { visitor_entry_date: "desc" }, // Order by visitor entry date in descending order

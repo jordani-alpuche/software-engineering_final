@@ -34,6 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { deleteUser } from "@/lib/serverActions/users/update/UpdateUsersActions";
+import { useSession } from "next-auth/react";
 
 export type User = {
   id: number;
@@ -70,6 +71,8 @@ export default function ListUsers({ userInformation }:any) {
     React.useState<VisibilityState>({}); // Visibility for table columns
 
   const router = useRouter(); // Router for navigation
+  const { data: session } = useSession();
+const role = session?.user?.role ?? ""; // fallback to empty string if undefined
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -140,6 +143,7 @@ export default function ListUsers({ userInformation }:any) {
               >
                 Update User
               </DropdownMenuItem>
+              {["admin"].includes(role) && (
               <DropdownMenuItem
                 onClick={async () => {
                   if (
@@ -159,6 +163,7 @@ export default function ListUsers({ userInformation }:any) {
               >
                 Delete User
               </DropdownMenuItem>
+               )}
             </DropdownMenuContent>
           </DropdownMenu>
         );

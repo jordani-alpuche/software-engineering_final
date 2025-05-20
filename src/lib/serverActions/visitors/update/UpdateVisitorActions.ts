@@ -39,12 +39,16 @@ export async function isValidSchedule(id: number) {
 export async function getSchedule(id: number) {
   const session = await getServerSession(authOptions);
   const userid = session?.user.id;
+  const role = session?.user.role;
 
   const schedule = await prisma.visitors_schedule.findUnique({
-    where: { id: Number(id), resident_id: Number(userid) },
+    where: {
+      id: Number(id),
+      ...(role === "resident" && { resident_id: Number(userid) }),
+    },
     include: {
-      visitiors: true, // Include visitor details
-      visitor_entry_logs: true, // Include entry logs
+      visitiors: true,
+      visitor_entry_logs: true,
     },
   });
 

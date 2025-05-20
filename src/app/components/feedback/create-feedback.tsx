@@ -17,7 +17,9 @@ import {
 import { Rating } from "@/components/ui/rating"; // Rating component
 import { Textarea } from "@/components/ui/textarea"; // Textarea component
 import { createVisitorFeedback } from "@/lib/serverActions/feedback/create/CreateFeedbackActions"; // API call for submitting feedback
-
+import { useSession } from "next-auth/react";
+import { redirect } from "next/dist/server/api-utils";
+import { useRouter } from "next/navigation"; // For navigation
 // Define the validation schema for the form using Zod
 const formSchema = z.object({
   rating: z.number(), // Rating must be a number
@@ -25,6 +27,8 @@ const formSchema = z.object({
 });
 
 export default function CreateFeedback({ scheduleData }:any) {
+  const router = useRouter(); // Initialize the router for navigation
+  const { data: session, status } = useSession(); // Get the session data using NextAuth
   // Initialize the form using react-hook-form with Zod resolver for validation
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,7 +48,14 @@ export default function CreateFeedback({ scheduleData }:any) {
 
       // Show a success or error toast based on the response code
       if (response.code === 200) {
+        
+        
         toast.success("Feedback submitted successfully!"); // Success toast
+        if(session){
+          return router.push("/feedback/listfeedback"); // Redirect to the feedback list page
+        }else{
+          router.push("/visitorfeedback/success"); // Redirect to the sign-in page
+        }
       } else {
         toast.error(response.message || "Failed to submit feedback."); // Error toast
       }

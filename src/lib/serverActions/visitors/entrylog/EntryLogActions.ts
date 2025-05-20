@@ -17,12 +17,37 @@ const prisma = new PrismaClient();
 export async function visitorsLog() {
   const session = await getServerSession(authOptions);
   const userid = Number(session?.user.id);
+
+  if (!session) {
+    return {
+      success: false,
+      code: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  const role = session.user.role;
+
+  // Optional: Allow only certain roles
+  if (!["admin","security","resident"].includes(role)) {
+    return {
+      success: false,
+      code: 403,
+      message: "Forbidden: You do not have permission",
+    };
+  }
+
+
   try {
-    const visitors = await prisma.visitor_entry_logs.findMany({
-      //   where: {
-      //     resident_id: userid,
-      //   },
-      include: { visitiors: true }, // Include visitor details
+    const visitors = await prisma.visitor_entry_logs.findMany({      
+             where: {
+        ...(role === "resident" && {
+          visitors_schedule: {
+            resident_id: userid,
+          },
+        }),
+      },
+      include: { visitiors: true, visitors_schedule:true}, // Include visitor details
     });
     // console.log("Visitors Logs", visitors);
     return visitors;

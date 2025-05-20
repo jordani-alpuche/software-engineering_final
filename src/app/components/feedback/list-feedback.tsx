@@ -145,8 +145,7 @@ export default function ListVisitorFeedback({ visitorFeedbackInformation }:any) 
       enableHiding: false, // Prevent hiding this column
       header: "Actions", // Column header
       cell: ({ row }) => {
-        const schedule = row.original; // Get the original row data (schedule)
-
+        const feedback = row.original; // Get the original row data (schedule)
         return (
           <DropdownMenu>
             {" "}
@@ -159,6 +158,16 @@ export default function ListVisitorFeedback({ visitorFeedbackInformation }:any) 
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => router.push(`/feedback/viewvisitorfeedback/${feedback.id}`)}
+            >
+              View Feedback
+            </DropdownMenuItem>
+                        <DropdownMenuItem
+              onClick={() => router.push(`/visitors/viewvisitor/${feedback.visitor_schedule_id}`)}
+            >
+              Visitor Schedule
+            </DropdownMenuItem>
               {/* Placeholder for potential menu items */}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -252,6 +261,7 @@ export default function ListVisitorFeedback({ visitorFeedbackInformation }:any) 
           Next
         </Button>
       </div>
+
     </div>
   );
 }

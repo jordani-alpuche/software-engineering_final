@@ -16,6 +16,28 @@ const prisma = new PrismaClient();
  ** @throws {Error} - Throws an error if the visitor ID is invalid.
  */
 export async function deleteBlacklistVisitor(id: number) {
+
+    const session = await getServerSession(authOptions);
+  if (!session) {
+    return {
+      success: false,
+      code: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  const role = session.user.role;
+
+  // Optional: Allow only certain roles
+  if (!["admin"].includes(role)) {
+    return {
+      success: false,
+      code: 403,
+      message: "Forbidden: You do not have permission",
+    };
+  }
+
+  
   try {
     console.log("Data id received:", id); // Log the incoming data
     const session = await getServerSession(authOptions); // Get the session
