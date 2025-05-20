@@ -33,8 +33,9 @@ import { faker } from '@faker-js/faker';
 //   return { status: 200, message: 'Email sent successfully (mocked).' };
 // };
 
-export async function GET() {
-  return("hello world");
+export async function POST() {
+  return NextResponse.json("hello world");
+
   // try {
   //   const schedules = [];
   //   const residentId = mockSession.user.id; // Use the resident ID from the mock session
