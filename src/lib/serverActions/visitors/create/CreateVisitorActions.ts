@@ -5,9 +5,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Import authentication logic
 import  {CreateNotification} from "@/lib/serverActions/notifications/createNotifications"; // Import your notification function
 import { sendEmail } from "@/app/utils/sendEmail"; // Import your email sending function
-// const prisma = new PrismaClient({
-//   log: ["query", "info", "warn", "error"],
-// });
+
 
 interface GroupVisitorData {
   resident_id: number;
@@ -360,7 +358,6 @@ export async function createIndividualVisitor(data: IndividualVisitorData) {
           type: "Individual visitor"
         }
     });
-
 
 
   // Fetch the updated visitorSchedule with QR code

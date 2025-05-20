@@ -165,101 +165,106 @@ export default function SelectVisitorToBlacklist({ visitorsData, userid }:any) {
     state: { sorting, columnFilters, columnVisibility }, // Local state values used by the table
   });
 
-  return (
-    <div className="p-4 md:p-7 lg:p-8">
-      {/* Page Title */}
-      <h1 className="text-4xl font-bold text-center mb-6">Existing Visitors</h1>
+return (
+  <div className="p-4 md:p-7 lg:p-8">
+    <h1 className="text-4xl font-bold text-center mb-6 text-gray-800 dark:text-white">
+      Existing Visitors
+    </h1>
 
-      {/* Filter box for first name */}
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter First Name..."
-          value={
-            (table
-              .getColumn("visitor_first_name")
-              ?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table
-              .getColumn("visitor_first_name")
-              ?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>
+    {/* Filter input */}
+    <div className="flex items-center py-4">
+      <Input
+        placeholder="Filter First Name..."
+        value={
+          (table.getColumn("visitor_first_name")?.getFilterValue() as string) ?? ""
+        }
+        onChange={(event) =>
+          table.getColumn("visitor_first_name")?.setFilterValue(event.target.value)
+        }
+        className="max-w-sm border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+      />
+    </div>
 
-      {/* Table container with horizontal scroll */}
-      <div className="overflow-x-auto rounded-md border">
-        <Table className="min-w-full">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </TableHead>
+    {/* Table container */}
+    <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md bg-white dark:bg-gray-900">
+      <Table className="min-w-full divide-y divide-gray-200">
+        <TableHeader className="bg-gray-100 dark:bg-gray-800">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  className="text-gray-700 dark:text-gray-200 text-sm font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+
+        <TableBody>
+          {loading ? (
+            Array(6)
+              .fill(0)
+              .map((_, index) => <SkeletonRow key={index} />)
+          ) : table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row, rowIndex) => (
+              <TableRow
+                key={row.id}
+                className={
+                  rowIndex % 2 === 0
+                    ? "bg-white dark:bg-gray-900"
+                    : "bg-gray-50 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-gray-700 transition-colors"
+                }
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className="text-gray-700 dark:text-gray-300 px-4 py-3"
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {/* If loading, show placeholder rows */}
-            {loading ? (
-              Array(6)
-                .fill(0)
-                .map((_, index) => <SkeletonRow key={index} />)
-            ) : table.getRowModel().rows.length ? (
-              // Render each row in the table
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              // No matching records
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={columns.length}
+                className="h-24 text-center text-gray-500 dark:text-gray-400"
+              >
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
-  );
+
+    {/* Pagination */}
+    <div className="flex items-center justify-end space-x-2 py-4">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => table.previousPage()}
+        disabled={!table.getCanPreviousPage()}
+        className="bg-white hover:bg-indigo-100 border-gray-300 text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+      >
+        Previous
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => table.nextPage()}
+        disabled={!table.getCanNextPage()}
+        className="bg-white hover:bg-indigo-100 border-gray-300 text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+      >
+        Next
+      </Button>
+    </div>
+  </div>
+);
+
+
 }
