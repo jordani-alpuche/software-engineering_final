@@ -25,6 +25,7 @@ import {
   markNotificationAsRead,
   markAllNotificationsAsRead,
 } from "@/lib/serverActions/notifications/viewNotifications";
+import { AppSidebarFooter } from "@/components/sidebar-footer";
 
 interface LayoutProps {
   children: ReactNode;
@@ -154,6 +155,8 @@ export default function Layout({ children }: LayoutProps) {
         </header>
 
         <main>{children}</main>
+
+        
       </SidebarInset>
     </SidebarProvider>
   );

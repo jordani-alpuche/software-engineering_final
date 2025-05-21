@@ -131,14 +131,14 @@ export default function LoginForm() {
             </form>
 
             {/* Forgot password link */}
-            <div className="mt-4 text-center text-sm">
+            {/* <div className="mt-4 text-center text-sm">
               <a
                 href="/forgot-password"
                 className="text-primary hover:underline"
               >
                 Forgot password?
               </a>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
         {/* Toast notification container */}

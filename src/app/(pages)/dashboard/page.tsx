@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [showContent, setShowContent] = useState(false);
   const router = useRouter();
   const [totalActiveVisitors, setTotalActiveVisitors] = useState<number | null>(null);
-  const [totalUnActiveVisitors, setTotalUnActiveVisitors] = useState<number | null>(null);
+  const [totalInActiveVisitors, setTotalInActiveVisitors] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), 1000);
@@ -51,10 +51,10 @@ export default function Dashboard() {
         const res = await fetch("/api/dashboard/unactive");
         if (!res.ok) throw new Error("Failed to fetch unactive visitors");
         const data = await res.json();
-        setTotalUnActiveVisitors(data.totalUnActiveVisitorsSchedule);
+        setTotalInActiveVisitors(data.totalInActiveVisitorsSchedule);
       } catch (error) {
         console.error("Error fetching unactive visitors:", error);
-        setTotalUnActiveVisitors(0);
+        setTotalInActiveVisitors(0);
       }
     }
     fetchTotalUnactiveVisitors();
@@ -134,7 +134,7 @@ export default function Dashboard() {
                 <DonutCounter count={totalActiveVisitors ?? 0} label="Total Active Visitor Schedules" />
               </div>
               <div className="rounded-xl bg-muted/50 p-4">
-                <DonutCounter count={totalUnActiveVisitors ?? 0} label="Total Inactive Visitor Schedules" />
+                <DonutCounter count={totalInActiveVisitors ?? 0} label="Total Inactive Visitor Schedules" />
               </div>
               <div className="rounded-xl bg-muted/50">
                 <VisitorCountPieChart />

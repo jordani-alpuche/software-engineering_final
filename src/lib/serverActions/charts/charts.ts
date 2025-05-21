@@ -43,16 +43,16 @@ export async function getTotalUnActiveVisitors() {
         throw new Error("User not authenticated");
         }
     
-        const totalUnActiveVisitorsSchedule = await prisma.visitors_schedule.count({
+        const totalInActiveVisitorsSchedule = await prisma.visitors_schedule.count({
         where: {
-            status: "unactive",
+            status: "inactive",
             ...(role === "resident" && { resident_id: Number(userId) }),
         },
         });   
 
     
         return {
-        totalUnActiveVisitorsSchedule,
+        totalInActiveVisitorsSchedule,
         };
     } catch (error) {
         console.error("Error fetching visitor statistics:", error);
