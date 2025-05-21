@@ -227,15 +227,15 @@ export default function ViewVisitors({
         status: scheduleData.status,
       };
 
-      console.log(
-        `Calling API for recurring action '${action}' for visitor ${visitorId}:`,
-        payload
-      );
+      // console.log(
+      //   `Calling API for recurring action '${action}' for visitor ${visitorId}:`,
+      //   payload
+      // );
       const result: ActionResult = await updateEntryExitStatus(payload);
-      console.log(
-        `API Result for recurring action '${action}' for visitor ${visitorId}:`,
-        result
-      );
+      // console.log(
+      //   `API Result for recurring action '${action}' for visitor ${visitorId}:`,
+      //   result
+      // );
 
       if (result.success) {
         toast.success(

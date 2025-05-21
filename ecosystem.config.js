@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "next-app",
+      name: "GateApp",
       script: "npm",
       args: "run build-and-start",
       env: {

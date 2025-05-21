@@ -199,8 +199,9 @@ export async function createGroupVisitor(data: GroupVisitorData) {
           await tx.notifications.create({
             data: {
               user_id: Number(data.resident_id),
-              message: `Schedule has created successfully by ${username} .`,
-              type: "Group visitor"
+              message: `Schedule has created successfully by ${username}.`,
+              type: "Group visitor",
+              scheduleid: Number(visitorSchedule.id),
             }
         });
 
@@ -356,8 +357,9 @@ export async function createIndividualVisitor(data: IndividualVisitorData) {
       await tx.notifications.create({
         data: {
           user_id: Number(data.resident_id),
-        message: `Schedule has created successfully by ${username} .`,
-          type: "Individual visitor"
+        message: `Schedule has created successfully by ${username}.`,
+          type: "Individual visitor",
+          scheduleid: Number(visitorSchedule.id),
         }
     });
 

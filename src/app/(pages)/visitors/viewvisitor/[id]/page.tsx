@@ -22,7 +22,7 @@ const scheduleId = Number(params_id); // Convert the id to a number
   }
   const scheduleGetData = (await getSchedule(scheduleId)) as ScheduleData | null; // Fetch schedule data based on the schedule ID
   const userid = Number(session?.user.id); // Get the user ID from the session
-console.log("scheduleGetData", scheduleGetData);
+// console.log("scheduleGetData", scheduleGetData);
   if (!scheduleGetData) {
   return notfound(); // Return 404 if no data found
     }

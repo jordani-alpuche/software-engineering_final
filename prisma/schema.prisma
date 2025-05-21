@@ -56,6 +56,7 @@ model notifications {
   created_at DateTime? @default(now()) @db.Timestamp(6)
   updated_at DateTime? @default(now()) @db.Timestamp(6)
   user_id    Int
+  scheduleid Int?
   users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "notifications_userid")
 
   @@index([id], map: "id_1741109344869_index")

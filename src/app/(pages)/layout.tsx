@@ -26,6 +26,7 @@ import {
   markAllNotificationsAsRead,
 } from "@/lib/serverActions/notifications/viewNotifications";
 import { AppSidebarFooter } from "@/components/sidebar-footer";
+import { useRouter } from "next/navigation"; // import router
 
 interface LayoutProps {
   children: ReactNode;
@@ -36,13 +37,13 @@ export default function Layout({ children }: LayoutProps) {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter(); // initialize router
 
   const userRole = session?.user?.role;
-//  console.log("User Role:", userRole);
   const isPrivileged = userRole === "admin" || userRole === "security";
   const unreadCount = notifications.length;
 
-  // Fetch notifications only for allowed roles
+  // Fetch notifications
   useEffect(() => {
     if (!isPrivileged || !session?.user?.id) return;
 
@@ -69,10 +70,13 @@ export default function Layout({ children }: LayoutProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleNotificationClick = async (notificationId: number) => {
+  const handleNotificationClick = async (notificationId: number, scheduleId: number) => {
     await markNotificationAsRead(notificationId);
     const updated = await getAllUnReadNotifications();
     if (updated) setNotifications(updated);
+
+    // Redirect to the visitor page
+    router.push(`https://gatecommunity.techadmin.me/visitors/viewvisitor/${scheduleId}`);
   };
 
   const handleMarkAllAsRead = async () => {
@@ -139,7 +143,7 @@ export default function Layout({ children }: LayoutProps) {
                         <li
                           key={note.id}
                           className="px-4 py-2 hover:bg-gray-100 text-sm text-gray-700 cursor-pointer"
-                          onClick={() => handleNotificationClick(note.id)}
+                          onClick={() => handleNotificationClick(note.id, note.scheduleid)}
                         >
                           {note.message}
                         </li>
@@ -155,8 +159,6 @@ export default function Layout({ children }: LayoutProps) {
         </header>
 
         <main>{children}</main>
-
-        
       </SidebarInset>
     </SidebarProvider>
   );
