@@ -134,7 +134,7 @@ export default function UpdateVisitors({ scheduleData, scheduleID }:any) {
         scheduleID,
         formattedData
       );
-      // console.log("Response:", updateVisitorResponse);
+      console.log("Response:", updateVisitorResponse);
 
       if (updateVisitorResponse.code === 400) {
         toast.error("Please fill all the required fields");

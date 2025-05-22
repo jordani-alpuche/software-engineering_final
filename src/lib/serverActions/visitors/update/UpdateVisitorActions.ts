@@ -167,8 +167,8 @@ export async function updateIndividualSchedule(id: number, data: any) {
           status: data.status,
           visitor_type: data.visitor_type,
           license_plate: data.license_plate,
-          visitor_entry_date: new Date(data.visitor_entry_date),
-          visitor_exit_date: new Date(data.visitor_exit_date),
+          visitor_entry_date: data.visitor_entry_date,
+          visitor_exit_date: data.visitor_exit_date,
           comments: data.comments,
         },
       });
@@ -241,8 +241,8 @@ export async function updateGroupSchedule(id: number, data: any) {
           status: data.status,
           visitor_type: data.visitor_type,
           license_plate: data.license_plate,
-          visitor_entry_date: new Date(data.visitor_entry_date),
-          visitor_exit_date: new Date(data.visitor_exit_date),
+          visitor_entry_date: data.visitor_entry_date,
+          visitor_exit_date: data.visitor_exit_date,
           comments: data.comments,
         },
       });

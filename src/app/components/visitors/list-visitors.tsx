@@ -110,8 +110,8 @@ const role = session?.user?.role ?? ""; // fallback to empty string if undefined
     status: string;
     visitor_type: string;
     license_plate: string;
-    visitor_entry_date: string;
-    visitor_exit_date: string;
+    visitor_entry_date: Date;
+    visitor_exit_date: Date;
     visitor_qrcode: string;
     comments: string;
     sg_type: number;
@@ -234,7 +234,7 @@ const role = session?.user?.role ?? ""; // fallback to empty string if undefined
                       "Are you sure you want to resend this email?"
                     )
                   ) {                    
-                     handleSendEmail(schedule.visitor_email, schedule.visitor_qrcode,"visitor", schedule.visitor_entry_date, schedule.visitor_exit_date);
+                     handleSendEmail(schedule.visitor_email, schedule.visitor_qrcode,"visitor", schedule.visitor_entry_date.toLocaleString(), schedule.visitor_exit_date.toLocaleString());
                   }
                 }}
               >
