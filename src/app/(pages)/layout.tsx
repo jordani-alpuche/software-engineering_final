@@ -102,7 +102,7 @@ export default function Layout({ children }: LayoutProps) {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{session?.user.username}</BreadcrumbPage>
+                  <BreadcrumbPage>{session?.user.role}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
