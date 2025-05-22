@@ -325,7 +325,7 @@ export default function UpdateGroupVisitors({ scheduleData, scheduleID }:any) {
                               selected={field.value}
                               onSelect={(date) => handleDateSelect(date, "visitor_entry_date")}
                               initialFocus
-                                                              disabled={(date) => {
+                                disabled={(date) => {
                                 const today = new Date();
                                 today.setHours(0, 0, 0, 0);
 
@@ -460,7 +460,7 @@ export default function UpdateGroupVisitors({ scheduleData, scheduleID }:any) {
                               selected={field.value}
                               onSelect={(date) => handleDateSelect(date, "visitor_exit_date")}
                               initialFocus
-                                                              disabled={(date) => {
+                                 disabled={(date) => {
                                 const today = new Date();
                                 today.setHours(0, 0, 0, 0);
 

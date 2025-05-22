@@ -187,7 +187,7 @@ export async function updateEntryExitStatus(
           //  = schedule.visitor_email;
            const qrcode_url = `https://gatecommunity.techadmin.me/visitorfeedback/${schedule.id}`;
 
-           const sendemail = await sendEmail(schedule.visitor_email, qrcode_url,"feedback");
+           const sendemail = await sendEmail(schedule.visitor_email, qrcode_url,"feedback", schedule.visitor_entry_date.toLocaleString(), schedule.visitor_exit_date.toLocaleString());
 
 
         } else if (!entryChecked && !exitChecked) {
@@ -309,7 +309,7 @@ export async function updateEntryExitStatus(
         const qrcode_url = `https://gatecommunity.techadmin.me/visitorfeedback/${schedule.id}`;
 
         if(feedbackGiven == null){
-           await sendEmail(schedule.visitor_email, qrcode_url,"feedback");
+           await sendEmail(schedule.visitor_email, qrcode_url,"feedback", schedule.visitor_entry_date.toLocaleString(), schedule.visitor_exit_date.toLocaleString());
         }
 
 
