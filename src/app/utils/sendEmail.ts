@@ -1,4 +1,5 @@
 // src/app/utils/sendEmail.ts
+
 import QRCode from 'qrcode';
 import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
@@ -84,9 +85,8 @@ export async function sendEmail(visitorEmail: string, qr_code_url: string, email
       attachments, // now added here
     });
 
-    return NextResponse.json({ success: true });
+ return { message: "Schedule deleted successfully", success: true };
   } catch (error) {
-    console.error('Email sending failed:', error);
-    return NextResponse.json({ success: false });
+    throw new Error("Error deleting schedule");
   }
 }

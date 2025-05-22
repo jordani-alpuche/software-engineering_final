@@ -34,7 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { deleteSchedule } from "@/lib/serverActions/visitors/update/UpdateVisitorActions";
-
+import { sendEmail } from "@/app/utils/sendEmail";
 import { useSession } from "next-auth/react";
 
 
@@ -65,6 +65,29 @@ export default function ListVisitors({ visitorInformation }:any) {
 const role = session?.user?.role ?? ""; // fallback to empty string if undefined
 
 
+  const handleSendEmail = async (visitorEmail: string, qr_code_url: string, emailType: string) => {
+    setLoading(true);
+    const res = await fetch("/api/sendEmail", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        visitorEmail: visitorEmail,
+        qr_code_url: qr_code_url,
+        emailType: emailType,
+      }),
+    });
+
+    const data = await res.json();
+    setLoading(false);
+
+    if (data.success) {
+      alert("Email sent!");
+    } else {
+      alert("Failed to send email.");
+    }
+  };
+
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -78,7 +101,7 @@ const role = session?.user?.role ?? ""; // fallback to empty string if undefined
     fetchData();
   }, []);
 
-  type User = {
+  type VisitorSchedule = {
     id: number;
     visitor_phone: string;
     visitor_email: string;
@@ -87,6 +110,7 @@ const role = session?.user?.role ?? ""; // fallback to empty string if undefined
     license_plate: string;
     visitor_entry_date: string;
     visitor_exit_date: string;
+    visitor_qrcode: string;
     comments: string;
     sg_type: number;
     visitiors: [
@@ -106,7 +130,7 @@ const role = session?.user?.role ?? ""; // fallback to empty string if undefined
     ];
   };
 
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<VisitorSchedule>[] = [
     {
       id: "visitor_first_name",
       header: "Visitor First Name",
@@ -195,6 +219,25 @@ const role = session?.user?.role ?? ""; // fallback to empty string if undefined
                 Update Schedule
               </DropdownMenuItem>
               )}
+
+          {["admin","resident"].includes(role) && schedule.status !== 'inactive' && (
+            // if (schedule.status !== "inactive"){
+              <DropdownMenuItem
+                onClick={async () => {
+                  if (
+                    window.confirm(
+                      "Are you sure you want to resend this email?"
+                    )
+                  ) {                    
+                     handleSendEmail(schedule.visitor_email, schedule.visitor_qrcode,"visitor");
+                  }
+                }}
+              >
+                Resend Email
+              </DropdownMenuItem>
+            // }
+              )}
+
               {["admin"].includes(role) && (
               <DropdownMenuItem
                 onClick={async () => {

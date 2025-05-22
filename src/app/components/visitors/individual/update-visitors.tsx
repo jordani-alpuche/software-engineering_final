@@ -117,7 +117,7 @@ export default function UpdateVisitors({ scheduleData, scheduleID }:any) {
   }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log("Form Values:", values);
+    // console.log("Form Values:", values);
     setIsLoading(true);
     const formattedData = { ...values };    
 
@@ -127,22 +127,22 @@ export default function UpdateVisitors({ scheduleData, scheduleID }:any) {
       formattedData.visitor_type = "one-time";
     }
 
-    console.log("Form Data:", formattedData);
+    // console.log("Form Data:", formattedData);
 
     try {
       const updateVisitorResponse = await updateIndividualSchedule(
         scheduleID,
         formattedData
       );
-      console.log("Response:", updateVisitorResponse);
+      // console.log("Response:", updateVisitorResponse);
 
       if (updateVisitorResponse.code === 400) {
         toast.error("Please fill all the required fields");
-        console.log("Error:", updateVisitorResponse);
+        // console.log("Error:", updateVisitorResponse);
         setIsLoading(false);
       } else if (updateVisitorResponse.code === 500) {
         toast.error("An Error Occurred while submitting the form.");
-        console.log("Error:", updateVisitorResponse);
+        // console.log("Error:", updateVisitorResponse);
         setIsLoading(false);
       } else if (updateVisitorResponse.code === 200) {
         toast.success("Schedule Updated successfully!");

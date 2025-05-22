@@ -129,13 +129,13 @@ export default function CreateVisitors({ userID: userid }:any) {
       formattedData.visitor_type = "one-time";
     }
 
-    console.log("Form Data:", formattedData);
+    // console.log("Form Data:", formattedData);
 
     try {
       const createVisitorResponse = await createIndividualVisitor(
         formattedData
       );
-      console.log("Response:", createVisitorResponse);
+      // console.log("Response:", createVisitorResponse);
 
       if(createVisitorResponse.code === 408) {
         toast.error(createVisitorResponse.message);
@@ -146,7 +146,7 @@ export default function CreateVisitors({ userID: userid }:any) {
         setIsLoading(false);
       } else if (createVisitorResponse.code === 500) {
         toast.error("An Error Occurred while submitting the form.");
-        console.log("Error:", createVisitorResponse);
+        // console.log("Error:", createVisitorResponse);
         setIsLoading(false);
       } else if (createVisitorResponse.code === 200) {
         toast.success("Visitor created successfully!");        

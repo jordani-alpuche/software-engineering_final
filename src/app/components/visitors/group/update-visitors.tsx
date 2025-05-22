@@ -165,12 +165,12 @@ export default function UpdateGroupVisitors({ scheduleData, scheduleID }:any) {
         toast.success("Visitor group created successfully!");
         router.push("/visitors/listvisitors"); // Redirect to visitor list
       } else if (updateVisitorResponse.code === 400) {
-        console.log("Error creating visitor group:", updateVisitorResponse);
+        // console.log("Error creating visitor group:", updateVisitorResponse);
         toast.error(
           "Failed to create visitor group: Ensure all Fields are filled"
         );
       } else {
-        console.log("Error creating visitor group:", updateVisitorResponse);
+        // console.log("Error creating visitor group:", updateVisitorResponse);
         toast.error(
           updateVisitorResponse.message || "Failed to create visitor group"
         );

@@ -1,36 +1,19 @@
-// src/app/api/send-email/route.ts
-// export const runtime = 'nodejs';
+// /app/api/send-email/route.ts
 import { NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
-
-
+import { sendEmail } from "@/app/utils/sendEmail"; // Import your email sending function
 export async function POST(req: Request) {
-  const formData = await req.formData();
-  const name = formData.get('name');
-  const email = formData.get('email');
-  const message = formData.get('message');
-
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    auth: {
-      user: process.env.GMAIL_USERNAME,
-      pass: process.env.GMAIL_PASSWORD,
-    },
-  });
-
   try {
-    await transporter.sendMail({
-      from: process.env.GMAIL_USERNAME,
-      to: 'recipient@example.com',
-      subject: `New message from ${name}`,
-      text: message as string,
-      replyTo: email as string,
-    });
+    const { visitorEmail, qr_code_url, emailType } = await req.json();
+
+    if (!visitorEmail || !qr_code_url || !emailType) {
+      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
+    }
+    await sendEmail(visitorEmail, qr_code_url, emailType);
+   
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ success: false });
+    // console.error("Failed to send email:", error);
+    return NextResponse.json({ success: false, error: "Email failed to send" }, { status: 500 });
   }
 }

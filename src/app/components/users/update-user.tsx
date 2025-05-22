@@ -102,7 +102,7 @@ export default function UpdateUsers({ userData }:any) {
       let residentReturn = {};
       let securityReturn = {};
       const role = rest.role;
-      console.log("role", role);
+      // console.log("role", role);
 
       const userData = { ...values };
 

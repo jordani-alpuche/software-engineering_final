@@ -155,7 +155,7 @@ export default function CreateVisitors({ userID: userid }:any) {
         toast.error("Visitor is blacklisted");
       } else {
         const errorData = await response;
-        console.log("Error creating visitor group:", errorData);
+        // console.log("Error creating visitor group:", errorData);
         toast.error(errorData.message || "Failed to create visitor group");
       }
     } catch (error) {
