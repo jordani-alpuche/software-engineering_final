@@ -141,13 +141,13 @@ export default function VisitorsLog({ visitorLog }:any) {
 },
 
 
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <div className="lowercase">{row.getValue("status") || "-"}</div>
-      ),
-    },
+    // {
+    //   accessorKey: "status",
+    //   header: "Status",
+    //   cell: ({ row }) => (
+    //     <div className="lowercase">{row.getValue("status") || "-"}</div>
+    //   ),
+    // },
 
     {
       id: "actions",
