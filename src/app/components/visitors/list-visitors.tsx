@@ -210,7 +210,10 @@ const role = session?.user?.role ?? ""; // fallback to empty string if undefined
               >
                 View Schedule
               </DropdownMenuItem>
-              {["admin","resident"].includes(role) && (
+                 {(
+                  (schedule.status === 'inactive' && role === 'admin') ||
+                  (schedule.status !== 'inactive' && ['admin', 'resident'].includes(role))
+                 ) && (
               <DropdownMenuItem
                 onClick={() =>
                   router.push(`/visitors/updatevisitor/${schedule.id}`)
