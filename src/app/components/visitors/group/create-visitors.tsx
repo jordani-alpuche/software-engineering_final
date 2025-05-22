@@ -308,6 +308,16 @@ export default function CreateVisitors({ userID: userid }:any) {
                               selected={field.value}
                               onSelect={(date) => handleDateSelect(date, "visitor_entry_date")}
                               initialFocus
+                                                              disabled={(date) => {
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+
+                                const maxDate = new Date();
+                                maxDate.setMonth(maxDate.getMonth() + 3);
+                                maxDate.setHours(23, 59, 59, 999); // optional, to include the full day
+
+                                return date < today || date > maxDate;
+                              }}
                             />
                             <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
                               <ScrollArea className="w-64 sm:w-auto">
@@ -433,6 +443,16 @@ export default function CreateVisitors({ userID: userid }:any) {
                               selected={field.value}
                               onSelect={(date) => handleDateSelect(date, "visitor_exit_date")}
                               initialFocus
+                                                              disabled={(date) => {
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+
+                                const maxDate = new Date();
+                                maxDate.setMonth(maxDate.getMonth() + 3);
+                                maxDate.setHours(23, 59, 59, 999); // optional, to include the full day
+
+                                return date < today || date > maxDate;
+                              }}
                             />
                             <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
                               <ScrollArea className="w-64 sm:w-auto">

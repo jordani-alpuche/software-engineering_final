@@ -4,7 +4,8 @@ import QRCode from 'qrcode';
 import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
 
-export async function sendEmail(visitorEmail: string, qr_code_url: string, emailType: string) {
+export async function sendEmail(visitorEmail: string, qr_code_url: string, emailType: string, enterDate: string, exitDate: string) {
+  // Validate the email type
   const email = '2021255646@ub.edu.bz';
 
   let htmlContent = "";
@@ -26,6 +27,10 @@ export async function sendEmail(visitorEmail: string, qr_code_url: string, email
             <img src="cid:qrcodecid" alt="QR Code" style="width: 180px; height: 180px;" />
           </div>
           <p style="text-align: center; font-weight: bold;">This QR code is required for your entry.</p>
+          <p style="text-align: center; font-size: 0.95em;">Your visit is scheduled for:</p>
+          <p style="text-align: center; font-weight: bold;">Enter Date: ${enterDate}</p>
+          <p style="text-align: center; font-weight: bold;">Exit Date: ${exitDate}</p>
+          <p style="text-align: center; font-size: 0.95em;">Please arrive on time and follow all community guidelines.</p>
           
           <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;" />
           <p style="font-size: 0.9em; color: #555;">If you have any questions, please contact the resident who scheduled your visit or reach out to the community management.</p>
