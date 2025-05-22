@@ -65,7 +65,7 @@ export default function ListVisitors({ visitorInformation }:any) {
 const role = session?.user?.role ?? ""; // fallback to empty string if undefined
 
 
-  const handleSendEmail = async (visitorEmail: string, qr_code_url: string, emailType: string,entryDate:string,exitDate:string) => {
+  const handleSendEmail = async (visitorEmail: string, qr_code_url: string, emailType: string,entryDate:string | Date,exitDate:string | Date) => {
     setLoading(true);
     const res = await fetch("/api/sendEmail", {
       method: "POST",
@@ -194,6 +194,7 @@ const role = session?.user?.role ?? ""; // fallback to empty string if undefined
       header: "Actions",
       cell: ({ row }) => {
         const schedule = row.original;
+        // console.log("Schedule:", schedule);
 
         return (
           <DropdownMenu>
@@ -234,7 +235,7 @@ const role = session?.user?.role ?? ""; // fallback to empty string if undefined
                       "Are you sure you want to resend this email?"
                     )
                   ) {                    
-                     handleSendEmail(schedule.visitor_email, schedule.visitor_qrcode,"visitor", schedule.visitor_entry_date.toLocaleString(), schedule.visitor_exit_date.toLocaleString());
+                     handleSendEmail(schedule.visitor_email, schedule.visitor_qrcode,"visitor", schedule.visitor_entry_date, schedule.visitor_exit_date);
                   }
                 }}
               >

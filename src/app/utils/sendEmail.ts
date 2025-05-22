@@ -4,8 +4,29 @@ import QRCode from 'qrcode';
 import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
 
-export async function sendEmail(visitorEmail: string, qr_code_url: string, emailType: string, enterDate: string, exitDate: string) {
+const formatDateTimes = (dateTime: Date | string | null | undefined): string => {
+  if (!dateTime) return "N/A";
+  try {
+    const date = new Date(dateTime);
+    return date.toLocaleString("en-US", {
+      timeZone: "America/Belize",
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } catch {
+    return "Invalid Date";
+  }
+};
+
+export async function sendEmail(visitorEmail: string, qr_code_url: string, emailType: string, enterDate: string | Date, exitDate: string | Date) {
   // Validate the email type
+  console.log("enterDate", enterDate);
+  console.log("exitDate", exitDate);
+
   const email = '2021255646@ub.edu.bz';
 
   let htmlContent = "";
@@ -28,8 +49,8 @@ export async function sendEmail(visitorEmail: string, qr_code_url: string, email
           </div>
           <p style="text-align: center; font-weight: bold;">This QR code is required for your entry.</p>
           <p style="text-align: center; font-size: 0.95em;">Your visit is scheduled for:</p>
-          <p style="text-align: center; font-weight: bold;">Enter Date: ${enterDate}</p>
-          <p style="text-align: center; font-weight: bold;">Exit Date: ${exitDate}</p>
+          <p style="text-align: center; font-weight: bold;">Enter Date: ${formatDateTimes(enterDate)}</p>
+          <p style="text-align: center; font-weight: bold;">Exit Date: ${formatDateTimes(exitDate)}</p>
           <p style="text-align: center; font-size: 0.95em;">Please arrive on time and follow all community guidelines.</p>
           
           <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;" />
